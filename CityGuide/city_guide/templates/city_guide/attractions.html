@@ -1,0 +1,9 @@
+{% if attracions_obj %}
+    <ul>
+    {% for attracion in attracions_obj %}
+        <li><a href="/city_guide/attractions/{{ attracion.id }}">{{ attracion.name }}</a></li>
+    {% endfor %}
+    </ul>
+{% else %}
+    <p>No attracions are available.</p>
+{% endif %}
