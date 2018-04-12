@@ -1,7 +1,7 @@
 {% if attracions_obj %}
     <ul>
     {% for attracion in attracions_obj %}
-        <li><a href="/city_guide/attractions/{{ attracion.id }}">{{ attracion.name }}</a></li>
+        <li><a href="{% url 'city_guide:attraction' attracion.id %}">{{ attracion.name }}</a></li>        
     {% endfor %}
     </ul>
 {% else %}
