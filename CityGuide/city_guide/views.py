@@ -7,7 +7,8 @@ from django.views import generic
 # Our views.
 
 def index(request):
-    return HttpResponse('city_guide/index.html')
+    template = loader.get_template('city_guide/index.html')
+    return HttpResponse(template.render())
 
 class AttractionsView(generic.ListView):
     template_name = 'city_guide/attractions.html'

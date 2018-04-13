@@ -13,7 +13,7 @@ class TicketType(models.Model):
     discount = models.IntegerField(default=0)
 
     def __str__(self):
-        return self.type_name + " " + str(self.discount) + "%"
+        return self.type_name + " " + str(self.discount) + "%"    
 
 class Ticket(models.Model):
     ticket_type = models.ForeignKey(TicketType, on_delete=models.CASCADE)
