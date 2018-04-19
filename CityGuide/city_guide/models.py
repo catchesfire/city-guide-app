@@ -1,4 +1,7 @@
 from django.db import models
+from django.contrib.auth.models import User
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 
 # Create your models here.
 
@@ -36,15 +39,15 @@ class Ticket(models.Model):
     def __str__(self):
         return self.ticket_type.__str__() + " " + str(self.price) + "zl"
 
+class Cart(models.Model):
+    id_user = models.ForeignKey(User, null=True, on_delete=models.SET_NULL)
+
 class Order(models.Model):
     quantity = models.IntegerField(default=1)
     date = models.DateField()
 
     id_cart = models.ForeignKey(Cart, on_delete=models.CASCADE)
-    id_ticket = models.ForeignKey(Ticket, on_delete=models.SET_NULL)
-
-class Cart(models.Model):
-    id_user = models.ForeignKey(Users, on_delete=models.SET_NULL)
+    id_ticket = models.ForeignKey(Ticket, null=True, on_delete=models.SET_NULL)
 
 class Tour(models.Model):
     discount = models.IntegerField(default=0)
@@ -53,13 +56,20 @@ class Tour(models.Model):
     date_from = models.DateField()
     date_to = models.DateField()
 
-    id_user = models.ForeignKey(Users, on_delete=models.SET_NULL)
+    id_user = models.ForeignKey(User, null=True, on_delete=models.SET_NULL)
 
-class User(models.Model):
+class Profile(models.Model):
     name = models.CharField(max_length=20)
     lastname = models.CharField(max_length=40)
     address = models.CharField(max_length=100)
     phone_number = models.CharField(max_length=12)
     mail = models.EmailField()
 
-    
+@receiver(post_save, sender=User)
+def create_user_profile(sender, instance, created, **kwargs):
+    if created:
+        Profile.objects.create(user=instance)
+
+@receiver(post_save, sender=User)
+def save_user_profile(sender, instance, **kwargs):
+    instance.profile.save()
