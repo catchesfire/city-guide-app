@@ -16,10 +16,9 @@ class Category(models.Model):
 
 class TicketType(models.Model):
     type_name = models.CharField(max_length=25)
-    discount = models.IntegerField(default=0)
 
     def __str__(self):
-        return self.type_name + " " + str(self.discount) + "%"
+        return self.type_name
 
 class Attraction(models.Model):
     name = models.CharField(max_length=75)
