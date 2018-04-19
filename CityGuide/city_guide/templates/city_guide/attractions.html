@@ -33,7 +33,28 @@
                                         Bilety
                                     </label>
                                     <div id="tickets">
-                                        BILETY
+                                        <div class="form-group">
+                                            <div class="row">
+                                                <div class="col-8">
+                                                    <label for="ticket_type">
+                                                        Wybierz
+                                                        <select class="form-control" type="number" id="ticket_type">
+                                                            <option>--Wybierz bilet--</option>
+                                                            {% for ticket in tickets %}
+                                                            <option>{{ticket.type_name}} - {{ticket.price}}ZŁ</option>
+                                                            {% endfor %}
+                                                        </select>
+                                                    </label>
+                                                </div>
+                        
+                                                <div class="col">
+                                                    <label for="ticket_quant">
+                                                        liczba
+                                                        <input class="form-control" type="number" id="ticket_quant" min="1" max="30">
+                                                    </label>
+                                                </div>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -42,31 +63,6 @@
                         <a href="{% url 'city_guide:attraction' attracion.id %}" class="float-right">
                             Więcej...
                         </a>
-                        
-                        <div class="row">
-                            <div class="form-group">
-                                <div class="row">
-                                    <div class="col-8">
-                                        <label for="ticket_type">
-                                            Wybierz
-                                            <select class="form-control" type="number" id="ticket_type">
-                                                <option>--Wybierz bilet--</option>
-                                            </select>
-                                        </label>
-                                    </div>
-                        
-                                    <div class="col">
-                                        <label for="ticket_quant">
-                                            liczba
-                                            <input class="form-control" type="number" id="ticket_quant" min="1" max="30">
-                                        </label>
-                                    </div>
-                                    {% for ticket in tickets %}
-                                    <div>{{ticket}}</div>
-                                {% endfor %}
-                                </div>
-                            </div>
-                        </div>
 
                     </div>
                 </div>
