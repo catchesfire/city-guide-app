@@ -4,3 +4,15 @@ body{
     margin: 0;
 }
 
+.imageShort {
+    width: 100%;
+    height: auto;
+}
+
+.imgDiv {
+    width: 50%;
+}
+
+.attracionShort {
+    padding: 25px;
+}

@@ -3,13 +3,23 @@ from django.contrib.auth.models import User
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 
+from django.db import connection
+
 # Create your models here.
+
 
 class Category(models.Model):
     name = models.CharField(max_length=25)
 
     def __str__(self):
         return self.name
+
+class TicketType(models.Model):
+    type_name = models.CharField(max_length=25)
+    discount = models.IntegerField(default=0)
+
+    def __str__(self):
+        return self.type_name + " " + str(self.discount) + "%"
 
 class Attraction(models.Model):
     name = models.CharField(max_length=75)
@@ -19,28 +29,36 @@ class Attraction(models.Model):
     age_restriction = models.CharField(max_length=25)
     opening_hours = models.CharField(max_length=100)
 
-class Attraction_Category(models.Model):
-    id_attracion = models.ForeignKey(Attraction, on_delete=models.CASCADE)
-    id_category = models.ForeignKey(Category, on_delete=models.CASCADE)    
-
-class TicketType(models.Model):
-    type_name = models.CharField(max_length=25)
-    discount = models.IntegerField(default=0)
-
     def __str__(self):
-        return self.type_name + " " + str(self.discount) + "%"    
+        return self.name
+
+    def getTypes():
+        cursor = connection.cursor()
+        cursor.execute('''SELECT t.ticket_type_id, type_name 
+                            FROM city_guide_attraction a JOIN city_guide_ticket t
+                            ON a.id = t.id_attraction_id JOIN city_guide_tickettype tt
+                            ON tt.id = t.ticket_type_id''')
+        row = cursor.fetchall()
+        return row
 
 class Ticket(models.Model):
     price = models.IntegerField(default=0)
-    
+
     ticket_type = models.ForeignKey(TicketType, on_delete=models.CASCADE)
-    id_attracion = models.ForeignKey(Attraction, on_delete=models.CASCADE)
+    id_attraction = models.ForeignKey(Attraction, on_delete=models.CASCADE)
 
     def __str__(self):
         return self.ticket_type.__str__() + " " + str(self.price) + "zl"
 
+
+class Attraction_Category(models.Model):
+    id_attraction = models.ForeignKey(Attraction, on_delete=models.CASCADE)
+    id_category = models.ForeignKey(Category, on_delete=models.CASCADE)
+
+
 class Cart(models.Model):
     id_user = models.ForeignKey(User, null=True, on_delete=models.SET_NULL)
+
 
 class Order(models.Model):
     quantity = models.IntegerField(default=1)
@@ -48,6 +66,7 @@ class Order(models.Model):
 
     id_cart = models.ForeignKey(Cart, on_delete=models.CASCADE)
     id_ticket = models.ForeignKey(Ticket, null=True, on_delete=models.SET_NULL)
+
 
 class Tour(models.Model):
     discount = models.IntegerField(default=0)
@@ -58,6 +77,7 @@ class Tour(models.Model):
 
     id_user = models.ForeignKey(User, null=True, on_delete=models.SET_NULL)
 
+
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     name = models.CharField(max_length=20)
@@ -66,10 +86,12 @@ class Profile(models.Model):
     phone_number = models.CharField(max_length=12)
     mail = models.EmailField()
 
+
 @receiver(post_save, sender=User)
 def create_user_profile(sender, instance, created, **kwargs):
     if created:
         Profile.objects.create(user=instance)
+
 
 @receiver(post_save, sender=User)
 def save_user_profile(sender, instance, **kwargs):

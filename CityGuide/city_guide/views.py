@@ -17,6 +17,10 @@ class AttractionsView(generic.ListView):
     def get_queryset(self):
         return Attraction.objects.order_by('-name')
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['tickets'] = Attraction.getTypes()
+        return context
 
 class AttracionView(generic.DetailView):
     model = Attraction
