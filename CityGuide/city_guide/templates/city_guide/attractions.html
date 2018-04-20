@@ -1,14 +1,14 @@
 {% extends 'base.html' %}
 {% load staticfiles %}
 {% block body %}
-    {% if attracions_obj %}
+    {% if attractions_obj %}
         <div class="container">
-            {% for attracion in attracions_obj %}
+            {% for attraction in attractions_obj %}
             <div class="row">
                 <div class="card attracionShort">
                     <div class="container">
                         <h3 class="row">
-                            {{attracion.name}}
+                            {{attraction.name}}
                         </h3>
                         <div class="row">
                             <div class="col">
@@ -23,7 +23,7 @@
                                         Opis
                                     </label>
                                     <div id="descr">
-                                        {{attracion.description}}
+                                        {{attraction.description}}
                                     </div>
                                 </div>
                             </div>
@@ -43,8 +43,8 @@
                                                         Wybierz
                                                         <select class="form-control" type="number" id="ticket_type">
                                                             <option>--Wybierz bilet--</option>
-                                                            {% for ticket in tickets %}
-                                                            <option>{{ticket.type_name}} - {{ticket.price}}ZŁ</option>
+                                                            {% for ticket in attraction.ticket_set.all %}
+                                                            <option>{{ticket.ticket_type}} - {{ticket.price}} ZŁ</option>
                                                             {% endfor %}
                                                         </select>
                                                     </label>
@@ -63,14 +63,14 @@
                             </div>
                         </div>
                     
-                        <a href="{% url 'city_guide:attraction' attracion.id %}" class="float-right">
+                        <a href="{% url 'city_guide:attraction' attraction.id %}" class="float-right">
                             Więcej...
                         </a>
                     
                     </div>
                 </div>
             </div>
-           {% endfor %}
+            {% endfor %}
         </div>
     {% else %}
     <p>No attracions are available.</p>

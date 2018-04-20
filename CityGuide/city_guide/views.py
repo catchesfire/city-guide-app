@@ -1,6 +1,6 @@
 from django.shortcuts import get_object_or_404, render
 from django.http import HttpResponse, HttpResponseRedirect
-from city_guide.models import Attraction
+from city_guide.models import Attraction, Ticket
 from django.template import loader
 from django.views import generic
 
@@ -12,15 +12,10 @@ def index(request):
 
 class AttractionsView(generic.ListView):
     template_name = 'city_guide/attractions.html'
-    context_object_name = 'attracions_obj'
+    context_object_name = 'attractions_obj'
 
     def get_queryset(self):
         return Attraction.objects.order_by('-name')
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['tickets'] = Attraction.getTypes()
-        return context
 
 class AttracionView(generic.DetailView):
     model = Attraction

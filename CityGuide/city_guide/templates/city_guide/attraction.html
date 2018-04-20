@@ -1,4 +1,9 @@
 {% extends 'base.html' %}
 {% block body %}
     {{ object.name }}
+
+    {% for ticket in tickets %}
+        {{ ticket.price }}fsf
+    {% endfor %}
+
 {% endblock %}

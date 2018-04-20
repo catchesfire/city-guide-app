@@ -31,20 +31,6 @@ class Attraction(models.Model):
     def __str__(self):
         return self.name
 
-    def getTypes():
-        cursor = connection.cursor()
-        cursor.execute('''SELECT type_name , t.price
-                            FROM city_guide_attraction a JOIN city_guide_ticket t
-                            ON a.id = t.id_attraction_id JOIN city_guide_tickettype tt
-                            ON tt.id = t.ticket_type_id''')
-
-        def namedtuplefetchall(cursor):
-            nt_result = namedtuple('Result', [col[0] for col in cursor.description])
-            return [nt_result(*row) for row in cursor.fetchall()]
-
-        return namedtuplefetchall(cursor)
-    
-
 class Ticket(models.Model):
     price = models.IntegerField(default=0)
 
