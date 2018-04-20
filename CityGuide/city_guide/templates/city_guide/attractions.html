@@ -13,7 +13,7 @@
                         <div class="row">
                             <div class="col">
                                 <div class="imgDiv">
-                                    <img class="img-fluid imageShort" src="{% static 'images/muzeum_wojska.jpg' %}" alt="error">
+                                    <img class="img-fluid imageShort" src="{{ attraction.photo_set.latest.photo.url }}" alt="error">                                    
                                 </div>
                             </div>
                     

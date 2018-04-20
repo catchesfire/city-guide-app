@@ -76,6 +76,14 @@ class Profile(models.Model):
     phone_number = models.CharField(max_length=12)
     mail = models.EmailField()
 
+class Photo(models.Model):
+    photo = models.ImageField(upload_to='uploads/')
+
+    id_attraction = models.ForeignKey(Attraction, null=True, on_delete=models.SET_NULL)
+
+    class Meta:
+        get_latest_by = 'photo'
+
 
 @receiver(post_save, sender=User)
 def create_user_profile(sender, instance, created, **kwargs):
