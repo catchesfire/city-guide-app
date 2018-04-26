@@ -33,3 +33,9 @@ body{
 .attracionShort {
     padding: 25px;
 }
+
+#map{
+    display: block;
+    width: 100%;
+    height: 500px;
+}

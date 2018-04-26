@@ -20,3 +20,4 @@ class AttractionsView(generic.ListView):
 class AttracionView(generic.DetailView):
     model = Attraction
     template_name = 'city_guide/attraction.html'
+    context_object_name = 'attraction_obj'

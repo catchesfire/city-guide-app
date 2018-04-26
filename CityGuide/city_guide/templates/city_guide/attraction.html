@@ -1,9 +1,157 @@
-{% extends 'base.html' %}
-{% block body %}
-    {{ object.name }}
+{% extends 'base.html' %} {% load staticfiles %} {% block body %}
+<!-- {{ object.name }}
 
     {% for ticket in tickets %}
         {{ ticket.price }}fsf
-    {% endfor %}
+    {% endfor %} -->
 
+
+<div class="container" style="margin-top: 72px;">
+    <!-- name -->
+    <h2 class="row">
+        {{ object.name }}
+    </h2>
+    <!-- photos -->
+    <div class="row">
+        <div class="imgDiv">
+            <img id="mainPhoto" class="img-fluid imageShort" src="{{ object.photo_set.latest.photo.url }}" alt="error">
+        </div>
+    </div>
+    <div class="row">
+        {% for photo in object.photo_set.all %}
+        <dix class="col">
+            <div class="imgDiv">
+                <img class="img-fluid imageShort minorPhoto" src="{{ photo.photo.url }}" alt="error">
+            </div>
+        </dix>
+        {% endfor %}
+    </div>
+    <!-- things -->
+    <div class="row">
+        <!-- category -->
+        <div class="col">
+            <div class="card">
+                <div class="card-header">
+                    <i class="fas fa-bars"></i> Kategorie
+                </div>
+                <div class="card-body">
+                    {% for category_attr in object.attraction_category_set.all %}
+                    <p>- {{category_attr.id_category.name}}</p>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <!-- age_restriction -->
+        <div class="col">
+            <div class="card">
+                <div class="card-header">
+                    <i class="far fa-calendar"></i> Ogranieczenie wiekowe
+                </div>
+                <div class="card-body">
+                    <p>{{object.age_restriction}}</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- open hours -->
+        <div class="col">
+            <div class="card">
+                <div class="card-header">
+                    <i class="far fa-clock"></i> Godziny otwarcia
+                </div>
+                <div class="card-body">
+                    <p>{{object.opening_hours}}</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- time -->
+        <div class="col">
+            <div class="card">
+                <div class="card-header">
+                    <i class="fas fa-stopwatch"></i> Szacowany czas odwiedźin
+                </div>
+                <div class="card-body">
+                    <p>{{object.time_minutes}}</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- tickets -->
+        <div class="col">
+            <div class="card">
+                <div class="card-header">
+                    <i class="fas fa-ticket-alt"></i> Bilety
+                </div>
+                <div class="card-body">
+                    {% if object.ticket_set.all %}
+                        {% for ticket in object.ticket_set.all %}
+                        <p>- {{ticket.ticket_type}} - {{ticket.price}} ZŁ</p>
+                        {% endfor %}
+                    {% else %}
+                        Brak
+                    {% endif %}
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- location,description -->
+    <div class="row">
+        <!-- location -->
+        <div class="col-5">
+            <div id="map"></div>
+
+        </div>
+        <!-- description -->
+        <div class="col">
+            <div class="card">
+                <div class="card-header">
+                    <i class="fas fa-sticky-note"></i> Opis
+                </div>
+                <div class="card-body">
+                    <p>{{object.description}}</p>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+</div>
+
+{% endblock %} {% block javascripts %} {{block.super}}
+<!-- <script> 
+    var height = 0;
+    $(".card-body").each(function () {
+        if ($(this).css("height") > height) {
+            height = $(this).css("height");
+        }
+    });
+    $(".card-body").each(function () {
+        $(this).css("height", height);
+    });
+</script> -->
+<script>
+    function initMap() {
+    var uluru = { lat: {{ object.location_x }}, lng: {{ object.location_y }} };
+    var map = new google.maps.Map(document.getElementById('map'), {
+        zoom: 17,
+        center: uluru
+    });
+    var marker = new google.maps.Marker({
+        position: uluru,
+        map: map
+    });
+    marker.showInfoWindow();
+    }
+</script>
+<script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCYXIhgWd59IDdrJoO38Tz2hbyoYw0u9TU&callback=initMap">
+</script> 
+<script>
+    $(".minorPhoto").on("click",function(){
+        $("#mainPhoto").attr("src",$(this).attr("src"));
+    });
+</script>
 {% endblock %}
