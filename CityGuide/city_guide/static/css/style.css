@@ -8,6 +8,10 @@ body{
     overflow-x: hidden;
 }
 
+.standard-container{
+    margin-top: 72px;
+}
+
 .navbar-light{
     background-color: #fcfcfc;
     font-family: 'Roboto Condensed', sans-serif;
@@ -32,4 +36,8 @@ body{
 
 .attracionShort {
     padding: 25px;
+}
+
+.cart-img{
+    max-height: 100px;
 }
