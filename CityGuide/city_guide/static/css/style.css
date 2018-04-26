@@ -1,4 +1,4 @@
-body{
+body {
     background-color: #ededed;
     padding: 0px;
     margin: 0;
@@ -8,28 +8,73 @@ body{
     overflow-x: hidden;
 }
 
-.navbar-light{
+.navbar-light {
     background-color: #fcfcfc;
     font-family: 'Roboto Condensed', sans-serif;
     font-weight: bold;
     min-height: 72px;
 }
 
-.navbar-light .navbar-nav .nav-link, .navbar-light .navbar-nav .nav-link:hover{
+.navbar-light .navbar-nav .nav-link, .navbar-light .navbar-nav .nav-link:hover {
     font-weight: bold;
     color: #2d4079;
 }
 
+/* <przyciski> */
 
-.imageShort {
-    width: 100%;
-    height: auto;
+.btn.btn-outline-success {
+    background-color: white;
+    color: #2d4079;
+    font-weight: 500;
+    border-color: #2d4079;
 }
 
-.imgDiv {
-    width: 50%;
+.btn.btn-outline-success:active:focus {
+    color: white;
+    background-color: #2d4079;
+    border-color: white;
+}
+
+.btn.btn-outline-success:hover {
+    color: white;
+    background-color: #2d4079;
+    border-color: white;
+}
+
+/* </przyciski> */
+
+/* <Atrakcje> */
+
+.attrDeck {
+    margin-bottom: 20px;
+}
+
+.attractionsCont {
+    margin-top: 102px;
 }
 
 .attracionShort {
-    padding: 25px;
+    min-height: 500px;
+    max-height: 500px;
+    color: #545455;
+    background-color: #ededed;
 }
+
+.descriptionText {
+    text-align: justify;
+}
+
+.descCardBody {
+    margin-top: 20px;
+    border-top: 1px solid #545455;
+}
+
+.mainImage {
+    margin-top: 10px;
+}
+
+.attracionShort {
+    padding: 15px;
+}
+
+/* </Atrakcje> */

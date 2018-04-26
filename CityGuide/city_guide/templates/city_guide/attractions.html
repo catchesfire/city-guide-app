@@ -1,78 +1,71 @@
-{% extends 'base.html' %}
-{% load staticfiles %}
-{% block body %}
-    {% if attractions_obj %}
-        <div class="container">
-            {% for attraction in attractions_obj %}
-            <div class="row">
+{% extends 'base.html' %} {% load staticfiles %} {% block body %} {% if attractions_obj %}
+<div class="container attractionsCont">
+    <div class="row">
+        {% for attraction in attractions_obj %}
+        <div class="col-6">
+            <div class="card-deck attrDeck">
                 <div class="card attracionShort">
-                    <div class="container">
-                        <h3 class="row">
-                            {{attraction.name}}
-                        </h3>
-                        <div class="row">
-                            <div class="col">
-                                <div class="imgDiv">
-                                    <img class="img-fluid imageShort" src="{{ attraction.photo_set.latest.photo.url }}" alt="error">                                    
-                                </div>
-                            </div>
-                    
-                            <div class="col">
-                                <div class="card">
-                                    <label for="descr">
-                                        Opis
-                                    </label>
-                                    <div id="descr">
-                                        {{attraction.description}}
-                                    </div>
-                                </div>
-                            </div>
+                    <div class="row atrrNameRow">
+                        <div class="col">
+                            <h4>
+                                {{attraction.name}}
+                            </h4>
                         </div>
-                    
-                        <div class="row">
-                            <div class="col">
-                                <div class="card">
-                                    <label for="tickets">
-                                        Bilety
-                                    </label>
-                                    <div id="tickets">
-                                        <div class="form-group">
-                                            <div class="row">
-                                                <div class="col-8">
-                                                    <label for="ticket_type">
-                                                        Wybierz
-                                                        <select class="form-control" type="number" id="ticket_type">
-                                                            <option>--Wybierz bilet--</option>
-                                                            {% for ticket in attraction.ticket_set.all %}
-                                                            <option>{{ticket.ticket_type}} - {{ticket.price}} ZŁ</option>
-                                                            {% endfor %}
-                                                        </select>
-                                                    </label>
-                                                </div>
-                    
-                                                <div class="col">
-                                                    <label for="ticket_quant">
-                                                        liczba
-                                                        <input class="form-control" type="number" id="ticket_quant" min="1" max="30">
-                                                    </label>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    
-                        <a href="{% url 'city_guide:attraction' attraction.id %}" class="float-right">
-                            Więcej...
-                        </a>
-                    
                     </div>
+
+                    <div class="row">
+                        <div class="col-7">
+                            <img class="card-img-top mainImage" src="{{ attraction.photo_set.latest.photo.url }}" alt="Brak zdjecia"></img>
+                        </div>
+
+                        <div class="col">
+                            <form>
+                                <div class="form-row">
+                                    <label for="ticket_type">
+                                        Bilety
+                                        <select class="form-control" type="number" id="ticket_type">
+                                            <option>--Wybierz bilet--</option>
+                                            {% for ticket in attraction.ticket_set.all %}
+                                            <option>{{ticket.ticket_type}} - {{ticket.price}} ZŁ</option>
+                                            {% endfor %}
+                                        </select>
+                                    </label>
+                                </div>
+
+                                <div class="form-group-row">
+                                    <div class="input-group-sm">
+                                        <label for="ticket_quant">
+                                            Liczba
+                                            <input class="form-control " type="number" id="ticket_quant" min="1" max="30">
+                                        </label>
+                                        <span class="input-group-btn">
+                                            <button class="btn btn-outline-success">
+                                                Do koszyka
+                                            </button>
+                                        </span>
+                                    </div>
+                                </div>
+
+                            </form>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="card-body descCardBody">
+                            <p class="card-text descriptionText">
+                                {{attraction.description}}
+                            </p>
+
+                            <a href="{% url 'city_guide:attraction' attraction.id %}">Wiecej...</a>
+                        </div>
+                    </div>
+
                 </div>
             </div>
-            {% endfor %}
         </div>
-    {% else %}
-    <p>No attracions are available.</p>
-    {% endif %}
-{% endblock %}
+        {% endfor %}
+    </div>
+</div>
+{% else %}
+<p>No attracions are available.</p>
+{% endif %} {% endblock %}
