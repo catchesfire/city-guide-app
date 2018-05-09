@@ -47,7 +47,6 @@ class Attraction_Category(models.Model):
     id_attraction = models.ForeignKey(Attraction, on_delete=models.CASCADE)
     id_category = models.ForeignKey(Category, on_delete=models.CASCADE)
 
-
 class Cart(models.Model):
     id_user = models.ForeignKey(User, null=True, on_delete=models.SET_NULL)
 

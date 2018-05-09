@@ -46,7 +46,7 @@
                             <div class="my-2 my-lg-0 pt-3">
                                 <ul class="list-inline my-lg-0 py-lg-0">
                                     <li class="list-inline-item">
-                                        <i class="far fa-user"></i> {% if request.user.is_authenticated %}Elo {{ user.get_username }} {% else %} Zaloguj {% endif %}
+                                        <i class="far fa-user"></i> {% if user.is_authenticated %}Elo {{ user.get_username }} {% else %} Zaloguj {% endif %}
                                     </li>
                                     <li class="list-inline-item">
                                         <i class="fas fa-shopping-cart"></i> 0

@@ -7,8 +7,7 @@ from django.views import generic
 # Our views.
 
 def index(request):
-    template = loader.get_template('city_guide/index.html')
-    return HttpResponse(template.render())
+    return render(request, 'city_guide/index.html', {})
 
 class AttractionsView(generic.ListView):
     template_name = 'city_guide/attractions.html'
@@ -24,4 +23,7 @@ class AttracionView(generic.DetailView):
 class CartView(generic.ListView):
     model = Cart
     template_name = 'city_guide/cart.html'
-    context_object_name = 'attraction_obj'
+    context_object_name = 'cart'
+
+    def get_queryset(self):
+        return Cart.objects.filter(id_user=self.request.user).last()
