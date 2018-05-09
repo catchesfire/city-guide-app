@@ -22,12 +22,16 @@ body{
 
 
 .imageShort {
-    width: 100%;
-    height: auto;
+    max-height: 500px;
 }
 
 .imgDiv {
     width: 50%;
+}
+
+.minor-photo{
+    cursor: pointer;
+    max-height: 150px;
 }
 
 .attracionShort {
