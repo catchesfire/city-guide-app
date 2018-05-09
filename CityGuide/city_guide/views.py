@@ -24,3 +24,4 @@ class AttracionView(generic.DetailView):
 class CartView(generic.ListView):
     model = Cart
     template_name = 'city_guide/cart.html'
+    context_object_name = 'attraction_obj'

@@ -5,6 +5,7 @@ from django.dispatch import receiver
 
 from django.db import connection
 from collections import namedtuple
+from decimal import Decimal
 # Create your models here.
 
 
@@ -22,7 +23,8 @@ class TicketType(models.Model):
 
 class Attraction(models.Model):
     name = models.CharField(max_length=75)
-    location = models.CharField(max_length=1000)
+    location_x = models.DecimalField(max_digits=10,decimal_places=7)
+    location_y = models.DecimalField(max_digits=10,decimal_places=7)
     time_minutes = models.IntegerField(default=0)
     description = models.CharField(max_length=500)
     age_restriction = models.CharField(max_length=25)

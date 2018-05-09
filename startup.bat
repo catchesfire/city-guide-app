@@ -1,0 +1,1 @@
+start powershell -noexit -Command "myvenv\Scripts\activate; code .; cd CityGuide"
