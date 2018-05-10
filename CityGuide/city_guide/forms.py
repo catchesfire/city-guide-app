@@ -14,4 +14,9 @@ class FilterForm(forms.Form):
     # time_min = forms.IntegerField(min_value=Attraction.objects.all().aggregate(Min('time_minutes')), max_value=Attraction.objects.all().aggregate(Max('time_minutes')))
     # time_max = forms.IntegerField(min_value=Attraction.objects.all().aggregate(Min('time_minutes')), max_value=Attraction.objects.all().aggregate(Max('time_minutes')))
 
-    
+class SearchForm(forms.Form):
+    search_fraze = forms.CharField(max_length=50)
+
+class SortForm(forms.Form):
+    sort_key = forms.CharField()
+
