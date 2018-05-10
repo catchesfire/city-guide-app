@@ -1,7 +1,77 @@
 {% extends 'base.html' %} {% load staticfiles %} {% block body %} {% if attractions_obj %}
+
+<div class="container">
+    <div class="row">
+        <div class="col">
+            {% include "city_guide/forms/filterForm.html" %}
+        </div>
+    </div>
+</div>
+
 <div class="container attractionsCont">
     <div class="row">
-        {% for attraction in attractions_obj %}
+        {% for attraction in attractions_obj %} {% if attractions_obj.count == 1 %}
+        <div class="col">
+            <div class="card-deck attrDeck">
+                <div class="card attracionShort">
+                    <div class="row atrrNameRow">
+                        <div class="col">
+                            <h4>
+                                {{attraction.name}}
+                            </h4>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-5">
+                            <img class="card-img-top mainImage" src="{{ attraction.main_photo.url }}" alt="Brak zdjecia"></img>
+                        </div>
+
+                        <div class="col">
+                            <form>
+                                <div class="form-row align-items-center">
+                                    <label for="ticket_type">
+                                        Bilety
+                                        <select class="form-control" type="number" id="ticket_type">
+                                            <option>--Wybierz bilet--</option>
+                                            {% for ticket in attraction.ticket_set.all %}
+                                            <option>{{ticket.ticket_type}} - {{ticket.price}} ZŁ</option>
+                                            {% endfor %}
+                                        </select>
+                                    </label>
+                                </div>
+
+                                <div class="form-row align-items-center">
+                                    <div class="input-group-sm">
+                                        <label for="ticket_quant">
+                                            Liczba
+                                            <input class="form-control " type="number" id="ticket_quant" min="1" max="30">
+                                        </label>
+
+                                        <button class="btn btn-outline-success mb-sm-1">
+                                            Do koszyka
+                                        </button>
+                                    </div>
+                                </div>
+
+                            </form>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="card-body">
+                            <p class="card-text descriptionText">
+                                {{attraction.description}}
+                            </p>
+
+                            <a href="{% url 'city_guide:attraction' attraction.id %}">Wiecej...</a>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+        {% else %}
         <div class="col-6">
             <div class="card-deck attrDeck">
                 <div class="card attracionShort">
@@ -20,7 +90,7 @@
 
                         <div class="col">
                             <form>
-                                <div class="form-row">
+                                <div class="form-row align-items-center">
                                     <label for="ticket_type">
                                         Bilety
                                         <select class="form-control" type="number" id="ticket_type">
@@ -32,13 +102,14 @@
                                     </label>
                                 </div>
 
-                                <div class="form-row">
+                                <div class="form-row align-items-center">
                                     <div class="input-group-sm">
                                         <label for="ticket_quant">
                                             Liczba
                                             <input class="form-control " type="number" id="ticket_quant" min="1" max="30">
                                         </label>
-                                        <button class="btn btn-outline-success">
+
+                                        <button class="btn btn-outline-success mb-sm-1">
                                             Do koszyka
                                         </button>
                                     </div>
@@ -49,7 +120,7 @@
                     </div>
 
                     <div class="row">
-                        <div class="card-body descCardBody">
+                        <div class="card-body">
                             <p class="card-text descriptionText">
                                 {{attraction.description}}
                             </p>
@@ -61,9 +132,63 @@
                 </div>
             </div>
         </div>
-        {% endfor %}
+        {% endif %} {% endfor %}
     </div>
 </div>
 {% else %}
 <p>No attracions are available.</p>
-{% endif %} {% endblock %}
+{% endif %} {% endblock %} {% block javascripts %} {{block.super}}
+<script>
+    let show = false;
+
+    $(".showFilters").on("click", function () {
+        if (!show) {
+            $(".filterCard").fadeIn("slow");
+        }
+        else {
+            $(".filterCard").fadeOut("slow");
+        }
+
+        show = !show;
+    });
+
+    $(function () {
+        $("#priceSliderRange").slider({
+            range: true,
+            min: 0,
+            max: 100,
+            values: [0, 100],
+            slide: function (event, ui) {
+                //$("#priceSliderMin").val(ui.values[0] + " PLN");
+                //$("#priceSliderMax").val(ui.values[1] + " PLN");
+                $("#priceSliderMin").val(ui.values[0]);
+                $("#priceSliderMax").val(ui.values[1]);
+            }
+        });
+        //$("#priceSliderMin").val($("#priceSliderRange").slider("values", 0) + " PLN");
+        //$("#priceSliderMax").val($("#priceSliderRange").slider("values", 1) + " PLN");
+        $("#priceSliderMin").val($("#priceSliderRange").slider("values", 0));
+        $("#priceSliderMax").val($("#priceSliderRange").slider("values", 1));
+
+    });
+
+    $(function () {
+        $("#timeSliderRange").slider({
+            range: true,
+            min: 15,
+            max: 360,
+            values: [15, 360],
+            slide: function (event, ui) {
+                //$("#timeSliderMin").val(ui.values[0] + " min");
+                //$("#timeSliderMax").val(ui.values[1] + " min");
+                $("#timeSliderMin").val(ui.values[0]);
+                $("#timeSliderMax").val(ui.values[1]);
+            }
+        });
+        //$("#timeSliderMin").val($("#timeSliderRange").slider("values", 0) + " min");
+        //$("#timeSliderMax").val($("#timeSliderRange").slider("values", 1) + " min");
+        $("#timeSliderMin").val($("#timeSliderRange").slider("values", 0));
+        $("#timeSliderMax").val($("#timeSliderRange").slider("values", 1));
+    });
+
+</script> {% endblock %}

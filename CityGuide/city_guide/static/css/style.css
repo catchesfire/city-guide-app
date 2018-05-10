@@ -20,7 +20,7 @@ body {
     color: #2d4079;
 }
 
-/* <przyciski> */
+/* #region przyciski */
 
 .btn.btn-outline-success {
     background-color: white;
@@ -41,16 +41,16 @@ body {
     border-color: white;
 }
 
-/* </przyciski> */
+/* #endregion */
 
-/* <Atrakcje> */
+/* #region Atrakcje */
 
 .attrDeck {
     margin-bottom: 20px;
 }
 
 .attractionsCont {
-    margin-top: 102px;
+    margin-top: 22px;
 }
 
 .attracionShort {
@@ -62,11 +62,8 @@ body {
 
 .descriptionText {
     text-align: justify;
-}
-
-.descCardBody {
-    margin-top: 20px;
     border-top: 1px solid #545455;
+    margin-top: 15px;
 }
 
 .mainImage {
@@ -77,4 +74,51 @@ body {
     padding: 15px;
 }
 
-/* </Atrakcje> */
+.filterNavbarCont {
+    margin-top: 92px;
+}
+
+.fa-search {
+    color: white;
+}
+
+.navbar-custom {
+    background-color: #2d4079;
+}
+
+.navbar-custom .navbar-brand {
+    color: white;
+}
+
+.navbar-custom .navbar-text {
+    color: white;
+}
+
+.navbar-custom .nav-item.active .nav-link, .navbar-custom .nav-item:hover .nav-link {
+    color: white;
+}
+
+.navbar-custom .navbar-nav .nav-link {
+    color: white;
+}
+
+.filterCard {
+    margin-top: 20px;
+    padding: 15px;
+    background-color: #2d4079;
+    color: white;
+    display: none;
+}
+
+.sliderValues {
+    border: 0;
+    color: white;
+    background-color: #2d4079;
+    font-weight: bold;
+}
+
+slider {
+    margin-top: 50px;
+}
+
+/* #endregion */

@@ -5,8 +5,6 @@ from django.dispatch import receiver
 
 from django.db import connection
 from collections import namedtuple
-# Create your models here.
-
 
 class Category(models.Model):
     name = models.CharField(max_length=25)
@@ -20,7 +18,6 @@ class TicketType(models.Model):
     def __str__(self):
         return self.type_name
 
-
 class Attraction(models.Model):
     name = models.CharField(max_length=75)
     location = models.CharField(max_length=1000)
@@ -28,13 +25,13 @@ class Attraction(models.Model):
     description = models.TextField()
     age_restriction = models.CharField(max_length=25)
     opening_hours = models.CharField(max_length=100)
-    main_photo = models.ImageField(upload_to='uploads/')    
+    main_photo = models.ImageField(upload_to='uploads/')
 
     def __str__(self):
         return self.name
 
 class Photo(models.Model):
-    photo = models.ImageField(upload_to='uploads/')
+    photo = models.ImageField(upload_to='uploads/', height_field=1280, width_field=720)
     
     id_attraction = models.ForeignKey(Attraction, null=True, on_delete=models.SET_NULL)
 

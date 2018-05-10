@@ -5,5 +5,6 @@ app_name = 'city_guide'
 urlpatterns = [
     path('', views.index, name='index'),
     path('attractions', views.AttractionsView.as_view(), name='attractions'),
+    path('attractions/filter', views.AttractionsView.as_view(), name="filter"),
     path('attractions/<int:pk>', views.AttracionView.as_view(), name='attraction')
 ]
