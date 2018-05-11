@@ -1,4 +1,4 @@
-body{
+body {
     background-color: #ededed;
     padding: 0px;
     margin: 0;
@@ -19,18 +19,62 @@ body{
     min-height: 72px;
 }
 
-.navbar-light .navbar-nav .nav-link, .navbar-light .navbar-nav .nav-link:hover{
+.navbar-light .navbar-nav .nav-link, .navbar-light .navbar-nav .nav-link:hover {
     font-weight: bold;
     color: #2d4079;
 }
 
+/* #region przyciski */
 
 .imageShort {
     max-height: 500px;
 }
+.btn.btn-outline-success {
+    background-color: white;
+    color: #2d4079;
+    font-weight: 500;
+    border-color: #2d4079;
+}
 
-.imgDiv {
-    width: 50%;
+.btn.btn-outline-success:active:focus {
+    color: white;
+    background-color: #2d4079;
+    border-color: white;
+}
+
+.btn.btn-outline-success:hover {
+    color: white;
+    background-color: #2d4079;
+    border-color: white;
+}
+
+/* #endregion */
+
+/* #region Atrakcje */
+
+.attrDeck {
+    margin-bottom: 20px;
+}
+
+.attractionsCont {
+    margin-top: 22px;
+}
+
+.attracionShort {
+    min-height: 500px;
+    max-height: 500px;
+    color: #545455;
+    background-color: #ededed;
+}
+
+.descriptionText {
+    text-align: justify;
+    border-top: 1px solid #545455;
+    margin-top: 15px;
+}
+
+.mainImage {
+    margin-top: 10px;
 }
 
 .minor-photo{
@@ -51,3 +95,52 @@ body{
 .cart-img{
     max-height: 100px;
 }
+
+.filterNavbarCont {
+    margin-top: 92px;
+}
+
+.fa-search {
+    color: white;
+}
+
+.navbar-custom {
+    background-color: #2d4079;
+}
+
+.navbar-custom .navbar-brand {
+    color: white;
+}
+
+.navbar-custom .navbar-text {
+    color: white;
+}
+
+.navbar-custom .nav-item.active .nav-link, .navbar-custom .nav-item:hover .nav-link {
+    color: white;
+}
+
+.navbar-custom .navbar-nav .nav-link {
+    color: white;
+}
+
+.filterCard {
+    margin-top: 20px;
+    padding: 15px;
+    background-color: #2d4079;
+    color: white;
+    display: none;
+}
+
+.sliderValues {
+    border: 0;
+    color: white;
+    background-color: #2d4079;
+    font-weight: bold;
+}
+
+slider {
+    margin-top: 50px;
+}
+
+/* #endregion */

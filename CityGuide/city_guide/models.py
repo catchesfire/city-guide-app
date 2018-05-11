@@ -5,9 +5,6 @@ from django.dispatch import receiver
 
 from django.db import connection
 from collections import namedtuple
-from decimal import Decimal
-# Create your models here.
-
 
 class Category(models.Model):
     name = models.CharField(max_length=25)
@@ -26,12 +23,18 @@ class Attraction(models.Model):
     location_x = models.DecimalField(max_digits=10,decimal_places=7)
     location_y = models.DecimalField(max_digits=10,decimal_places=7)
     time_minutes = models.IntegerField(default=0)
-    description = models.CharField(max_length=500)
+    description = models.TextField()
     age_restriction = models.CharField(max_length=25)
     opening_hours = models.CharField(max_length=100)
+    main_photo = models.ImageField(upload_to='uploads/')
 
     def __str__(self):
         return self.name
+
+class Photo(models.Model):
+    photo = models.ImageField(upload_to='uploads/', height_field=1280, width_field=720)
+    
+    id_attraction = models.ForeignKey(Attraction, null=True, on_delete=models.SET_NULL)
 
 class Ticket(models.Model):
     price = models.IntegerField(default=0)
@@ -76,14 +79,6 @@ class Profile(models.Model):
     address = models.CharField(max_length=100)
     phone_number = models.CharField(max_length=12)
     mail = models.EmailField()
-
-class Photo(models.Model):
-    photo = models.ImageField(upload_to='uploads/')
-
-    id_attraction = models.ForeignKey(Attraction, null=True, on_delete=models.SET_NULL)
-
-    class Meta:
-        get_latest_by = 'photo'
 
 
 @receiver(post_save, sender=User)
