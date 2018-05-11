@@ -1,4 +1,5 @@
 from django import forms
+from django.contrib.auth.models import User
 from django.db.models import Max, Min
 from city_guide.models import Attraction, Category, Ticket
 
@@ -14,9 +15,17 @@ class FilterForm(forms.Form):
     # time_min = forms.IntegerField(min_value=Attraction.objects.all().aggregate(Min('time_minutes')), max_value=Attraction.objects.all().aggregate(Max('time_minutes')))
     # time_max = forms.IntegerField(min_value=Attraction.objects.all().aggregate(Min('time_minutes')), max_value=Attraction.objects.all().aggregate(Max('time_minutes')))
 
+
 class SearchForm(forms.Form):
     search_fraze = forms.CharField(max_length=50)
 
 class SortForm(forms.Form):
     sort_key = forms.CharField()
+
+class UserForm(forms.ModelForm):
+    password = forms.CharField(widget=forms.PasswordInput,min_length=6)
+
+    class Meta:
+        model = User
+        fields = ['username', 'email', 'password']
 
