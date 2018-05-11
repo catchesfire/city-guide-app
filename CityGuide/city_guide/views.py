@@ -4,7 +4,7 @@ from city_guide.models import Attraction, Category, Ticket, TicketType, Attracti
 from django.template import loader
 from django.views import View, generic
 from itertools import chain
-from django.db.models import Q
+from django.db.models import Q, Case, When
 from django.contrib.auth import authenticate, login, logout
 
 from .forms import FilterForm, SearchForm, SortForm, UserForm
@@ -25,10 +25,9 @@ class AttractionsView(generic.ListView):
     context_object_name = 'attractions_obj'
 
     # @todo
-    # opakować sortowanie w forma
     # naprawić widok kiedy jest tylko jedna kategoria
-    # jak get nic nie zwróci, to nie wyświetla się navbar
     # dobrze by było, gdyby form zapamietywał aktualne filtry
+    # to później
 
     def get(self, request, **kwargs):
         filter_form = self.filter_form_class(request.GET)
@@ -59,11 +58,30 @@ class AttractionsView(generic.ListView):
         if search_form.is_valid():
             search_fraze = request.GET.get('search_fraze', "")
             attractions = Attraction.objects.filter(Q(name__icontains=search_fraze) | Q(description__icontains=search_fraze))
+            return render(request, self.template_name, {"filter_form": filter_form, "attractions_obj": attractions, "categories": Category.objects.all()}) 
         
-        elif sort_form.is_valid():
-            pass # narazie nic
+        sort_keys = [ key for key in request.GET.getlist('sort_key', [])]
+        if len(sort_keys) != 0:
+            found = False
+                         
+            for key in sort_keys:
+                if key:
+                    if key == "price" or key == "-price":
+                        attr_ids = [attr.id_attraction.id for attr in Ticket.objects.all().order_by(key)]
+                        tickets_order = Case(*[When(pk=pk, then=pos) for pos, pk in enumerate(attr_ids)])
+                        attractions = Attraction.objects.filter(id__in=attr_ids).order_by(tickets_order)
+                    else:
+                        attractions = Attraction.objects.all().order_by(key)
 
-        elif filter_form.is_valid():
+                    found = True
+                    break
+
+            if not found:
+                attractions = Attraction.objects.all().order_by('name')
+            
+            return render(request, self.template_name, {"filter_form": filter_form, "attractions_obj": attractions, "categories": Category.objects.all()}) 
+            
+        if filter_form.is_valid():
             category_ids = [cat_id for cat_id in request.GET.getlist('categories', Category.objects.all())] 
             price_min = request.GET.get('price_min', 0)
             price_max = request.GET.get('price_max', 1000)
@@ -71,11 +89,9 @@ class AttractionsView(generic.ListView):
             time_max = request.GET.get('time_max', 1000)
 
             attractions = Attraction.objects.filter(id__in=GetAttractionsByCategory(category_ids)).filter(id__in=GetAttractionsByPrice(price_min, price_max)).filter(time_minutes__gt=time_min, time_minutes__lt=time_max).order_by('name')
-        else:
-            attractions = Attraction.objects.all().order_by('-name')
-            
-        return render(request, self.template_name, {"filter_form": filter_form, "attractions_obj": attractions, "categories": Category.objects.all()})        
+            return render(request, self.template_name, {"filter_form": filter_form, "attractions_obj": attractions, "categories": Category.objects.all()})             
 
+        return render(request, self.template_name, {"filter_form": filter_form, "attractions_obj": Attraction.objects.all().order_by('name'), "categories": Category.objects.all()})        
 
 class AttracionView(generic.DetailView):
     model = Attraction
