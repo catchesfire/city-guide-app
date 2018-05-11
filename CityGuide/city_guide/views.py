@@ -1,6 +1,6 @@
 from django.shortcuts import get_object_or_404, render, redirect
 from django.http import HttpResponse, HttpResponseRedirect
-from city_guide.models import Attraction, Category, Ticket, TicketType, Attraction_Category, Cart
+from city_guide.models import Attraction, Category, Ticket, TicketType, Attraction_Category, Cart, Tour
 from django.template import loader
 from django.views import View, generic
 from itertools import chain
@@ -137,3 +137,7 @@ class UserFormView(View):
                 return redirect('city_guide:index')
         return render(request, self.template_name, {'form': form})
         
+
+class PlannerView(generic.DetailView):
+    model = Tour
+    template_name = 'city_guide/planner.html'

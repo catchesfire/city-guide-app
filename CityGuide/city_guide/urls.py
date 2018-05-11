@@ -13,6 +13,6 @@ urlpatterns = [
     path('attractions', views.AttractionsView.as_view(), name='attractions'),
     path('attractions/<int:pk>', views.AttracionView.as_view(), name='attraction'),
     path('cart', views.CartView.as_view(), name="cart"),
-    path('login', auth_views.login, name="login"),
-    path('attractions/filter', views.AttractionsView.as_view(), name="filter")
+    path('attractions/filter', views.AttractionsView.as_view(), name="filter"),
+    path('planner/<int:pk>', views.PlannerView.as_view(), name='planner')
 ]

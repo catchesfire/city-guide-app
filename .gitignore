@@ -99,6 +99,6 @@ ENV/
 
 # mypy
 .mypy_cache/
-*.sqlite3
 
 start.bat
+*.sqlite3

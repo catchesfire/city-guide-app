@@ -53,6 +53,7 @@ class Attraction_Category(models.Model):
 
 class Cart(models.Model):
     id_user = models.ForeignKey(User, null=True, on_delete=models.SET_NULL)
+    
 
 class Order(models.Model):
     quantity = models.IntegerField(default=1)

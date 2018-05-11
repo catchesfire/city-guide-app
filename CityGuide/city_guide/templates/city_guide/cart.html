@@ -28,7 +28,7 @@
                 {% for order in cart.order_set.all %}
                 <tr>
                     <td class="align-middle">{{ forloop.counter }}</td>
-                    <td class="align-middle"><img src="{{order.id_ticket.id_attraction.photo_set.latest.photo.url}}" class="img-fluid cart-img" alt="Muzeum"/></td>
+                    <td class="align-middle"><img src="{{order.id_ticket.id_attraction.main_photo.url}}" class="img-fluid cart-img" alt="Muzeum"/></td>
                     <td class="align-middle">{{order.id_ticket.id_attraction.name}}</td>
                     <td class="align-middle">{{ order.id_ticket.ticket_type.type_name }}</td>
                     <td class="align-middle">
