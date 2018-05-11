@@ -1,0 +1,109 @@
+{% extends 'base.html' %} {% load staticfiles %} {% block body %}
+<div class="container" style="margin-top:85px">
+    <div class="row">
+        <h3 class="col">
+            Planowanie podróży
+        </h3>
+    </div>
+    <div class="card px-0 mx-0">
+        <div class="card-body ">
+            <div class="row">
+                <div class="col" id="widgets">
+                        <div class="row">
+                                <div class="col-md-12">
+                            
+                                    <div class="panel panel-default">
+                                        <div class="panel-heading">
+                                            <h1 class="panel-title">Photos</h1>
+                                        </div>
+                                        <div class="panel-body">
+                            
+                                            <div class="row sortable">
+                            
+                                                <div class="col-md-3 thumb">
+                                                    <a class="thumbnail" href="#">
+                                                        <img class="img-responsive" src="http://placehold.it/400x300" alt="">1
+                                                    </a>
+                                                </div>
+                                                <div class="col-md-3 thumb">
+                                                    <a class="thumbnail" href="#">
+                                                        <img class="img-responsive" src="http://placehold.it/400x300" alt="">2
+                                                    </a>
+                                                </div>
+                                                <div class="col-md-3 thumb">
+                                                    <a class="thumbnail" href="#">
+                                                        <img class="img-responsive" src="http://placehold.it/400x300" alt="">3
+                                                    </a>
+                                                </div>
+                                                <div class="col-md-3 thumb">
+                                                    <a class="thumbnail" href="#">
+                                                        <img class="img-responsive" src="http://placehold.it/400x300" alt="">4
+                                                    </a>
+                                                </div>
+                                                <div class="col-md-3 thumb">
+                                                    <a class="thumbnail" href="#">
+                                                        <img class="img-responsive" src="http://placehold.it/400x300" alt="">5
+                                                    </a>
+                                                </div>
+                                             </div>
+                            
+                                        </div>
+                            
+                                    </div>
+                                </div>
+                            </div>
+                    <!-- <div class="col-lg-4">
+                        <div class="card cardDrag">
+                            <div class="cardDrag-heading">1 - Site Bilgileri</div>
+                            <div class="cardDrag-body">
+                                <dl class="dl-horizontal">
+                                    <dt>Sahibi</dt>
+                                    <dd>John Doe</dd>
+                                </dl>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-4">
+                        <div class="card cardDrag">
+                            <div class="cardDrag-heading">1 - Site Bilgileri</div>
+                            <div class="cardDrag-body">
+                                <dl class="dl-horizontal">
+                                    <dt>Sahibi</dt>
+                                    <dd>John Doe</dd>
+                                </dl>
+                            </div>
+                        </div>
+                    </div> -->
+                </div>
+                <!-- <div class="col-7">
+                    <img class="img-fluid imageShort" src="https://i.stack.imgur.com/fqKSl.png" alt="Dupa">
+                </div> -->
+            </div>
+        </div>
+    </div>
+</div>
+
+
+{% endblock %} {% block javascripts %} {{ super.base }}
+<script>
+    // $("#widgets").sortable({
+    //     handle: ".cardDrag-heading",
+    //     cursor: "move",
+    //     opacity: 0.5,
+    //     stop: function (event, ui) {
+    //         $("#json").val(
+    //             JSON.stringify(
+    //                 $("#widgets").sortable("toArray", {
+    //                     attribute: "id"
+    //                 })
+    //             )
+    //         );
+    //     }
+    // });
+    $( ".sortable" ).sortable({
+  items       : 'div:not(.unsortable)',
+  placeholder : 'sortable-placeholder'
+});
+$( ".sortable" ).disableSelection();
+
+</script> {% endblock %}
