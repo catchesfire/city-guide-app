@@ -49,7 +49,7 @@
                                         <i class="far fa-user"></i> {% if user.is_authenticated %}Elo {{ user.get_username }} {% else %} Zaloguj {% endif %}
                                     </li>
                                     <li class="list-inline-item">
-                                        <i class="fas fa-shopping-cart"></i> 0
+                                        <a href="{% url 'city_guide:cart' %}"><i class="fas fa-shopping-cart"></i> 0</a>
                                     </li>
                                 </ul>
                             </div>
