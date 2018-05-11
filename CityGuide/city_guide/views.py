@@ -1,6 +1,6 @@
 from django.shortcuts import get_object_or_404, render
 from django.http import HttpResponse, HttpResponseRedirect
-from city_guide.models import Attraction, Ticket
+from city_guide.models import Attraction, Ticket, Tour
 from django.template import loader
 from django.views import generic
 
@@ -20,3 +20,7 @@ class AttractionsView(generic.ListView):
 class AttracionView(generic.DetailView):
     model = Attraction
     template_name = 'city_guide/attraction.html'
+
+class PlannerView(generic.DetailView):
+    model = Tour
+    template_name = 'city_guide/planner.html'

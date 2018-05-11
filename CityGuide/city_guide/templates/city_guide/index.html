@@ -1,28 +1,117 @@
-{% extends 'base.html' %}
-{% load staticfiles %}
-{% block body %}
+{% extends 'base.html' %} {% load staticfiles %} {% block body %}
 <div class="container-fluid px-0">
-        <div id="carouselExampleIndicators" class="carousel slide mx-auto" data-ride="carousel">
-                <ol class="carousel-indicators">
-                  <li data-target="#carouselExampleIndicators" data-slide-to="0" class="active"></li>
-                  <li data-target="#carouselExampleIndicators" data-slide-to="1"></li>
-                </ol>
-                <div class="carousel-inner">
-                  <div class="carousel-item active">
-                    <img class="d-block w-100" src="{% static 'images/slider/slider1.png' %}" alt="First slide">
-                  </div>
-                  <div class="carousel-item">
-                    <img class="d-block w-100" src="{% static 'images/slider/slider1.png' %}" alt="Second slide">
-                  </div>
-                </div>
-                <a class="carousel-control-prev" href="#carouselExampleIndicators" role="button" data-slide="prev">
-                  <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                  <span class="sr-only">Previous</span>
-                </a>
-                <a class="carousel-control-next" href="#carouselExampleIndicators" role="button" data-slide="next">
-                  <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                  <span class="sr-only">Next</span>
-                </a>
-              </div>
+  <div id="carouselExampleIndicators" class="carousel slide mx-auto" data-ride="carousel">
+    <ol class="carousel-indicators">
+      <li data-target="#carouselExampleIndicators" data-slide-to="0" class="active"></li>
+      <li data-target="#carouselExampleIndicators" data-slide-to="1"></li>
+    </ol>
+    <div class="carousel-inner">
+      <div class="carousel-item active">
+        <img class="d-block w-100" src="{% static 'images/slider/slider1.png' %}" alt="First slide">
+      </div>
+      <div class="carousel-item">
+        <img class="d-block w-100" src="{% static 'images/slider/slider1.png' %}" alt="Second slide">
+      </div>
+    </div>
+    <a class="carousel-control-prev" href="#carouselExampleIndicators" role="button" data-slide="prev">
+      <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+      <span class="sr-only">Previous</span>
+    </a>
+    <a class="carousel-control-next" href="#carouselExampleIndicators" role="button" data-slide="next">
+      <span class="carousel-control-next-icon" aria-hidden="true"></span>
+      <span class="sr-only">Next</span>
+    </a>
+  </div>
 </div>
-{% endblock %}
+
+<div class="card cardSideInfo">
+  <div class="card-body cardBody">
+    <h1 class="card-title text-light">
+      Jak to działa?
+    </h1>
+    <p class="card-text text-light tourDesc">
+      <small>
+        Ta strona jest super i wgl. Myśle że dej pan pięć bo somsiad bedzie zazdrosny a o to chodzi. Gdzie jest Tomasz? Bo nie chciałąś
+        w dupe to masz. No i Cisniemy z Inwokacją.
+      </small>
+    </p>
+    <p class="card-text text-light tourDesc">
+      <small>
+        Litwo! Ojczyzno moja! Ty jesteś jak zdrowie, Ile cię trzeba cenić, ten tylko się dowie, Kto cię stracił. Dziś piękność twą
+        w całej ozdobie Widzę i opisuję, bo tęsknię po tobie Panno święta, co Jasnej bronisz Częstochowy I w Ostrej świecisz
+        Bramie! Ty, co gród zamkowy Nowogródzki ochraniasz z jego wiernym ludem! Jak mnie dziecko do zdrowia powróciłaś cudem,
+        (Gdy od płaczącej matki pod Twoją opiekę Ofiarowany, martwą podniosłem powiekę I zaraz mogłem pieszo do Twych świątyń
+        progu Iść za wrócone życie podziękować Bogu), Tak nas powrócisz cudem na Ojczyzny łono. Tymczasem przenoś moją duszę
+        utęsknioną Do tych pagórków leśnych, do tych łąk zielonych, Szeroko nad błękitnym Niemnem rozciągnionych; Do tych
+        pól malowanych zbożem rozmaitem, Wyzłacanych pszenicą, posrebrzanych żytem; Gdzie bursztynowy świerzop, gryka jak
+        śnieg biała, Gdzie panieńskim rumieńcem dzięcielina pała, A wszystko przepasane jakby wstęgą, miedzą Zieloną, na
+        niej z rzadka ciche grusze siedz
+      </small>
+    </p>
+  </div>
+</div>
+
+<div class="card cardRoutInfo">
+  <div class="card-body cardBody">
+    <h2 class="card-title">
+      Przykładowe trasy
+    </h2>
+    <div class="row ">
+      <div class="col">
+        <img class="img-fluid" src="https://i.stack.imgur.com/fqKSl.png" alt="Dupa">
+      </div>
+      <div class="col-7 cardBody">
+        <div class="row">
+          <h1>
+            Studenckie życie
+          </h1>
+        </div>
+        <div class="row">
+          <div class="col fa fa-money-bill-alt px-0">
+            <span class="fontForAll">
+              <small>
+                95zł
+              </small>
+            </span>
+          </div>
+          <div class="col-9 fa fa-clock px-0">
+            <span class="fontForAll">
+              <small>
+                Szczęsliwi czasu nie liczą
+              </small>
+            </span>
+          </div>
+        </div>
+        <div class="row px-0 mt-3">
+          <p class="tourDesc">
+            <small>
+              Litwo! Ojczyzno moja! Ty jesteś jak zdrowie, Ile cię trzeba cenić, ten tylko się dowie, Kto cię stracił. Dziś piękność twą
+              w całej ozdobie Widzę i opisuję, bo tęsknię po tobie Panno święta, co Jasnej bronisz Częstochowy I w Ostrej
+              świecisz Bramie! Ty, co gród zamkowy Nowogródzki ochraniasz z jego wiernym ludem! Jak mnie dziecko do zdrowia
+            </small>
+          </p>
+        </div>
+        <div class="row px-0">
+          <div class="card-title px-0 mt-3">
+            <p class="fa fa-university px-0">
+              <span class="fontForAll"><small>Lista atrakcji</small></span>
+            </p>
+            <ul class="col"><small>
+               <li>dupa</li>
+              <li>dupatrzy</li>
+              <li>fajnadupa</li>
+            </small>
+             
+            </ul>
+          </div>
+        </div>
+        <div class="row px-0">
+          <button type="button" class="btn btn-light">Przejdz do trasy</button>
+        </div>
+        
+      </div>
+    </div>
+  </div>
+
+
+  {% endblock %}
