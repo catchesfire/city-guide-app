@@ -46,7 +46,14 @@
                             <div class="my-2 my-lg-0 pt-3">
                                 <ul class="list-inline my-lg-0 py-lg-0">
                                     <li class="list-inline-item">
-                                        <i class="far fa-user"></i> Zaloguj
+                                        <i class="far fa-user"></i>
+                                        {% spaceless %}
+                                        {% if user.is_authenticated %}
+                                             Witaj {{ user.get_username }} 
+                                             <a href="{% url 'city_guide:logout' %}"> Wyloguj</a>
+                                        {% else %} 
+                                            <a href="{% url 'city_guide:login' %}"> Zaloguj</a>   
+                                        {% endif %}{% endspaceless %} 
                                     </li>
                                     <li class="list-inline-item">
                                         <i class="fas fa-shopping-cart"></i> 0
