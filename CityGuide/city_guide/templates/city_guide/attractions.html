@@ -28,7 +28,8 @@
                         </div>
 
                         <div class="col">
-                            <form action="{% url 'city_guide:cart_add' %}" method="GET">
+                            <form action="{% url 'city_guide:cart_add' %}" method="POST">
+                                {% csrf_token %}
                                 <div class="form-row align-items-center">
                                     <label for="ticket_type">
                                         Bilety
@@ -88,7 +89,8 @@
                         </div>
 
                         <div class="col">
-                            <form action="{% url 'city_guide:cart_add' %}" method="GET">
+                            <form action="{% url 'city_guide:cart_add' %}" method="POST">
+                                {% csrf_token %}
                                 <div class="form-row align-items-center">
                                     <label for="ticket_type">
                                         Bilety

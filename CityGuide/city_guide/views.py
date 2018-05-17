@@ -118,13 +118,13 @@ class AttractionsView(generic.ListView):
 def AddToCart(request):
     order_form_class = OrderForm
 
-    if request.method == 'GET':
-        order_form = order_form_class(request.GET)
+    if request.method == 'POST':
+        order_form = order_form_class(request.POST)
 
         if order_form.is_valid():
-            quantity = request.GET.get('quantity', 1)
-            date = request.GET.get('date', timezone.now())
-            ticket_id = request.GET.get('ticket_id', 1)
+            quantity = request.POST.get('quantity', 1)
+            date = request.POST.get('date', timezone.now())
+            ticket_id = request.POST.get('ticket_id', 1)
             cart = Cart.objects.filter(user=request.user).last()
             ticket = Ticket.objects.get(pk=ticket_id)
 
