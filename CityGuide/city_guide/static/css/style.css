@@ -10,6 +10,8 @@ body {
 
 .standard-container{
     margin-top: 70px;
+    background-color: #fff;
+    min-height: 600px;
 }
 
 .navbar-light{
@@ -27,7 +29,7 @@ body {
 /* #region przyciski */
 
 .imageShort {
-    max-height: 500px;
+    max-height: 720px;
 }
 .btn.btn-outline-success {
     background-color: white;

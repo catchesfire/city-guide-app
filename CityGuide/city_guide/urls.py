@@ -3,6 +3,8 @@ from django.contrib.auth.views import logout
 from django.conf import settings
 from . import views
 from django.contrib.auth import views as auth_views
+from django.views.decorators.csrf import csrf_exempt
+
 
 app_name = 'city_guide'
 urlpatterns = [
@@ -12,7 +14,9 @@ urlpatterns = [
     path('logout/', views.logoutUser, name='logout'),
     path('attractions', views.AttractionsView.as_view(), name='attractions'),
     path('attractions/<int:pk>', views.AttracionView.as_view(), name='attraction'),
-    path('cart', views.CartView.as_view(), name="cart"),
+    path('cart', views.cartView, name="cart"),
     path('attractions/filter', views.AttractionsView.as_view(), name="filter"),
-    path('planner/<int:pk>', views.PlannerView.as_view(), name='planner')
+    path('planner/<int:pk>', views.PlannerView.as_view(), name='planner'),
+    path('profile/', views.profileView, name='profile')
+    
 ]
