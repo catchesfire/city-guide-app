@@ -1,14 +1,12 @@
-{% extends 'base.html' %} {% load staticfiles %} {% block body %} {% if attractions_obj %}
+{% extends 'base.html' %} {% load staticfiles %} {% block body %} 
 
-<div class="container filterNavbarCont">
+<div class="container standard-container filterNavbarCont">
     <div class="row">
         <div class="col">
             {% include "city_guide/forms/filterForm.html" %}
         </div>
     </div>
-</div>
-
-<div class="container attractionsCont">
+{% if attractions_obj %}
     <div class="row">
         {% for attraction in attractions_obj %} {% if attractions_obj.count == 1 %}
         <div class="col">
