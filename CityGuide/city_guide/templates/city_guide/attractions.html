@@ -89,7 +89,7 @@
                         </div>
 
                         <div class="col">
-                            <form>
+                            <form action="{% url 'city_guide:add' %}">
                                 <div class="form-row align-items-center">
                                     <label for="ticket_type">
                                         Bilety
@@ -109,7 +109,7 @@
                                             <input class="form-control " type="number" id="ticket_quant" min="1" max="30">
                                         </label>
 
-                                        <button class="btn btn-outline-success mb-sm-1">
+                                        <button class="btn btn-outline-success mb-sm-1" type="submit">
                                             Do koszyka
                                         </button>
                                     </div>

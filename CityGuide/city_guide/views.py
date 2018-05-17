@@ -7,7 +7,7 @@ from itertools import chain
 from django.db.models import Q, Case, When
 from django.contrib.auth import authenticate, login, logout
 
-from .forms import FilterForm, SearchForm, SortForm, UserForm
+from .forms import FilterForm, SearchForm, SortForm, UserForm, OrderForm
 
 def index(request):
     return render(request, 'city_guide/index.html', {})
@@ -157,3 +157,6 @@ class UserFormView(View):
 class PlannerView(generic.DetailView):
     model = Tour
     template_name = 'city_guide/planner.html'
+
+class AddToCart(View):
+    form_class = OrderForm

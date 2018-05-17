@@ -24,3 +24,5 @@ class UserForm(forms.ModelForm):
         model = User
         fields = ['username', 'email', 'password']
 
+class OrderForm(forms.Form):
+    duap = forms.CharField()
