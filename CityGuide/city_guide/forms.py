@@ -19,8 +19,6 @@ class SortForm(forms.Form):
 
 class UserForm(forms.ModelForm):
     password = forms.CharField(widget=forms.PasswordInput, min_length=6)
-    # address = forms.CharField()
-    # phone_number = forms.IntegerField()
 
     class Meta:
         model = User
