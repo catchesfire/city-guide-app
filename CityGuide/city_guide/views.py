@@ -140,31 +140,41 @@ class UserLogFormView(View):
 
 
 class UserFormView(View):
-    form_class = UserForm
+    user_form_class = UserForm
     template_name = 'city_guide/registration.html'
 
     def get(self,request):
-        form = self.form_class(None)
-        return render(request, self.template_name, {'form': form})
+        user_form = self.user_form_class(None)
+        return render(request, self.template_name, {'user_form': user_form})
 
     def post(self,request):
         
-        form = self.form_class(request.POST)
-        if form.is_valid():
-            user = form.save(commit=False)
+        user_form = self.user_form_class(request.POST)
+        if user_form.is_valid():
+            user = user_form.save(commit=False)
 
-            username = form.cleaned_data['username']
-            password = form.cleaned_data['password']
-            email = form.cleaned_data['email']
+            username = user_form.cleaned_data['username']
+            password = user_form.cleaned_data['password']
+            email = user_form.cleaned_data['email']
+            name = user_form.cleaned_data['first_name']
+            lastName = user_form.cleaned_data['last_name']
+            address = user_form.cleaned_data['address']
+            phone = user_form.cleaned_data['phone_number']
             user.set_password(password)
             user.save()
+            user.profile.address = address
+            user.profile.phone_number = phone
+            user.profile.save()
+
+            cart = Cart.objects.create(user=user)
+            cart.save()
 
             user = authenticate(username=username, password= password)
 
             if user is not None:
                 login(request, user)
                 return redirect('city_guide:index')
-        return render(request, self.template_name, {'form': form})
+        return render(request, self.template_name, {'user_form': user_form})
 
 class PlannerView(generic.DetailView):
     model = Tour

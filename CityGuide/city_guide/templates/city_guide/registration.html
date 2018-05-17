@@ -8,15 +8,15 @@
     <div class="container">
         <h2>Tworzenie nowego konta.</h2>
         <p>Wprowadź dane</p>
-        {% if form.errors %}
-            {% for field in form %}
+        {% if user_form.errors %}
+            {% for field in user_form %}
                 {% for error in field.errors %}
                 <div class="alert alert-danger">
                     <strong>{{ error|escape }}</strong>
                 </div>
                 {% endfor %}
             {% endfor %}
-            {% for error in form.non_field_errors %}
+            {% for error in user_form.non_field_errors %}
             <div class="alert alert-danger">
                 <strong>{{ error|escape }}</strong>
             </div>
@@ -29,6 +29,14 @@
                 <input type="text" class="form-control" id="usr" name="username">
             </div>
             <div class="form-group">
+                <label for="name">Imię:</label>
+                <input type="text" class="form-control" id="name" name="first_name">
+            </div>
+            <div class="form-group">
+                <label for="lastName">Nazwisko:</label>
+                <input type="text" class="form-control" id="lastName" name="last_name">
+            </div>
+            <div class="form-group">
                 <label for="mail">Email:</label>
                 <input type="text" class="form-control" id="mail" name="email">
             </div>
@@ -36,6 +44,15 @@
                 <label for="pwd">Halso:</label>
                 <input type="password" class="form-control" id="pwd" name="password">
             </div>
+            <div class="form-group">
+                <label for="address">Adres:</label>
+                <input type="text" class="form-control" id="address" name="address">
+            </div>
+            <div class="form-group">
+                <label for="phone">Nr telefonu:</label>
+                <input type="text" class="form-control" id="phone" name="phone_number">
+            </div>
+            
             <!--ok -->
             <div class="row">
                 <button type="submit" class="btn" >Załóż konto</button> 
