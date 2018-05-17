@@ -1,6 +1,6 @@
 from django.shortcuts import get_object_or_404, render, redirect
 from django.http import HttpResponse, HttpResponseRedirect
-from city_guide.models import Attraction, Category, Ticket, TicketType, Attraction_Category, Cart, Tour
+from city_guide.models import Attraction, Category, Ticket, TicketType, Cart, Tour
 from django.template import loader
 from django.views import View, generic
 from itertools import chain
@@ -16,6 +16,19 @@ def index(request):
 def logoutUser(request):
     logout(request)
     return redirect('city_guide:index')
+
+def cartView(request):
+    template_name = 'city_guide/cart.html'
+    cart = Cart.objects.filter(user=request.user).last()
+    all_orders = cart.order_set.all()
+
+    orders = dict(
+        [
+            (attraction.ticket.attraction, all_orders.filter(ticket_id__in=Ticket.objects.filter(attraction_id=attraction.ticket.attraction.id))) for attraction in all_orders
+        ]
+    )
+
+    return render(request, template_name, {'cart': orders})
 
 class AttractionsView(generic.ListView):
     filter_form_class = FilterForm
@@ -40,11 +53,12 @@ class AttractionsView(generic.ListView):
             attr_list = []
 
             for cat_id in category_ids_list:
-                for obj in Attraction_Category.objects.filter(id_category=cat_id):
+                print(cat_id)
+                for obj in Category.objects.get(pk=cat_id).attraction_set.all():
                     attr_list.append(obj)
 
                 for obj in attr_list:
-                    attr_ids.append(obj.id_attraction.id)
+                    attr_ids.append(obj.id)
             
             return attr_ids
         
@@ -52,7 +66,7 @@ class AttractionsView(generic.ListView):
             attr_ids = []
             
             for ticket in Ticket.objects.filter(price__gt=price_min, price__lt=price_max):           
-                attr_ids.append(ticket.id_attraction.id)
+                attr_ids.append(ticket.attraction.id)
             
             return attr_ids
 
@@ -64,7 +78,10 @@ class AttractionsView(generic.ListView):
             pass # narazie nic
 
         elif filter_form.is_valid():
-            category_ids = [cat_id for cat_id in request.GET.getlist('categories', Category.objects.all())] 
+            if request.GET.getlist('categories'):
+                category_ids = [cat_id for cat_id in request.GET.getlist('categories')]
+            else:
+                category_ids = [cat_id.id for cat_id in Category.objects.all()] 
             price_min = request.GET.get('price_min', 0)
             price_max = request.GET.get('price_max', 1000)
             time_min = request.GET.get('time_min', 0)
@@ -82,13 +99,15 @@ class AttracionView(generic.DetailView):
     template_name = 'city_guide/attraction.html'
     context_object_name = 'attraction_obj'
 
-class CartView(generic.ListView):
-    model = Cart
-    template_name = 'city_guide/cart.html'
-    context_object_name = 'cart'
 
-    def get_queryset(self):
-        return Cart.objects.filter(id_user=self.request.user).last()
+
+# class CartView(generic.ListView):
+#     model = Cart
+#     template_name = 'city_guide/cart.html'
+#     context_object_name = 'cart'
+
+#     def get_queryset(self):
+#         return Cart.objects.filter(id_user=self.request.user).last()
 
 class UserLogFormView(View):
     template_name = 'city_guide/login.html'
