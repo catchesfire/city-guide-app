@@ -1,6 +1,6 @@
 from django.shortcuts import get_object_or_404, render, redirect
 from django.http import HttpResponse, HttpResponseRedirect
-from city_guide.models import Attraction, Category, Ticket, TicketType, Cart, Tour
+from city_guide.models import Attraction, Category, Ticket, TicketType, Cart, Tour, Profile
 from django.template import loader
 from django.views import View, generic
 from itertools import chain
@@ -29,6 +29,10 @@ def cartView(request):
     )
 
     return render(request, template_name, {'cart': orders})
+def profileView(request):
+    profile = Profile.objects.get(user=request.user)
+
+    return render(request, 'city_guide/profile.html', {'profile': profile})
 
 class AttractionsView(generic.ListView):
     filter_form_class = FilterForm
@@ -156,6 +160,9 @@ class UserFormView(View):
                 return redirect('city_guide:index')
         return render(request, self.template_name, {'form': form})
         
+
+    
+
 
 class PlannerView(generic.DetailView):
     model = Tour

@@ -15,6 +15,8 @@ urlpatterns = [
     path('attractions', views.AttractionsView.as_view(), name='attractions'),
     path('attractions/<int:pk>', views.AttracionView.as_view(), name='attraction'),
     path('cart', views.cartView, name="cart"),
-    path('attractions/filter', csrf_exempt(views.AttractionsView.as_view()), name="filter"),
-    path('planner/<int:pk>', views.PlannerView.as_view(), name='planner')
+    path('attractions/filter', views.AttractionsView.as_view(), name="filter"),
+    path('planner/<int:pk>', views.PlannerView.as_view(), name='planner'),
+    path('profile/', views.profileView, name='profile')
+    
 ]
