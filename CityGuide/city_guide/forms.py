@@ -1,7 +1,7 @@
 from django import forms
 from django.contrib.auth.models import User
 from django.db.models import Max, Min
-from city_guide.models import Attraction, Category, Ticket
+from city_guide.models import Attraction, Category, Ticket, Profile
 
 class FilterForm(forms.Form):
     categories = forms.ModelMultipleChoiceField(queryset=Category.objects.all(), widget=forms.CheckboxSelectMultiple, required=False)    
@@ -19,10 +19,18 @@ class SortForm(forms.Form):
 
 class UserForm(forms.ModelForm):
     password = forms.CharField(widget=forms.PasswordInput, min_length=6)
+    # address = forms.CharField()
+    # phone_number = forms.IntegerField()
 
     class Meta:
         model = User
-        fields = ['username', 'email', 'password']
+        fields = ['username', 'email', 'password', 'first_name', 'last_name' ]
+
+class ProfileForm(forms.ModelForm):
+    class Meta:
+        model = Profile
+        fields = ('address', 'phone_number')
+
 
 class OrderForm(forms.Form):
     duap = forms.CharField()

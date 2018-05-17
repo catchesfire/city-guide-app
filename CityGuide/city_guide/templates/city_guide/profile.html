@@ -2,7 +2,32 @@
 {% block body %}
 
 
-<div class="container" style="margin-top: 72px; background-color: #fff">
+
+<div class="container standard-container" >
+    <form method="post">
+        {% csrf_token %}
+        <div class="form-group">
+            <label for="firstname">Imię:</label>
+            <input type="text" class="form-control" id="firstname" name="firstname" value="{{user_form.first_name.value}}">
+        </div>
+ 
+
+        <button type="submit">Save changes</button>
+      </form>
+</div>
+
+<!-- <div class="container" >
+    <form method="post">
+        {% csrf_token %}
+        {{ user_form.as_p }}
+        {{ profile_form.as_p }}
+        <button type="submit">Save changes</button>
+      </form>
+</div> -->
+
+
+
+<!-- <div class="container" style="margin-top: 72px; background-color: #fff">
     
     <div class="row">
         {{profile.phone_number}}
@@ -16,6 +41,6 @@
     </div>
 
 
-</div>
+</div> -->
 
 {% endblock %}

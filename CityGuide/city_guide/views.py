@@ -6,8 +6,10 @@ from django.views import View, generic
 from itertools import chain
 from django.db.models import Q, Case, When
 from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.decorators import login_required
+from django.db import transaction
 
-from .forms import FilterForm, SearchForm, SortForm, UserForm, OrderForm
+from .forms import FilterForm, SearchForm, SortForm, UserForm, OrderForm, ProfileForm
 
 def index(request):
     return render(request, 'city_guide/index.html', {})
@@ -29,10 +31,7 @@ def cartView(request):
     )
 
     return render(request, template_name, {'cart': orders})
-def profileView(request):
-    profile = Profile.objects.get(user=request.user)
 
-    return render(request, 'city_guide/profile.html', {'profile': profile})
 
 class AttractionsView(generic.ListView):
     filter_form_class = FilterForm
@@ -139,32 +138,68 @@ class UserLogFormView(View):
         return render(request, self.template_name, {'error_message' : error})    
 
 
+@login_required
+@transaction.atomic
+def update_profile(request):
+    if request.method == 'POST':
+        user_form = UserForm(request.POST, instance=request.user)
+        profile_form = ProfileForm(request.POST, instance=request.user.profile)
+        if user_form.is_valid() and profile_form.is_valid():
+            user_form.save()
+            profile_form.save()
+            messages.success(request, _('Your profile was successfully updated!'))
+            return redirect('settings:profile')
+        else:
+            messages.error(request, _('Please correct the error below.'))
+    else:
+        user_form = UserForm(instance=request.user)
+        user_form.address =  'cosssss'
+        profile_form = ProfileForm(instance=request.user.profile)
+    return render(request, 'city_guide/profile.html', {
+        'user_form': user_form,
+        'profile_form': profile_form
+    })
+
 class UserFormView(View):
-    form_class = UserForm
+    user_form_class = UserForm
+    profile_form_class = ProfileForm
     template_name = 'city_guide/registration.html'
 
     def get(self,request):
-        form = self.form_class(None)
-        return render(request, self.template_name, {'form': form})
+        user_form = self.user_form_class(None)
+        profile_form = self.profile_form_class(None)
+        return render(request, self.template_name, {'user_form': user_form, 'profile_form': profile_form})
 
     def post(self,request):
         
-        form = self.form_class(request.POST)
-        if form.is_valid():
-            user = form.save(commit=False)
+        user_form = self.user_form_class(request.POST)
+        profile_form = self.profile_form_class(request.POST)
+        if user_form.is_valid():
+            user = user_form.save(commit=False)
+            profile = profile_form.save(commit=False)
 
-            username = form.cleaned_data['username']
-            password = form.cleaned_data['password']
-            email = form.cleaned_data['email']
+            username = user_form.cleaned_data['username']
+            password = user_form.cleaned_data['password']
+            email = user_form.cleaned_data['email']
+            name = user_form.cleaned_data['first_name']
+            lastName = user_form.cleaned_data['last_name']
+            address = profile_form.cleaned_data['address']
+            phone = profile_form.cleaned_data['phone_number']
             user.set_password(password)
             user.save()
+            user.profile.address = address
+            user.profile.phone_number = phone
+            user.profile.save()
+
+            cart = Cart.objects.create(user=user)
+            cart.save()
 
             user = authenticate(username=username, password= password)
 
             if user is not None:
                 login(request, user)
                 return redirect('city_guide:index')
-        return render(request, self.template_name, {'form': form})
+        return render(request, self.template_name, {'user_form': user_form, 'profile_form': profile_form})
 
 class PlannerView(generic.DetailView):
     model = Tour
