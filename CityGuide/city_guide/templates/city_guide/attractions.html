@@ -28,14 +28,14 @@
                         </div>
 
                         <div class="col">
-                            <form>
+                            <form action="{% url 'city_guide:cart_add' %}" method="GET">
                                 <div class="form-row align-items-center">
                                     <label for="ticket_type">
                                         Bilety
-                                        <select class="form-control" type="number" id="ticket_type">
-                                            <option>--Wybierz bilet--</option>
+                                        <select class="form-control" type="number" id="ticket_type" name="ticket_id">
+                                            <option value="">--Wybierz bilet--</option>
                                             {% for ticket in attraction.ticket_set.all %}
-                                            <option>{{ticket.ticket_type}} - {{ticket.price}} ZŁ</option>
+                                            <option value="{{ticket.id}}">{{ticket.ticket_type}} - {{ticket.price}} ZŁ</option>
                                             {% endfor %}
                                         </select>
                                     </label>
@@ -45,15 +45,14 @@
                                     <div class="input-group-sm">
                                         <label for="ticket_quant">
                                             Liczba
-                                            <input class="form-control " type="number" id="ticket_quant" min="1" max="30">
+                                            <input class="form-control " type="number" id="ticket_quant" name="quantity" min="1" max="30">
                                         </label>
 
-                                        <button class="btn btn-outline-success mb-sm-1">
+                                        <button class="btn btn-outline-success mb-sm-1" id="AddToCartBtn">
                                             Do koszyka
                                         </button>
                                     </div>
                                 </div>
-
                             </form>
                         </div>
                     </div>
@@ -89,14 +88,14 @@
                         </div>
 
                         <div class="col">
-                            <form action="{% url 'city_guide:add' %}">
+                            <form action="{% url 'city_guide:cart_add' %}" method="GET">
                                 <div class="form-row align-items-center">
                                     <label for="ticket_type">
                                         Bilety
-                                        <select class="form-control" type="number" id="ticket_type">
-                                            <option>--Wybierz bilet--</option>
+                                        <select class="form-control" type="number" id="ticket_type" name="ticket_id">
+                                            <option value="">--Wybierz bilet--</option>
                                             {% for ticket in attraction.ticket_set.all %}
-                                            <option>{{ticket.ticket_type}} - {{ticket.price}} ZŁ</option>
+                                            <option value="{{ticket.id}}">{{ticket.ticket_type}} - {{ticket.price}} ZŁ</option>
                                             {% endfor %}
                                         </select>
                                     </label>
@@ -106,15 +105,14 @@
                                     <div class="input-group-sm">
                                         <label for="ticket_quant">
                                             Liczba
-                                            <input class="form-control " type="number" id="ticket_quant" min="1" max="30">
+                                            <input class="form-control " type="number" id="ticket_quant" name="quantity" min="1" max="30">
                                         </label>
 
-                                        <button class="btn btn-outline-success mb-sm-1" type="submit">
+                                        <button class="btn btn-outline-success mb-sm-1" id="AddToCartBtn">
                                             Do koszyka
                                         </button>
                                     </div>
                                 </div>
-
                             </form>
                         </div>
                     </div>

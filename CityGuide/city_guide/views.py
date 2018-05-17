@@ -1,17 +1,17 @@
 from django.shortcuts import get_object_or_404, render, redirect
-from django.http import HttpResponse, HttpResponseRedirect
-from city_guide.models import Attraction, Category, Ticket, TicketType, Cart, Tour, Profile
+from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
+from city_guide.models import Attraction, Category, Ticket, TicketType, Cart, Tour, Profile, Order
 from django.template import loader
 from django.views import View, generic
 from itertools import chain
 from django.db.models import Q, Case, When
 from django.contrib.auth import authenticate, login, logout
+from django.utils import timezone
 
 from .forms import FilterForm, SearchForm, SortForm, UserForm, OrderForm
 
 def index(request):
     return render(request, 'city_guide/index.html', {})
-
 
 def logoutUser(request):
     logout(request)
@@ -29,6 +29,7 @@ def cartView(request):
     )
 
     return render(request, template_name, {'cart': orders})
+
 def profileView(request):
     profile = Profile.objects.get(user=request.user)
 
@@ -67,7 +68,7 @@ class AttractionsView(generic.ListView):
         def GetAttractionsByPrice(price_min, price_max):
             attr_ids = []
             
-            for ticket in Ticket.objects.filter(price__gt=price_min, price__lt=price_max):           
+            for ticket in Ticket.objects.filter(price__gte=price_min, price__lte=price_max):           
                 attr_ids.append(ticket.attraction.id)
             
             return attr_ids
@@ -109,10 +110,48 @@ class AttractionsView(generic.ListView):
             time_min = request.GET.get('time_min', 0)
             time_max = request.GET.get('time_max', 1000)
 
-            attractions = Attraction.objects.filter(id__in=GetAttractionsByCategory(category_ids)).filter(id__in=GetAttractionsByPrice(price_min, price_max)).filter(time_minutes__gt=time_min, time_minutes__lt=time_max).order_by('name')
+            attractions = Attraction.objects.filter(id__in=GetAttractionsByCategory(category_ids)).filter(id__in=GetAttractionsByPrice(price_min, price_max)).filter(time_minutes__gte=time_min, time_minutes__lte=time_max).order_by('name')
             return render(request, self.template_name, {"filter_form": filter_form, "attractions_obj": attractions, "categories": Category.objects.all()})             
 
-        return render(request, self.template_name, {"filter_form": filter_form, "attractions_obj": Attraction.objects.all().order_by('name'), "categories": Category.objects.all()})        
+        return render(request, self.template_name, {"filter_form": filter_form, "attractions_obj": Attraction.objects.all().order_by('name'), "categories": Category.objects.all()})
+
+def AddToCart(request):
+    order_form_class = OrderForm
+
+    if request.method == 'GET':
+        order_form = order_form_class(request.GET)
+
+        if order_form.is_valid():
+            quantity = request.GET.get('quantity', 1)
+            date = request.GET.get('date', timezone.now())
+            ticket_id = request.GET.get('ticket_id', 1)
+            cart = Cart.objects.filter(user=request.user).last()
+            ticket = Ticket.objects.get(pk=ticket_id)
+
+            new_order, created = cart.order_set.get_or_create(ticket_id=ticket_id)            
+
+            if created:
+                new_order.date = date
+                new_order.quantity = quantity
+                new_order.cart = cart
+                new_order.ticket = ticket
+            else:
+                new_order.quantity += int(quantity)
+            
+            data = {
+                'status': 'ok'
+            }
+
+            new_order.save()
+
+            return JsonResponse(data)
+
+    data = {
+        'status': 'error'
+    }  
+
+    return JsonResponse(data)
+
 
 class AttracionView(generic.DetailView):
     model = Attraction
@@ -169,6 +208,3 @@ class UserFormView(View):
 class PlannerView(generic.DetailView):
     model = Tour
     template_name = 'city_guide/planner.html'
-
-class AddToCart(View):
-    form_class = OrderForm
