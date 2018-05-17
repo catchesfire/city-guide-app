@@ -175,6 +175,10 @@ h3{
     background-color: #ededed;
 }
 
+.cardPlanner{
+    background-color: #ededed;
+}
+
 .fontForAll{
     font-family: "Helvetica Neue",Arial,sans-serif;
     font-weight: lighter !important;
@@ -184,21 +188,8 @@ h3{
     text-align: justify;
 }
 
-*{border-radius:0;}
-dl dt{text-align:left !important;}
-
-/* .cardDrag{border:none; box-shadow:0 0 10px rgba(0,0,0,0.20); border-radius:4px 4px 0 0;}
-.cardDrag .cardDrag-heading{background:#FFF; padding:25px 20px; color:#151515; font:500 16px/1 'Roboto',sans-serif; border-color:#DDD; border-radius:4px 4px 0 0;}
-.cardDrag .cardDrag-body{padding:15px 20px;}
-.cardDrag .cardDrag-body dl{padding:12px 0; margin:0; font:300 14px 'Roboto',sans-serif;}
-.cardDrag .cardDrag-body dl dd{}
-.cardDrag .cardDrag-body dl dt{} */
-
-.sortable-placeholder {
-    margin-left: 0 !important;
-    border: 1px solid #ccc;
-    background-color: yellow;
-    -webkit-box-shadow: 0px 0px 10px #888;
-    -moz-box-shadow: 0px 0px 10px #888;
-    box-shadow: 0px 0px 10px #888;
+.buttonEditingPlanner{
+    height: 19px;
+    width: 31px;
 }
+
