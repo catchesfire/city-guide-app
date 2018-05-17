@@ -18,24 +18,31 @@
                     </a>
 
                     <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
-                        <form action="{% url 'city_guide:filter' %}" method="GET">
-                            <a class="dropdown-item" href="#">Alfabetycznie
+                        <form action="{% url 'city_guide:sort' %}" method="GET" id="sort_form">
+                            {% csrf_token %}
+                            <a class="dropdown-item" href="javascript:{}" onclick="document.getElementById('alph_asc').value='name'; document.getElementById('sort_form').submit();">Alfabetycznie
                                 <span class="fa fa-long-arrow-alt-up ml-1"></span>
+                                <input id="alph_asc" type="hidden" name="sort_key">
                             </a>
-                            <a class="dropdown-item" href="#">Alfabetycznie
+                            <a class="dropdown-item" href="javascript:{}" onclick="document.getElementById('alph_desc').value='-name'; document.getElementById('sort_form').submit();">Alfabetycznie
                                 <span class="fa fa-long-arrow-alt-down ml-1"></span>
+                                <input id="alph_desc" type="hidden" name="sort_key">
                             </a>
-                            <a class="dropdown-item" href="#">Cena
+                            <a class="dropdown-item" href="javascript:{}" onclick="document.getElementById('price_asc').value='price'; document.getElementById('sort_form').submit();">Cena
                                 <span class="fa fa-long-arrow-alt-up ml-1"></span>
+                                <input id="price_asc" type="hidden" name="sort_key">
                             </a>
-                            <a class="dropdown-item" href="#">Cena
+                            <a class="dropdown-item" href="javascript:{}" onclick="document.getElementById('price_desc').value='-price'; document.getElementById('sort_form').submit();">Cena
                                 <span class="fa fa-long-arrow-alt-down ml-1"></span>
+                                <input id="price_desc" type="hidden" name="sort_key">
                             </a>
-                            <a class="dropdown-item" href="#">Czas zwiedzania
+                            <a class="dropdown-item" href="javascript:{}" onclick="document.getElementById('time_asc').value='time_minutes'; document.getElementById('sort_form').submit();">Czas zwiedzania
                                 <span class="fa fa-long-arrow-alt-up ml-1"></span>
+                                <input id="time_asc" type="hidden" name="sort_key">
                             </a>
-                            <a class="dropdown-item" href="#">Czas zwiedzania
+                            <a class="dropdown-item" href="javascript:{}" onclick="document.getElementById('time_desc').value='-time_minutes'; document.getElementById('sort_form').submit();">Czas zwiedzania
                                 <span class="fa fa-long-arrow-alt-down ml-1"></span>
+                                <input id="time_desc" type="hidden" name="sort_key">
                             </a>
                         </form>
                     </div>
@@ -49,7 +56,8 @@
             <form class="form-inline my-2 my-lg-0">
                 <div class="container-fluid">
                     <div class="form-row align-items-center">
-                        <form action="{% url 'city_guide:filter' %}" method="GET">
+                        <form action="{% url 'city_guide:search' %}" method="GET">
+                            {% csrf_token %}
                             <div class="col-auto">
                                 <label for="attrSearch">
                                     <i class="fa fa-search"></i>
@@ -75,7 +83,7 @@
     <form action="{% url 'city_guide:filter' %}" method="GET">
         <div class="container">
             <div class="row">
-                {% for cat in categories %}
+                {% if categories %} {% for cat in categories %}
                 <div class="col-4">
                     <div class="form-check">
                         <input class="form-check-input" type="checkbox" value="{{cat.id}}" id="CatCheck" name="categories">
@@ -84,7 +92,11 @@
                         </label>
                     </div>
                 </div>
-                {% endfor %}
+                {% endfor %} {% else %}
+                <div>
+                    BRAK KATEGORII
+                </div>
+                {% endif %}
             </div>
 
             <div class="row mt-3">

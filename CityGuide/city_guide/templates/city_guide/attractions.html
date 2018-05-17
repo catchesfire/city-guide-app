@@ -1,12 +1,14 @@
-{% extends 'base.html' %} {% load staticfiles %} {% block body %} 
-
-<div class="container standard-container filterNavbarCont">
+{% extends 'base.html' %} {% load staticfiles %} {% block body %}
+<div class="container filterNavbarCont">
     <div class="row">
         <div class="col">
             {% include "city_guide/forms/filterForm.html" %}
         </div>
     </div>
+</div>
+
 {% if attractions_obj %}
+<div class="container attractionsCont">
     <div class="row">
         {% for attraction in attractions_obj %} {% if attractions_obj.count == 1 %}
         <div class="col">
@@ -87,7 +89,7 @@
                         </div>
 
                         <div class="col">
-                            <form>
+                            <form action="{% url 'city_guide:add' %}">
                                 <div class="form-row align-items-center">
                                     <label for="ticket_type">
                                         Bilety
@@ -107,7 +109,7 @@
                                             <input class="form-control " type="number" id="ticket_quant" min="1" max="30">
                                         </label>
 
-                                        <button class="btn btn-outline-success mb-sm-1">
+                                        <button class="btn btn-outline-success mb-sm-1" type="submit">
                                             Do koszyka
                                         </button>
                                     </div>
@@ -134,7 +136,9 @@
     </div>
 </div>
 {% else %}
-<p>No attracions are available.</p>
+<div class="container attractionsCont">
+    <h2 class="noAtrractionsHeader">There are no attractions that meet the criteria.</h2>
+</div>
 {% endif %} {% endblock %} {% block javascripts %} {{block.super}}
 <script>
     let show = false;
@@ -157,14 +161,10 @@
             max: 100,
             values: [0, 100],
             slide: function (event, ui) {
-                //$("#priceSliderMin").val(ui.values[0] + " PLN");
-                //$("#priceSliderMax").val(ui.values[1] + " PLN");
                 $("#priceSliderMin").val(ui.values[0]);
                 $("#priceSliderMax").val(ui.values[1]);
             }
         });
-        //$("#priceSliderMin").val($("#priceSliderRange").slider("values", 0) + " PLN");
-        //$("#priceSliderMax").val($("#priceSliderRange").slider("values", 1) + " PLN");
         $("#priceSliderMin").val($("#priceSliderRange").slider("values", 0));
         $("#priceSliderMax").val($("#priceSliderRange").slider("values", 1));
 
@@ -177,14 +177,11 @@
             max: 360,
             values: [15, 360],
             slide: function (event, ui) {
-                //$("#timeSliderMin").val(ui.values[0] + " min");
-                //$("#timeSliderMax").val(ui.values[1] + " min");
                 $("#timeSliderMin").val(ui.values[0]);
                 $("#timeSliderMax").val(ui.values[1]);
             }
         });
-        //$("#timeSliderMin").val($("#timeSliderRange").slider("values", 0) + " min");
-        //$("#timeSliderMax").val($("#timeSliderRange").slider("values", 1) + " min");
+
         $("#timeSliderMin").val($("#timeSliderRange").slider("values", 0));
         $("#timeSliderMax").val($("#timeSliderRange").slider("values", 1));
     });
