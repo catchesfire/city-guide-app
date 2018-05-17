@@ -208,3 +208,4 @@ class UserFormView(View):
 class PlannerView(generic.DetailView):
     model = Tour
     template_name = 'city_guide/planner.html'
+    context_object_name = 'tour_obj'    
