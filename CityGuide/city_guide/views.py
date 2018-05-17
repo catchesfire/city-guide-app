@@ -8,12 +8,12 @@ from django.db.models import Q, Case, When
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.db import transaction
+from django.contrib import messages
 
-from .forms import FilterForm, SearchForm, SortForm, UserForm, OrderForm, ProfileForm
+from .forms import FilterForm, SearchForm, SortForm, UserForm, OrderForm, ProfileForm, UserUpdateForm
 
 def index(request):
     return render(request, 'city_guide/index.html', {})
-
 
 def logoutUser(request):
     logout(request)
@@ -31,7 +31,6 @@ def cartView(request):
     )
 
     return render(request, template_name, {'cart': orders})
-
 
 class AttractionsView(generic.ListView):
     filter_form_class = FilterForm
@@ -142,17 +141,19 @@ class UserLogFormView(View):
 @transaction.atomic
 def update_profile(request):
     if request.method == 'POST':
-        user_form = UserForm(request.POST, instance=request.user)
+        user_form = UserUpdateForm(request.POST, instance=request.user)
         profile_form = ProfileForm(request.POST, instance=request.user.profile)
+
         if user_form.is_valid() and profile_form.is_valid():
             user_form.save()
             profile_form.save()
-            messages.success(request, _('Your profile was successfully updated!'))
-            return redirect('settings:profile')
-        else:
-            messages.error(request, _('Please correct the error below.'))
+            print(":::::")
+            messages.success(request, ('Your profile was successfully updated!'))
+            return redirect('city_guide:profile')
+        # else:
+            # messages.error(request, _('Please correct the error below.'))
     else:
-        user_form = UserForm(instance=request.user)
+        user_form = UserUpdateForm(instance=request.user)
         user_form.address =  'cosssss'
         profile_form = ProfileForm(instance=request.user.profile)
     return render(request, 'city_guide/profile.html', {
@@ -160,6 +161,8 @@ def update_profile(request):
         'profile_form': profile_form
     })
 
+# to do
+# captcha
 class UserFormView(View):
     user_form_class = UserForm
     profile_form_class = ProfileForm

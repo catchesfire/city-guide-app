@@ -72,8 +72,11 @@ class Tour(models.Model):
 
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    address = models.CharField(max_length=100, blank=True)
-    phone_number = models.CharField(max_length=12, blank=True)
+    address = models.CharField(max_length=100, blank=True, verbose_name="Adres")
+    phone_number = models.CharField(max_length=12, blank=True, verbose_name="Nr telefonu")
+
+    class Meta:
+        verbose_name_plural = "Categories"
 
 @receiver(post_save, sender=User)
 def create_user_profile(sender, instance, created, **kwargs):

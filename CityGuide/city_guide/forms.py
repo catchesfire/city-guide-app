@@ -24,10 +24,30 @@ class UserForm(forms.ModelForm):
         model = User
         fields = ['username', 'email', 'password', 'first_name', 'last_name' ]
 
+class UserUpdateForm(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        super(UserUpdateForm, self).__init__(*args, **kwargs)
+        self.fields['first_name'].label = "Imię"
+        self.fields['last_name'].label = "Nazwisko"
+        self.fields['email'].label = "E-mail"
+
+    class Meta:
+        model = User
+        fields = [ 'first_name', 'last_name', 'email' ]
+        widgets = {
+            'first_name': forms.TextInput(attrs={'class' : 'form-control'}),
+            'last_name': forms.TextInput(attrs={'class' : 'form-control'}),
+            'email': forms.EmailInput(attrs={'class' : 'form-control'})
+        }
+
 class ProfileForm(forms.ModelForm):
     class Meta:
         model = Profile
         fields = ('address', 'phone_number')
+        widgets = {
+            'address': forms.TextInput(attrs={'class' : 'form-control'}),
+            'phone_number': forms.NumberInput(attrs={'class' : 'form-control'}),
+        }
 
 
 class OrderForm(forms.Form):
