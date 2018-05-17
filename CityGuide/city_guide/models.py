@@ -60,6 +60,9 @@ class Order(models.Model):
     cart = models.ForeignKey(Cart, on_delete=models.CASCADE)
     ticket = models.ForeignKey(Ticket, null=True, on_delete=models.SET_NULL)
 
+    def cost(self):
+        return self.ticket.price * self.quantity
+
 class Tour(models.Model):
     name = models.CharField(max_length=50)
     discount = models.IntegerField(default=0)

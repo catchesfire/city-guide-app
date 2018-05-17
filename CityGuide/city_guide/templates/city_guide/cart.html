@@ -28,129 +28,26 @@
                     <td class="align-middle">{{ forloop.counter }}</td>
                     <td class="align-middle"><img src="{{attraction.main_photo.url}}" class="img-fluid cart-img" alt="Muzeum"/></td>
                     <td class="align-middle">{{attraction}}</td>
-                    <!-- <td class="align-middle">{{ order.0.id_ticket.ticket_type.type_name }}</td>
-                    <td class="align-middle">
-                        <div>
-                        <input type="number" class="form-control form-control-sm float-left align-middle" id="input-ticket-normal-1" value="{{ order.quantity }}" style="width: 90px;">
-                        <div class="float-left align-middle">
-                            <button class="btn btn-success btn-sm">+</button>
-                            <button class="btn btn-danger btn-sm">-</button>
-                        </div>
-                    </div>
-                    </td>
-                    <td class="align-middle">{{ order.id_ticket.price }} zł</td> -->
                     <td class="align-middle">
                         {% for order in orders %}
 
                         <div class="form-group row my-0">
                             <label for="input-ticket-normal-1" class="col-sm-4 col-form-label">{{ order.ticket.ticket_type.name }}</label>
                             <div class="col-sm-4">
-                                <input type="number" class="form-control" id="input-ticket-normal-1" value="{{ order.quantity }}">
+                                <input type="number" class="form-control" id="input-ticket-{{ order.id }}" value="{{ order.quantity }}" data-order-id="{{ order.id }}">
                             </div>
+                            <div class="float-left align-middle">
+                                    <button class="btn btn-success btn-sm add-to-order" data-order-id="{{ order.id }}" data-button-type="add">+</button>
+                                    <button class="btn btn-danger btn-sm subtract-from-order" data-order-id="{{ order.id }}" data-button-type="subtract">-</button>
+                                </div>
                             <div class="col col-form-label">
-                                {{ order.ticket.price }} zł
+                                {{ order.cost }} zł
                             </div>
                         </div>
-
                         {% endfor %}
-                       
-                        <!-- <div class="form-group row my-0">
-                            <label for="input-ticket-normal-1" class="col-sm-4 col-form-label">{{ order.id_ticket.ticket_type.type_name }}</label>
-                            <div class="col-sm-4">
-                                <input type="number" class="form-control" id="input-ticket-normal-1" value="{{ order.quantity }}">
-                            </div>
-                            <div class="col col-form-label">
-                                {{ order.id_ticket.price }} zł
-                            </div>
-                        </div> -->
-
-                        <!-- <div class="form-group row">
-                            <label for="input-ticket-half-price-1" class="col-sm-4 col-form-label">Popierdolony</label>
-                            <div class="col-sm-4">
-                                <input type="number" class="form-control" id="input-ticket-half-price-1" value="0">
-                            </div>
-                            <div class="col col-form-label">
-                                0 zł
-                            </div>
-                        </div> -->
                     </td>
                 </tr>
                 {% endfor %}
-                <!-- <tr>
-                    <td class="align-middle">1</td>
-                    <td class="align-middle"><img src="{% static 'images/slider/slider1.png' %}" class="img-fluid cart-img" alt="Muzeum"/></td>
-                    <td class="align-middle">Muzeum wojska polskiego</td>
-                    <td class="align-middle">
-                        <div class="form-group row">
-                            <label for="input-ticket-normal-1" class="col-sm-4 col-form-label">Normalny</label>
-                            <div class="col-sm-4">
-                                <input type="number" class="form-control" id="input-ticket-normal-1" value="2">
-                            </div>
-                            <div class="col col-form-label">
-                                48 zł
-                            </div>
-                        </div>
-                        <div class="form-group row">
-                            <label for="input-ticket-half-price-1" class="col-sm-4 col-form-label">Popierdolony</label>
-                            <div class="col-sm-4">
-                                <input type="number" class="form-control" id="input-ticket-half-price-1" value="0">
-                            </div>
-                            <div class="col col-form-label">
-                                0 zł
-                            </div>
-                        </div>
-                    </td>
-                </tr>
-                <tr>
-                    <td class="align-middle">2</td>
-                    <td class="align-middle"><img src="{% static 'images/slider/slider1.png' %}" class="img-fluid cart-img" alt="Muzeum"/></td>
-                    <td class="align-middle">Muzeum wojska polskiego</td>
-                    <td class="align-middle">
-                        <div class="form-group row">
-                            <label for="input-ticket-normal-1" class="col-sm-4 col-form-label">Normalny</label>
-                            <div class="col-sm-4">
-                                <input type="number" class="form-control" id="input-ticket-normal-1" value="2">
-                            </div>
-                            <div class="col col-form-label">
-                                48 zł
-                            </div>
-                        </div>
-                        <div class="form-group row">
-                            <label for="input-ticket-half-price-1" class="col-sm-4 col-form-label">Popierdolony</label>
-                            <div class="col-sm-4">
-                                <input type="number" class="form-control" id="input-ticket-half-price-1" value="0">
-                            </div>
-                            <div class="col col-form-label">
-                                0 zł
-                            </div>
-                        </div>
-                    </td>
-                </tr>
-                <tr>
-                        <td class="align-middle">3</td>
-                        <td class="align-middle"><img src="{% static 'images/slider/slider1.png' %}" class="img-fluid cart-img" alt="Muzeum"/></td>
-                        <td class="align-middle">Muzeum wojska polskiego</td>
-                        <td class="align-middle">
-                            <div class="form-group row">
-                                <label for="input-ticket-normal-1" class="col-sm-4 col-form-label">Normalny</label>
-                                <div class="col-sm-4">
-                                    <input type="number" class="form-control" id="input-ticket-normal-1" value="2">
-                                </div>
-                                <div class="col col-form-label">
-                                    48 zł
-                                </div>
-                            </div>
-                            <div class="form-group row">
-                                <label for="input-ticket-half-price-1" class="col-sm-4 col-form-label">Popierdolony</label>
-                                <div class="col-sm-4">
-                                    <input type="number" class="form-control" id="input-ticket-half-price-1" value="0">
-                                </div>
-                                <div class="col col-form-label">
-                                    0 zł
-                                </div>
-                            </div>
-                        </td>
-                    </tr> -->
             </tbody>
         </table>
         {% else %}
@@ -158,4 +55,48 @@
         {% endif %}
     </div>
 </div>
+{% endblock %}
+{% block javascripts %}
+{{ block.super }}
+<script>
+    function addToOrder(id, quantity, type="add"){
+        console.log(type);
+        if(type == "add"){
+            $('#input-ticket-' + id).val(++quantity);        
+        }
+
+        if(type == "subtract"){
+            $('#input-ticket-' + id).val(--quantity);        
+        }
+
+        if(quantity >= 0){
+            $.get(
+                "{% url 'city_guide:cart_order_edit' %}",
+                {id: id, quantity: quantity}
+            ).done(function(data){
+                if(data.status == 200){
+                    location.reload();
+                }
+            });
+        }
+
+    }
+    $('.add-to-order').on('click', function(){
+        let id = $(this).attr('data-order-id');
+        let quantity = $('#input-ticket-'+id).val();
+        let button = $(this).attr('data-button-type');
+
+        addToOrder(id, quantity, button);
+        
+    });
+
+    $('.subtract-from-order').on('click', function(){
+        let id = $(this).attr('data-order-id');
+        let quantity = $('#input-ticket-'+id).val();
+        let button = $(this).attr('data-button-type');
+
+        addToOrder(id, quantity, button);
+        
+    });
+</script>
 {% endblock %}

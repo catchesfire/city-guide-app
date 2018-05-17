@@ -1,6 +1,6 @@
 from django.shortcuts import get_object_or_404, render, redirect
-from django.http import HttpResponse, HttpResponseRedirect
-from city_guide.models import Attraction, Category, Ticket, TicketType, Cart, Tour, Profile
+from django.http import HttpResponse, HttpResponseRedirect, JsonResponse, Http404
+from city_guide.models import Attraction, Category, Ticket, TicketType, Cart, Tour, Profile, Order
 from django.template import loader
 from django.views import View, generic
 from itertools import chain
@@ -12,15 +12,30 @@ from .forms import FilterForm, SearchForm, SortForm, UserForm, OrderForm
 def index(request):
     return render(request, 'city_guide/index.html', {})
 
-
 def logoutUser(request):
     logout(request)
     return redirect('city_guide:index')
 
+def cartDetails(request):
+    if request.is_ajax():
+        cart = Cart.objects.filter(user=request.user).last()
+        orders = cart.order_set.all()
+
+        data = {
+            'count' : orders.count()
+        }
+
+        return JsonResponse(data)
+    return redirect('city_guide:cart')
+
 def cartView(request):
     template_name = 'city_guide/cart.html'
     cart = Cart.objects.filter(user=request.user).last()
+    # all_orders = cart.order_set.all().extra(select={'test': "(select price from city_guide_ticket ticket where ticket.id = '%s') * quantity"}, select_params=(ticket_id))
     all_orders = cart.order_set.all()
+    
+    # for order in all_orders:
+    #     order.cost = order.ticket.price * order.quantity
 
     orders = dict(
         [
@@ -29,6 +44,32 @@ def cartView(request):
     )
 
     return render(request, template_name, {'cart': orders})
+
+def cart_order_edit(request):
+    order_id = request.GET.get('id', 0)
+    try:
+        order = Order.objects.get(pk=order_id)
+    except:
+        raise Http404("Order doesn't exist.")
+    
+    if request.is_ajax():
+        quantity = request.GET.get('quantity', 0)
+        
+        order.quantity = int(quantity)
+        if order.quantity >= 0:
+            order.save()
+            data = {
+                'status' : 200,
+                'message' : 'Item has been changed.'
+            }
+        else:
+            data = {
+                'status': 400,
+                'message': "Amount can't be negative."
+            }
+        return JsonResponse(data)
+    return redirect('city_guide:cart')
+
 def profileView(request):
     profile = Profile.objects.get(user=request.user)
 
