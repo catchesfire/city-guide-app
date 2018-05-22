@@ -10,9 +10,9 @@
             <h1 class="display-4">Twój koszyk</h1>
         </div>
     </div>
+    {% if cart %}
     <div class="row">
-        {% if cart %}
-        <table class="table table-borderless">
+        <table class="table table-borderless mx-4">
             <thead>
                 <tr>
                     <th>#</th>
@@ -50,10 +50,24 @@
                 {% endfor %}
             </tbody>
         </table>
-        {% else %}
-        <p>Koszyk jest pusty, powinieneś coś dodać.</p>
-        {% endif %}
     </div>
+    <div class="row">
+        <div class="col">
+            <div class="float-right">
+                Całkowity koszt: {{ total_cost }} zł
+                <button class="btn btn-primary btn-sm">Planuj włajasz</button>
+            </div>
+        </div>
+    </div>    
+    {% else %}
+    <div class="row">
+        <div class="col">
+            <div class="alert alert-info">
+                Koszyk jest pusty, powinieneś coś dodać.
+            </div>
+        </div>
+    </div>
+    {% endif %}
 </div>
 {% endblock %}
 {% block javascripts %}

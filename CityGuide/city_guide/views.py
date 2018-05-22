@@ -43,7 +43,13 @@ def cartView(request):
         ]
     )
 
-    return render(request, template_name, {'cart': orders})
+    total_cost = 0
+
+    for order in all_orders:
+        total_cost += order.cost()
+        
+
+    return render(request, template_name, {'cart': orders, 'total_cost': total_cost})
 
 def cart_order_edit(request):
     order_id = request.GET.get('id', 0)
