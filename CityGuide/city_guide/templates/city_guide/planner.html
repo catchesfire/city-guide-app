@@ -29,104 +29,133 @@
                                             <ul class="card-body mb-0">
                                                 <li class="row">
                                                     <div class="col">
-                                                        Jakaś atrakcja.
-                                                    </div>
-                                                    <div class="col-8">
                                                         <div class="row">
-
-                                                            <div class="col px-0 mg-0">
-                                                                <button type="button" class="btn btn-warning btn-sm ">
-                                                                    <small>Edycja</small>
-                                                                </button>
+                                                            <div class="col attractionTitleInPlanner">
+                                                                Jakaś atrakcja.
                                                             </div>
-                                                            <div class="col px-0 mg-0">
-                                                                <button type="button" class="btn btn-danger btn-sm">
-                                                                    <small>Usuń</small>
-                                                                </button>
+                                                            <div class="col-6">
+                                                                <div class="row">
+                                                                    <div class="col px-0 mg-0">
+                                                                        <button type="button" class="btn btn-warning btn-sm ">
+                                                                            <small>Edycja</small>
+                                                                        </button>
+                                                                    </div>
+                                                                    <div class="col px-0 mg-0">
+                                                                        <button type="button" class="btn btn-danger btn-sm">
+                                                                            <small>Usuń</small>
+                                                                        </button>
+                                                                    </div>
+                                                                </div>
                                                             </div>
-                                                            <div class="col px-0 mg-0">
-                                                                <button type="button" class="btn btn-primary btn-sm showOptionsPlanner">
-                                                                    <small>Usuń</small>
-                                                                </button>
-                                                            </div>
-
                                                         </div>
+                                                        <div class="row mt-1">
+                                                            <div class="col">
+                                                                <div class="row cardBody mx-0 my-1 optionPlannerCard">
+                                                                    <div class="col px-0 mg-0">
+                                                                        <div class="col fa fa-clock px-0">
+                                                                            <span class="fontForAll">
+                                                                                <small>
+                                                                                    Czas
+                                                                                </small>
+                                                                            </span>
+                                                                        </div>
+                                                                    </div>
+                                                                    <div class="col px-0 mg-0">
+                                                                        <div class="col fas fa-users px-0">
+                                                                            <span class="fontForAll">
+                                                                                <small>
+                                                                                    L. os
+                                                                                </small>
+                                                                            </span>
+                                                                        </div>
+                                                                    </div>
+                                                                    <div class="col px-0 mg-0">
+                                                                        <div class="col fas fa-ticket-alt px-0">
+                                                                            <span class="fontForAll">
+                                                                                <small>
+                                                                                    Ulgowe
+                                                                                </small>
+                                                                            </span>
+                                                                        </div>
+                                                                    </div>
+                                                                    <div class="col px-0 mg-0">
+                                                                        <div class="col fas fa-ticket-alt px-0">
+                                                                            <span class="fontForAll">
+                                                                                <small>
+                                                                                    Normalne
+                                                                                </small>
+                                                                            </span>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+
                                                     </div>
                                                 </li>
                                             </ul>
                                         </div>
                                     </div>
                                 </div>
-                                <div class="row">
-                                    <div class="col">
-                                        <div class="showOptionsPlanner">
-                                            <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor
-                                                incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis
-                                                nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
-                                        </div>
 
-                                    </div>
-                                </div>
 
                             </div>
                             <div class="col-5">
-                                <img class="img-fluid imageShort" src="https://i.stack.imgur.com/fqKSl.png" alt="Mapa">
+                                <div id="map"></div>
                             </div>
                         </div>
                     </div>
                 </div>
-<<<<<<< Updated upstream
-=======
-
->>>>>>> Stashed changes
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col">
+            <div class="card px-0 mx-0">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col fa fa-clock">
+                            <span class="fontForAll">
+                                <small>
+                                    Łączny czas zwiedzania:
+                                </small>
+                            </span>
+                        </div>
+                        <div class="col fas fa-coin">
+                                <span class="fontForAll">
+                                    <small>
+                                        Łączny koszt wycieczki:
+                                    </small>
+                                </span>
+                            </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 </div>
 
-<div class="card px-0 mx-0">
-    <div class="card-body">
-        <div class="row">
-            <div class="col">
-            </div>
-        </div>
-    </div>
-</div>
-</div>
 
 
 {% endblock %} {% block javascripts %} {{ super.base }}
 
 <script>
-    let showoptions = false;
-
-    $(".showOptionsPlanner").on("click", function () {
-        if (!show) {
-            $(".optionPlannerCard").fadeIn("slow");
-        }
-        else {
-            $(".optionPlannerCard").fadeOut("slow");
+    function initMap() {
+        var uluru = {
+            lat: 53.1182885,
+            lng: 23.1497195,
         }
 
-        show = !show;
-    });
-</script> 
-{% endblock %}
-<!-- <div class="col px-0 mg-0">
-                                                                    <div class="col fa fa-clock px-0">
-                                                                        <span class="fontForAll">
-                                                                            <small>
-                                                                                Czas
-                                                                            </small>
-                                                                        </span>
-                                                                    </div>
-                                                                </div>
-                                                                <div class="col px-0 mg-0">
-                                                                    <div class="col fas fa-users px-0">
-                                                                        <span class="fontForAll">
-                                                                            <small>
-                                                                                L. os
-                                                                            </small>
-                                                                        </span>
-                                                                    </div>
-                                                                </div> -->
+        var map = new google.maps.Map(document.getElementById('map'), {
+            zoom: 17,
+            center: uluru
+        });
+        var marker = new google.maps.Marker({
+            position: uluru,
+            map: map
+        });
+        marker.showInfoWindow();
+    }
+</script>
+<script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCYXIhgWd59IDdrJoO38Tz2hbyoYw0u9TU&callback=initMap">
+</script> {% endblock %}
