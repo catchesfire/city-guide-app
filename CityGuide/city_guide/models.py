@@ -8,15 +8,12 @@ from collections import namedtuple
 
 class Category(models.Model):
     name = models.CharField(max_length=25)
+    
+    class Meta:
+        verbose_name_plural = "Categories"
 
     def __str__(self):
         return self.name
-
-class TicketType(models.Model):
-    type_name = models.CharField(max_length=25)
-
-    def __str__(self):
-        return self.type_name
 
 class Attraction(models.Model):
     name = models.CharField(max_length=75)
@@ -28,65 +25,64 @@ class Attraction(models.Model):
     opening_hours = models.CharField(max_length=100)
     main_photo = models.ImageField(upload_to='uploads/')
 
+    categories = models.ManyToManyField(Category)
+
     def __str__(self):
         return self.name
 
 class Photo(models.Model):
     photo = models.ImageField(upload_to='uploads/', height_field=1280, width_field=720)
     
-    id_attraction = models.ForeignKey(Attraction, null=True, on_delete=models.SET_NULL)
+    attraction = models.ForeignKey(Attraction, null=True, on_delete=models.SET_NULL)
+
+class TicketType(models.Model):
+    name = models.CharField(max_length=25)
+
+    def __str__(self):
+        return self.name
 
 class Ticket(models.Model):
     price = models.IntegerField(default=0)
 
     ticket_type = models.ForeignKey(TicketType, on_delete=models.CASCADE)
-    id_attraction = models.ForeignKey(Attraction, on_delete=models.CASCADE)
+    attraction = models.ForeignKey(Attraction, on_delete=models.CASCADE)
 
     def __str__(self):
         return self.ticket_type.__str__() + " " + str(self.price) + "zl"
 
-
-class Attraction_Category(models.Model):
-    id_attraction = models.ForeignKey(Attraction, on_delete=models.CASCADE)
-    id_category = models.ForeignKey(Category, on_delete=models.CASCADE)
-
-
 class Cart(models.Model):
-    id_user = models.ForeignKey(User, null=True, on_delete=models.SET_NULL)
-    
+    user = models.ForeignKey(User, null=True, on_delete=models.DO_NOTHING)
 
 class Order(models.Model):
     quantity = models.IntegerField(default=1)
-    date = models.DateField()
+    date = models.DateField(null=True, blank=True)
+    position = models.IntegerField(default=1)
 
-    id_cart = models.ForeignKey(Cart, on_delete=models.CASCADE)
-    id_ticket = models.ForeignKey(Ticket, null=True, on_delete=models.SET_NULL)
+    cart = models.ForeignKey(Cart, on_delete=models.CASCADE)
+    ticket = models.ForeignKey(Ticket, null=True, on_delete=models.SET_NULL)
 
+    def cost(self):
+        return self.ticket.price * self.quantity
 
 class Tour(models.Model):
+    name = models.CharField(max_length=50)
     discount = models.IntegerField(default=0)
     description = models.CharField(max_length=500)
     route = models.CharField(max_length=1000)
     date_from = models.DateField()
     date_to = models.DateField()
 
-    id_user = models.ForeignKey(User, null=True, on_delete=models.SET_NULL)
-
+    user = models.ForeignKey(User, null=True, on_delete=models.SET_NULL)
 
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    name = models.CharField(max_length=20)
-    lastname = models.CharField(max_length=40)
-    address = models.CharField(max_length=100)
-    phone_number = models.CharField(max_length=12)
-    mail = models.EmailField()
-
+    address = models.CharField(max_length=100, blank=True)
+    phone_number = models.CharField(max_length=12, blank=True)
 
 @receiver(post_save, sender=User)
 def create_user_profile(sender, instance, created, **kwargs):
     if created:
         Profile.objects.create(user=instance)
-
 
 @receiver(post_save, sender=User)
 def save_user_profile(sender, instance, **kwargs):

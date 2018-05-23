@@ -30,24 +30,24 @@
     <!-- things -->
     <div class="row my-4">
         <!-- category -->
-        <div class="col">
-            <div class="card">
+        {% comment %} <div class="col">
+            <div class="card h-100">
                 <div class="card-header">
                     <i class="fas fa-bars"></i> Kategorie
                 </div>
                 <div class="card-body">
-                    {% for category_attr in object.attraction_category_set.all %}
-                    <p>- {{category_attr.id_category.name}}</p>
+                    {% for category_attr in object.categories.all %}
+                    <p>- {{category_attr.name}}</p>
                     {% endfor %}
                 </div>
             </div>
-        </div>
+        </div> {% endcomment %}
 
         <!-- age_restriction -->
         <div class="col">
-            <div class="card">
+            <div class="card h-100">
                 <div class="card-header">
-                    <i class="far fa-calendar"></i> Ogranieczenie wiekowe
+                    <i class="far fa-calendar"></i> Ograniczenie wiekowe
                 </div>
                 <div class="card-body">
                     <p>{{object.age_restriction}}</p>
@@ -57,7 +57,7 @@
 
         <!-- open hours -->
         <div class="col">
-            <div class="card">
+            <div class="card h-100">
                 <div class="card-header">
                     <i class="far fa-clock"></i> Godziny otwarcia
                 </div>
@@ -69,7 +69,7 @@
 
         <!-- time -->
         <div class="col">
-            <div class="card">
+            <div class="card h-100">
                 <div class="card-header">
                     <i class="fas fa-stopwatch"></i> Szacowany czas odwiedźin
                 </div>
@@ -81,7 +81,7 @@
 
         <!-- tickets -->
         <div class="col">
-            <div class="card">
+            <div class="card h-100">
                 <div class="card-header">
                     <i class="fas fa-ticket-alt"></i> Bilety
                 </div>
@@ -125,16 +125,22 @@
 
 <script>
     function initMap() {
-    var uluru = { lat: {{ object.location_x }}, lng: {{ object.location_y }} };
-    var map = new google.maps.Map(document.getElementById('map'), {
-        zoom: 17,
-        center: uluru
-    });
-    var marker = new google.maps.Marker({
-        position: uluru,
-        map: map
-    });
-    marker.showInfoWindow();
+        var uluru = { 
+            lat: {{ object.location_x }}, 
+            lng: {{ object.location_y }} 
+        };
+    
+        var map = new google.maps.Map(document.getElementById('map'), {
+            zoom: 17,
+            center: uluru
+        });
+
+        var marker = new google.maps.Marker({
+            position: uluru,
+            map: map
+        });
+
+        marker.showInfoWindow();
     }
 </script>
 <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCYXIhgWd59IDdrJoO38Tz2hbyoYw0u9TU&callback=initMap">
