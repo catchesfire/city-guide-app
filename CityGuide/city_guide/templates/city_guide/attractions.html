@@ -1,4 +1,11 @@
 {% extends 'base.html' %} {% load staticfiles %} {% block body %}
+<div class="modal fade added-to-cart" tabindex="-1" role="dialog" aria-labelledby="Dodano do koszyka" aria-hidden="true">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+            Bilet został dodany do koszyka.
+        </div>
+    </div>
+</div>
 <div class="container filterNavbarCont">
     <div class="row">
         <div class="col">
@@ -28,14 +35,15 @@
                         </div>
 
                         <div class="col">
-                            <form>
+                            <form action="{% url 'city_guide:cart_add' %}" method="POST">
+                                {% csrf_token %}
                                 <div class="form-row align-items-center">
                                     <label for="ticket_type">
                                         Bilety
-                                        <select class="form-control" type="number" id="ticket_type">
-                                            <option>--Wybierz bilet--</option>
+                                        <select class="form-control" type="number" id="ticket_type" name="ticket_id">
+                                            <option value="">--Wybierz bilet--</option>
                                             {% for ticket in attraction.ticket_set.all %}
-                                            <option>{{ticket.ticket_type}} - {{ticket.price}} ZŁ</option>
+                                            <option value="{{ticket.id}}">{{ticket.ticket_type}} - {{ticket.price}} ZŁ</option>
                                             {% endfor %}
                                         </select>
                                     </label>
@@ -45,15 +53,14 @@
                                     <div class="input-group-sm">
                                         <label for="ticket_quant">
                                             Liczba
-                                            <input class="form-control " type="number" id="ticket_quant" min="1" max="30">
+                                            <input class="form-control " type="number" id="ticket_quant" name="quantity" min="1" max="30">
                                         </label>
 
-                                        <button class="btn btn-outline-success mb-sm-1">
+                                        <button class="btn btn-outline-success mb-sm-1" id="AddToCartBtn">
                                             Do koszyka
                                         </button>
                                     </div>
                                 </div>
-
                             </form>
                         </div>
                     </div>
@@ -89,14 +96,15 @@
                         </div>
 
                         <div class="col">
-                            <form action="{% url 'city_guide:add' %}">
+                            <form class="ticket-form" action="{% url 'city_guide:cart_add' %}" method="POST">
+                                {% csrf_token %}
                                 <div class="form-row align-items-center">
                                     <label for="ticket_type">
                                         Bilety
-                                        <select class="form-control" type="number" id="ticket_type">
-                                            <option>--Wybierz bilet--</option>
+                                        <select class="form-control" type="number" id="ticket_type" name="ticket_id">
+                                            <option value="">--Wybierz bilet--</option>
                                             {% for ticket in attraction.ticket_set.all %}
-                                            <option>{{ticket.ticket_type}} - {{ticket.price}} ZŁ</option>
+                                            <option value="{{ticket.id}}">{{ticket.ticket_type}} - {{ticket.price}} ZŁ</option>
                                             {% endfor %}
                                         </select>
                                     </label>
@@ -106,15 +114,14 @@
                                     <div class="input-group-sm">
                                         <label for="ticket_quant">
                                             Liczba
-                                            <input class="form-control " type="number" id="ticket_quant" min="1" max="30">
+                                            <input class="form-control " type="number" id="ticket_quant" name="quantity" min="1" max="30">
                                         </label>
 
-                                        <button class="btn btn-outline-success mb-sm-1" type="submit">
+                                        <button class="btn btn-outline-success mb-sm-1" id="AddToCartBtn">
                                             Do koszyka
                                         </button>
                                     </div>
                                 </div>
-
                             </form>
                         </div>
                     </div>
@@ -184,6 +191,25 @@
 
         $("#timeSliderMin").val($("#timeSliderRange").slider("values", 0));
         $("#timeSliderMax").val($("#timeSliderRange").slider("values", 1));
+    });
+
+    $('.ticket-form').submit(function(e){
+
+        let url = $(this).attr("action");
+        
+        $.ajax({
+            url: url,
+            type: 'POST',
+            data: $(this).serialize(),
+            success: function(data){
+                $('.added-to-cart').modal('toggle');
+                setTimeout(function(){
+                    $('.added-to-cart').modal('toggle');                
+                }, 2000);
+            }
+        });
+
+        e.preventDefault();
     });
 
 </script> {% endblock %}
