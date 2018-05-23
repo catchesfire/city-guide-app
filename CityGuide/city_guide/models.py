@@ -56,6 +56,7 @@ class Cart(models.Model):
 class Order(models.Model):
     quantity = models.IntegerField(default=1)
     date = models.DateField(null=True, blank=True)
+    position = models.IntegerField(default=1)
 
     cart = models.ForeignKey(Cart, on_delete=models.CASCADE)
     ticket = models.ForeignKey(Ticket, null=True, on_delete=models.SET_NULL)

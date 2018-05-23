@@ -251,10 +251,16 @@ class UserFormView(View):
 class PlannerView(generic.DetailView):
     model = Tour
     template_name = 'city_guide/planner.html'
-    # context_object_name = 'tour_obj'    
+    context_object_name = 'tour'    
 
-    # def get_context_data(self, **kwargs):
-    #     context = super(Tour, self).get_context_data(**kwargs)
-    #     context['tour_obj'] = Tour.user_set.all()
-    #     return context
+    # def __init__(self, *args, **kwargs):
+    #     self.storage_pk = kwargs.pop('pk')
+    #     super(PlannerView, self).__init__(*args, **kwargs)
 
+    def get_context_data(self, **kwargs):
+        print(self.request)
+        context = super(PlannerView, self).get_context_data(**kwargs)
+        # context['tour'] = Tour.objects.filter(user=self.request.user, id=self.object.pk).last()
+        context['tour'] = self.object       
+        context['cart'] = Cart.objects.filter(user=self.request.user).last()
+        return context
