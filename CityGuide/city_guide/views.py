@@ -6,6 +6,7 @@ from django.views import View, generic
 from itertools import chain
 from django.db.models import Q, Case, When
 from django.contrib.auth import authenticate, login, logout
+from django.utils import timezone
 
 from .forms import FilterForm, SearchForm, SortForm, UserForm, OrderForm
 
@@ -31,11 +32,7 @@ def cartDetails(request):
 def cartView(request):
     template_name = 'city_guide/cart.html'
     cart = Cart.objects.filter(user=request.user).last()
-    # all_orders = cart.order_set.all().extra(select={'test': "(select price from city_guide_ticket ticket where ticket.id = '%s') * quantity"}, select_params=(ticket_id))
     all_orders = cart.order_set.all()
-    
-    # for order in all_orders:
-    #     order.cost = order.ticket.price * order.quantity
 
     orders = dict(
         [
@@ -114,7 +111,7 @@ class AttractionsView(generic.ListView):
         def GetAttractionsByPrice(price_min, price_max):
             attr_ids = []
             
-            for ticket in Ticket.objects.filter(price__gt=price_min, price__lt=price_max):           
+            for ticket in Ticket.objects.filter(price__gte=price_min, price__lte=price_max):           
                 attr_ids.append(ticket.attraction.id)
             
             return attr_ids
@@ -156,10 +153,48 @@ class AttractionsView(generic.ListView):
             time_min = request.GET.get('time_min', 0)
             time_max = request.GET.get('time_max', 1000)
 
-            attractions = Attraction.objects.filter(id__in=GetAttractionsByCategory(category_ids)).filter(id__in=GetAttractionsByPrice(price_min, price_max)).filter(time_minutes__gt=time_min, time_minutes__lt=time_max).order_by('name')
+            attractions = Attraction.objects.filter(id__in=GetAttractionsByCategory(category_ids)).filter(id__in=GetAttractionsByPrice(price_min, price_max)).filter(time_minutes__gte=time_min, time_minutes__lte=time_max).order_by('name')
             return render(request, self.template_name, {"filter_form": filter_form, "attractions_obj": attractions, "categories": Category.objects.all()})             
 
-        return render(request, self.template_name, {"filter_form": filter_form, "attractions_obj": Attraction.objects.all().order_by('name'), "categories": Category.objects.all()})        
+        return render(request, self.template_name, {"filter_form": filter_form, "attractions_obj": Attraction.objects.all().order_by('name'), "categories": Category.objects.all()})
+
+def AddToCart(request):
+    order_form_class = OrderForm
+
+    if request.method == 'POST' and request.is_ajax():
+        order_form = order_form_class(request.POST)
+
+        if order_form.is_valid():
+            quantity = request.POST.get('quantity', 1)
+            date = request.POST.get('date', timezone.now())
+            ticket_id = request.POST.get('ticket_id', 1)
+            cart = Cart.objects.filter(user=request.user).last()
+            ticket = Ticket.objects.get(pk=ticket_id)
+
+            new_order, created = cart.order_set.get_or_create(ticket_id=ticket_id)            
+
+            if created:
+                new_order.date = date
+                new_order.quantity = quantity
+                new_order.cart = cart
+                new_order.ticket = ticket
+            else:
+                new_order.quantity += int(quantity)
+            
+            data = {
+                'status': 'ok'
+            }
+
+            new_order.save()
+
+            return JsonResponse(data)
+
+    data = {
+        'status': 'error'
+    }  
+
+    return JsonResponse(data)
+
 
 class AttracionView(generic.DetailView):
     model = Attraction
@@ -216,6 +251,10 @@ class UserFormView(View):
 class PlannerView(generic.DetailView):
     model = Tour
     template_name = 'city_guide/planner.html'
+    # context_object_name = 'tour_obj'    
 
-class AddToCart(View):
-    form_class = OrderForm
+    # def get_context_data(self, **kwargs):
+    #     context = super(Tour, self).get_context_data(**kwargs)
+    #     context['tour_obj'] = Tour.user_set.all()
+    #     return context
+

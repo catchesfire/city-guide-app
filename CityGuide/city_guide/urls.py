@@ -13,14 +13,14 @@ urlpatterns = [
     path('login/', views.UserLogFormView.as_view(), name='login'),
     path('logout/', views.logoutUser, name='logout'),
     path('attractions', views.AttractionsView.as_view(), name='attractions'),
-    path('attractions/<int:pk>', views.AttracionView.as_view(), name='attraction'), 
+    path('attractions/<int:pk>', views.AttracionView.as_view(), name='attraction'),
     path('cart', views.cartView, name="cart"),
     path('profile/', views.profileView, name='profile'),
-    path('cart/add', views.AddToCart.as_view(), name="add"),
     path('cart/details', views.cartDetails, name="cart_details"),
     path('cart/order/edit', views.cart_order_edit, name="cart_order_edit"),
+    path('cart/add', views.AddToCart, name="cart_add"),
     path('attractions/filter', views.AttractionsView.as_view(), name="filter"),
     path('attractions/search', views.AttractionsView.as_view(), name="search"),
-    path('attractions/sort', views.AttractionsView.as_view(), name="sort"),    
+    path('attractions/sort', views.AttractionsView.as_view(), name="sort"),
     path('planner/<int:pk>', views.PlannerView.as_view(), name='planner')
 ]

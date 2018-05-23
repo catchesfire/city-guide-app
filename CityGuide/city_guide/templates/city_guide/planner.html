@@ -70,7 +70,7 @@
 
                             </div>
                             <div class="col-5">
-                                <img class="img-fluid imageShort" src="https://i.stack.imgur.com/fqKSl.png" alt="Mapa">
+                                <div id="map"></div>
                             </div>
                         </div>
                     </div>
@@ -94,35 +94,60 @@
 {% endblock %} {% block javascripts %} {{ super.base }}
 
 <script>
-    let showoptions = false;
+    function initMap() {
+        //var uluru = { lat: {{ object.location_x }}, lng: { { object.location_y } } };
+        var uluru = { 
+            lat: 53.1182885, 
+            lng: 23.1497195 
+        };
 
-    $(".showOptionsPlanner").on("click", function () {
+        var map = new google.maps.Map(document.getElementById('map'),{
+            zoom: 17,
+            center: uluru
+        });
+
+        var marker = new google.maps.Marker({
+            position: uluru,
+            map: map
+        });
+
+        marker.showInfoWindow();
+    }
+</script>
+<script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCYXIhgWd59IDdrJoO38Tz2hbyoYw0u9TU&callback=initMap">
+</script>
+
+<script>
+    let show = false;
+
+    $(".showFilters").on("click", function () {
         if (!show) {
-            $(".optionPlannerCard").fadeIn("slow");
+            $(".filterCard").fadeIn("slow");
         }
         else {
-            $(".optionPlannerCard").fadeOut("slow");
+            $(".filterCard").fadeOut("slow");
         }
 
         show = !show;
     });
-</script> 
-{% endblock %}
-<!-- <div class="col px-0 mg-0">
-                                                                    <div class="col fa fa-clock px-0">
-                                                                        <span class="fontForAll">
-                                                                            <small>
-                                                                                Czas
-                                                                            </small>
-                                                                        </span>
-                                                                    </div>
-                                                                </div>
-                                                                <div class="col px-0 mg-0">
-                                                                    <div class="col fas fa-users px-0">
-                                                                        <span class="fontForAll">
-                                                                            <small>
-                                                                                L. os
-                                                                            </small>
-                                                                        </span>
-                                                                    </div>
-                                                                </div> -->
+
+    $(function () {
+        $("#priceSliderRange").slider({
+            range: true,
+            min: 0,
+            max: 100,
+            values: [0, 100],
+            slide: function (event, ui) {
+                //$("#priceSliderMin").val(ui.values[0] + " PLN");
+                //$("#priceSliderMax").val(ui.values[1] + " PLN");
+                $("#priceSliderMin").val(ui.values[0]);
+                $("#priceSliderMax").val(ui.values[1]);
+            }
+        });
+        //$("#priceSliderMin").val($("#priceSliderRange").slider("values", 0) + " PLN");
+        //$("#priceSliderMax").val($("#priceSliderRange").slider("values", 1) + " PLN");
+        $("#priceSliderMin").val($("#priceSliderRange").slider("values", 0));
+        $("#priceSliderMax").val($("#priceSliderRange").slider("values", 1));
+
+    });
+</script> {% endblock %}

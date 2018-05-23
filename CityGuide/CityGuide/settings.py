@@ -85,6 +85,9 @@ DATABASES = {
     }
 }
 
+DATABASE_OPTIONS = {
+    "init_command": "SET storage_engine=INNODB, SESSION TRANSACTION ISOLATION LEVEL READ COMMITTED", }
+
 
 # Password validation
 # https://docs.djangoproject.com/en/2.0/ref/settings/#auth-password-validators
