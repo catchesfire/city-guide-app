@@ -13,11 +13,11 @@ from .forms import FilterForm, SearchForm, SortForm, UserForm, OrderForm
 def index(request):
     return render(request, 'city_guide/index.html', {})
 
-def logoutUser(request):
+def logout_user(request):
     logout(request)
     return redirect('city_guide:index')
 
-def cartDetails(request):
+def cart_details(request):
     if request.is_ajax():
         cart = Cart.objects.filter(user=request.user).last()
         orders = cart.order_set.all()
@@ -29,7 +29,7 @@ def cartDetails(request):
         return JsonResponse(data)
     return redirect('city_guide:cart')
 
-def cartView(request):
+def cart(request):
     template_name = 'city_guide/cart.html'
     cart = Cart.objects.filter(user=request.user).last()
     all_orders = cart.order_set.all()
@@ -73,7 +73,7 @@ def cart_order_edit(request):
         return JsonResponse(data)
     return redirect('city_guide:cart')
 
-def profileView(request):
+def profile(request):
     profile = Profile.objects.get(user=request.user)
 
     return render(request, 'city_guide/profile.html', {'profile': profile})
@@ -158,7 +158,7 @@ class AttractionsView(generic.ListView):
 
         return render(request, self.template_name, {"filter_form": filter_form, "attractions_obj": Attraction.objects.all().order_by('name'), "categories": Category.objects.all()})
 
-def AddToCart(request):
+def cart_add(request):
     order_form_class = OrderForm
 
     if request.method == 'POST' and request.is_ajax():
@@ -194,7 +194,6 @@ def AddToCart(request):
     }  
 
     return JsonResponse(data)
-
 
 class AttracionView(generic.DetailView):
     model = Attraction
