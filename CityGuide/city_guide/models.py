@@ -63,6 +63,9 @@ class Order(models.Model):
 
     def cost(self):
         return self.ticket.price * self.quantity
+    
+    def time(self):
+        return self.ticket.attraction.time_minutes
 
 class Tour(models.Model):
     name = models.CharField(max_length=50)
