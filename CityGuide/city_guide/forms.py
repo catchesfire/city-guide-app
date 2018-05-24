@@ -51,6 +51,9 @@ class ProfileForm(forms.ModelForm):
         }
 
 
+
+
+
 class OrderForm(forms.Form):
     quantity = forms.IntegerField(min_value=1, max_value=100)
     date = forms.DateField(initial=timezone.now(), required=False)
