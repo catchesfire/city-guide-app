@@ -325,10 +325,37 @@ class UserFormView(View):
 class PlannerView(generic.DetailView):
     model = Tour
     template_name = 'city_guide/planner.html'
-    # context_object_name = 'tour_obj'    
+    context_object_name = 'tour'    
 
-    # def get_context_data(self, **kwargs):
-    #     context = super(Tour, self).get_context_data(**kwargs)
-    #     context['tour_obj'] = Tour.user_set.all()
-    #     return context
 
+    def get_context_data(self, **kwargs):
+        print(self.request)
+        context = super(PlannerView, self).get_context_data(**kwargs)
+        context['tour'] = self.object
+        all_orders = Cart.objects.filter(user=self.request.user).last().order_set.all()
+
+        orders = dict(
+            [
+                (attraction.ticket.attraction, all_orders.filter(ticket_id__in=Ticket.objects.filter(attraction_id=attraction.ticket.attraction.id))) for attraction in Cart.objects.filter(user=self.request.user).last().order_set.all()
+            ]
+        )
+        context['cart'] = orders
+
+        def min_to_hours(time):
+            hours = time // 60
+            minutes = time - hours * 60
+
+            return str(hours) + " godz. " + str(minutes) + " min"
+
+        tot_time = 0
+        for attraction in orders.keys():
+            tot_time += attraction.time_minutes
+
+        tot_cost = 0
+        for order in all_orders:
+            tot_cost += order.cost()
+
+        context['total_time'] = min_to_hours(tot_time)
+        context['total_cost'] = tot_cost
+
+        return context
