@@ -2,20 +2,99 @@
 {% block body %}
 
 
-<div class="container" style="margin-top: 72px; background-color: #fff">
+
+<div class="container standard-container" >
+        <div class="row">
+            <div class="col">
+                <h1>Twoje dane</h1>
+                <form class="form" action="{% url 'city_guide:profile_update' %}" method="post">
+                    {% csrf_token %}
+                    {% for field in user_form %}
+                    {% if field.errors %}
+                    <div class="alert alert-danger">
+                        {{ field.errors}}
+                    </div>
+                    {% endif %}
+                    
+                    <div class="form-group row">
+                        
+                        <label class="col-form-label col-sm-3" for="{{field.id_for_label}}">{{field.label}}:</label>
+                        <div class="col-sm-7">
+                            {{field}}
+                        </div>
+                    </div>
+                    {% endfor %}
+                    {% for field in profile_form %}
+                    {% if field.errors %}
+                    <div class="alert alert-danger">
+                        {{ field.errors}}
+                    </div>
+                    {% endif %}
+                    <div class="form-group row">
+                        <label class="col-form-label col-sm-3" for="{{field.id_for_label}}">{{field.label}}:</label>
+                        <div class="col-sm-7">
+                            {{field}}
+                        </div>
+                    </div>
+                    {% endfor %}
+                    
+                    <button class="btn btn-primary" type="submit">Save changes</button>
+                </form>
+            </div>
+            <div class="col">
+                <h1>Zmień hasło</h1>
+                <form class="form" action="{% url 'city_guide:profile_change' %}" method="post">
+                {% csrf_token %}
+                {% for field in password_form %}
+                    {% if field.errors %}
+                    <div class="alert alert-danger">
+                        {{ field.errors}}
+                    </div>
+                    {% endif %}
+                    
+                    <div class="form-group row">
+                        
+                        <label class="col-form-label col-sm-3" for="{{field.id_for_label}}">{{field.label}}:</label>
+                        <div class="col-sm-7">
+                            {{field}}
+                        </div>
+                    </div>
+                    {% endfor %}
+                    <button class="btn btn-primary" type="submit">Save changes</button>
+                    
+                </form>
+            </div>
+        </div>
+
+        <div class="row">
+            <h1>Twoje zapisane trasy</h1>
+            <table class="table table-borderless">
+                <thead>
+                  <tr>
+                    <th>#</th>
+                    <th>Nazwa</th>
+                    <th>Aktualizacja</th>
+                    <th>Czas trwania</th>
+                    <th>Koszt</th>
+                    <th>Akcja</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>1</td>
+                    <td>Fajna trasa</td>
+                    <td>dziś</td>
+                    <td>365,25 dni</td>
+                    <td>1 m2</td>
+                    <td><button>Szczegóły</button></td>
+                  </tr>
+             
+                </tbody>
+            </table>
+        </div>
+        
     
-    <div class="row">
-        {{profile.phone_number}}
-        <div class="col">
-            <h1>{{user.get_username}}</h1>
-            <h1>{{user.get_email}}</h1>
-        </div>
-        <div class="col">
-            
-        </div>
-    </div>
-
-
+    
 </div>
-
-{% endblock %}
+    
+    {% endblock %}

@@ -1,7 +1,7 @@
 from django import forms
 from django.contrib.auth.models import User
 from django.db.models import Max, Min
-from city_guide.models import Attraction, Category, Ticket, Order
+from city_guide.models import Attraction, Category, Ticket, Order, Profile
 from django.utils import timezone
 
 class FilterForm(forms.Form):
@@ -23,7 +23,36 @@ class UserForm(forms.ModelForm):
 
     class Meta:
         model = User
-        fields = ['username', 'email', 'password']
+        fields = ['username', 'email', 'password', 'first_name', 'last_name' ]
+
+class UserUpdateForm(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        super(UserUpdateForm, self).__init__(*args, **kwargs)
+        self.fields['first_name'].label = "Imię"
+        self.fields['last_name'].label = "Nazwisko"
+        self.fields['email'].label = "E-mail"
+
+    class Meta:
+        model = User
+        fields = [ 'first_name', 'last_name', 'email' ]
+        widgets = {
+            'first_name': forms.TextInput(attrs={'class' : 'form-control'}),
+            'last_name': forms.TextInput(attrs={'class' : 'form-control'}),
+            'email': forms.EmailInput(attrs={'class' : 'form-control'})
+        }
+
+class ProfileForm(forms.ModelForm):
+    class Meta:
+        model = Profile
+        fields = ('address', 'phone_number')
+        widgets = {
+            'address': forms.TextInput(attrs={'class' : 'form-control'}),
+            'phone_number': forms.NumberInput(attrs={'class' : 'form-control'}),
+        }
+
+
+
+
 
 class OrderForm(forms.Form):
     quantity = forms.IntegerField(min_value=1, max_value=100)

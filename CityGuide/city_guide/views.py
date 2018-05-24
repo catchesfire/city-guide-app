@@ -1,14 +1,18 @@
 from django.shortcuts import get_object_or_404, render, redirect
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse, Http404
-from city_guide.models import Attraction, Category, Ticket, TicketType, Cart, Tour, Profile, Order
+from city_guide.models import Attraction, Category, Ticket, TicketType, Cart, Tour, Profile, Order, User
 from django.template import loader
 from django.views import View, generic
 from itertools import chain
 from django.db.models import Q, Case, When
-from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth import authenticate, login, logout, update_session_auth_hash
+from django.contrib.auth.decorators import login_required
+from django.db import transaction
+from django.contrib import messages
 from django.utils import timezone
-
-from .forms import FilterForm, SearchForm, SortForm, UserForm, OrderForm
+from django.contrib.auth.hashers  import check_password
+from django.contrib.auth.forms import PasswordChangeForm
+from .forms import FilterForm, SearchForm, SortForm, UserForm, OrderForm, ProfileForm, UserUpdateForm
 
 def index(request):
     return render(request, 'city_guide/index.html', {})
@@ -76,7 +80,7 @@ def cart_order_edit(request):
 def profile(request):
     profile = Profile.objects.get(user=request.user)
 
-    return render(request, 'city_guide/profile.html', {'profile': profile})
+#     return render(request, 'city_guide/profile.html', {'profile': profile})
 
 class AttractionsView(generic.ListView):
     filter_form_class = FilterForm
@@ -220,32 +224,102 @@ class UserLogFormView(View):
         return render(request, self.template_name, {'error_message' : error})    
 
 
+@login_required
+@transaction.atomic
+def update_profile(request):
+
+    user_form = UserUpdateForm(instance=request.user)
+    profile_form = ProfileForm(instance=request.user.profile)
+    password_form = PasswordChangeForm(request.user)
+
+    print(password_form.fields)
+    password_form.fields['old_password'].label = "Stare hasło"
+    password_form.fields['new_password1'].label = "Nowe hasło"
+    password_form.fields['new_password2'].label = "Potrwierdź nowe hasło"
+
+    password_form.fields['old_password'].widget.attrs['class'] = 'form-control'
+    
+    return render(request, 'city_guide/profile.html', {
+        'user_form': user_form,
+        'profile_form': profile_form,
+        'password_form': password_form
+        
+    })
+
+def profileView(request):
+    if request.method == 'POST':
+        user_form = UserUpdateForm(request.POST, instance=request.user)
+        profile_form = ProfileForm(request.POST, instance=request.user.profile)
+
+        if user_form.is_valid() and profile_form.is_valid():
+            user_form.save()
+            profile_form.save()
+            print(":::::")
+            messages.success(request, ('Your profile was successfully updated!'))
+            return redirect('city_guide:profile')
+        # else:
+            # messages.error(request, _('Please correct the error below.'))
+
+def passwordView(request):
+    if request.method == 'POST':
+        password_form = PasswordChangeForm(request.user, request.POST)
+        if password_form.is_valid():
+            user = password_form.save()
+            update_session_auth_hash(request, user)  # Important!
+            messages.success(request, 'Your password was successfully updated!')
+            return redirect('city_guide:profile')
+        else:
+            messages.error(request, 'Please correct the error below.')
+            return redirect('city_guide:profile')
+            
+    
+    
+        
+
+
+
+# to do
+# captcha
 class UserFormView(View):
-    form_class = UserForm
+    user_form_class = UserForm
+    profile_form_class = ProfileForm
     template_name = 'city_guide/registration.html'
 
     def get(self,request):
-        form = self.form_class(None)
-        return render(request, self.template_name, {'form': form})
+        user_form = self.user_form_class(None)
+        profile_form = self.profile_form_class(None)
+        return render(request, self.template_name, {'user_form': user_form, 'profile_form': profile_form})
 
     def post(self,request):
         
-        form = self.form_class(request.POST)
-        if form.is_valid():
-            user = form.save(commit=False)
+        user_form = self.user_form_class(request.POST)
+        profile_form = self.profile_form_class(request.POST)
+        if user_form.is_valid():
+            user = user_form.save(commit=False)
+            profile = profile_form.save(commit=False)
 
-            username = form.cleaned_data['username']
-            password = form.cleaned_data['password']
-            email = form.cleaned_data['email']
+            username = user_form.cleaned_data['username']
+            password = user_form.cleaned_data['password']
+            email = user_form.cleaned_data['email']
+            name = user_form.cleaned_data['first_name']
+            lastName = user_form.cleaned_data['last_name']
+            address = profile_form.cleaned_data['address']
+            phone = profile_form.cleaned_data['phone_number']
             user.set_password(password)
             user.save()
+            user.profile.address = address
+            user.profile.phone_number = phone
+            user.profile.save()
+
+            cart = Cart.objects.create(user=user)
+            cart.save()
 
             user = authenticate(username=username, password= password)
 
             if user is not None:
                 login(request, user)
                 return redirect('city_guide:index')
-        return render(request, self.template_name, {'form': form})
+        return render(request, self.template_name, {'user_form': user_form, 'profile_form': profile_form})
 
 class PlannerView(generic.DetailView):
     model = Tour
