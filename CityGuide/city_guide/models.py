@@ -56,7 +56,6 @@ class Cart(models.Model):
 class Order(models.Model):
     quantity = models.IntegerField(default=1)
     date = models.DateField(null=True, blank=True)
-    position = models.IntegerField(default=1)
 
     cart = models.ForeignKey(Cart, on_delete=models.CASCADE)
     ticket = models.ForeignKey(Ticket, null=True, on_delete=models.SET_NULL)
@@ -74,6 +73,7 @@ class Tour(models.Model):
     route = models.CharField(max_length=1000)
     date_from = models.DateField()
     date_to = models.DateField()
+    attraction_order = models.TextField(default="{}")
 
     user = models.ForeignKey(User, null=True, on_delete=models.SET_NULL)
 
