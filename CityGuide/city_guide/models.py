@@ -74,6 +74,7 @@ class Tour(models.Model):
     date_from = models.DateField()
     date_to = models.DateField()
     attraction_order = models.TextField(default="{}")
+    was_order_modified = models.BooleanField(default=False)
 
     user = models.ForeignKey(User, null=True, on_delete=models.SET_NULL)
 

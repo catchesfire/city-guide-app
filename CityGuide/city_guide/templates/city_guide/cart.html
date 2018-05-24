@@ -74,7 +74,6 @@
 {{ block.super }}
 <script>
     function addToOrder(id, quantity, type="add"){
-        console.log(type);
         if(type == "add"){
             $('#input-ticket-' + id).val(++quantity);        
         }

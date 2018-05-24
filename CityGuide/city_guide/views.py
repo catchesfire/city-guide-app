@@ -115,6 +115,7 @@ def planner_edit(request, pk):
     if request.is_ajax():
         order = json.loads(request.GET.get("order", ""))
         tour.attraction_order = json.dumps(order)
+        tour.was_order_modified = True
         tour.save()
 
         data = {
