@@ -14,6 +14,8 @@ from django.contrib.auth.hashers  import check_password
 from django.contrib.auth.forms import PasswordChangeForm
 from .forms import FilterForm, SearchForm, SortForm, UserForm, OrderForm, ProfileForm, UserUpdateForm
 
+import json
+
 def index(request):
     return render(request, 'city_guide/index.html', {})
 
@@ -76,6 +78,33 @@ def cart_order_edit(request):
             }
         return JsonResponse(data)
     return redirect('city_guide:cart')
+
+@login_required
+def planner_add(request):
+    tour = Tour(name="test", description="test", route="sfsf", date_from=timezone.now(), date_to=timezone.now(), user=request.user)
+    cart = Cart.objects.filter(user=request.user).last()
+    all_orders = cart.order_set.all()    
+
+    attractions = dict(
+        [
+            (attraction.ticket.attraction, all_orders.filter(ticket_id__in=Ticket.objects.filter(attraction_id=attraction.ticket.attraction.id))) for attraction in all_orders
+        ]
+    )
+
+    order = {}
+
+    i = 0
+    for attraction in attractions:
+        order[str(i)] = attraction.id
+        i += 1
+
+    tour.attraction_order = json.dumps(order)
+
+    tour.save()
+
+    print(tour)
+
+    return redirect('city_guide:index')
 
 def profile(request):
     profile = Profile.objects.get(user=request.user)

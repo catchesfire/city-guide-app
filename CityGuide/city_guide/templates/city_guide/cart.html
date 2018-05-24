@@ -55,7 +55,7 @@
         <div class="col">
             <div class="float-right">
                 Całkowity koszt: {{ total_cost }} zł
-                <button id="createTourBtn" class="btn btn-primary btn-sm">Planuj włajasz</button>
+                <a href="{% url 'city_guide:planner_add' %}" class="btn btn-primary btn-sm">Planuj włajasz</a>
             </div>
         </div>
     </div>    
