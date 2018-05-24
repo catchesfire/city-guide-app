@@ -69,7 +69,8 @@ body {
     min-height: 500px;
     max-height: 500px;
     color: #545455;
-    background-color: #ededed;
+    /* background-color: #ededed; */
+    border: none;
 }
 
 .noAtrractionsHeader {
