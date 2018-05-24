@@ -359,7 +359,6 @@ class PlannerView(generic.DetailView):
     def get_context_data(self, **kwargs):
         print(self.request)
         context = super(PlannerView, self).get_context_data(**kwargs)
-        context['tour'] = self.object
         all_orders = Cart.objects.filter(user=self.request.user).last().order_set.all()
 
         orders = dict(
@@ -385,5 +384,6 @@ class PlannerView(generic.DetailView):
 
         context['total_time'] = min_to_hours(tot_time)
         context['total_cost'] = tot_cost
+        context['tour'] = self.object
 
         return context
