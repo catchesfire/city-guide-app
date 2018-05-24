@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load mathfilters %}
 {% block body %}
 
 
@@ -73,22 +74,23 @@
                   <tr>
                     <th>#</th>
                     <th>Nazwa</th>
-                    <th>Aktualizacja</th>
                     <th>Czas trwania</th>
                     <th>Koszt</th>
                     <th>Akcja</th>
                   </tr>
                 </thead>
                 <tbody>
-                  <tr>
-                    <td>1</td>
-                    <td>Fajna trasa</td>
-                    <td>dziś</td>
-                    <td>365,25 dni</td>
-                    <td>1 m2</td>
-                    <td><button>Szczegóły</button></td>
-                  </tr>
-             
+                    {% for tour in tours %}
+                    
+                    <tr>
+                        <td>{{forloop.counter}}</td>
+                        <td>{{tour.name}}</td>
+                        <td>{{tour.date_to|sub:tour.date_from}}</td>
+                        <td>1 m2</td>
+                        <td><a href="{% url 'city_guide:planner' tour.id %}"><button>Szczegóły</button></a></td>
+                    </tr>
+                    
+                    {% endfor %}
                 </tbody>
             </table>
         </div>

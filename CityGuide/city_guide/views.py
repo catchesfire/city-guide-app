@@ -281,6 +281,7 @@ def update_profile(request):
     user_form = UserUpdateForm(instance=request.user)
     profile_form = ProfileForm(instance=request.user.profile)
     password_form = PasswordChangeForm(request.user)
+    tours = Tour.objects.filter(user=request.user)
 
     print(password_form.fields)
     password_form.fields['old_password'].label = "Stare hasło"
@@ -289,10 +290,19 @@ def update_profile(request):
 
     password_form.fields['old_password'].widget.attrs['class'] = 'form-control'
     
+    # for tour in tours:
+
+    #     for order in Cart.objects.filter(user=request.user).last().order_set.all():
+
+
+
+
     return render(request, 'city_guide/profile.html', {
         'user_form': user_form,
         'profile_form': profile_form,
-        'password_form': password_form
+        'password_form': password_form,
+        'tours': tours
+
         
     })
 
