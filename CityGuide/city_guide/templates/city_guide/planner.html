@@ -126,7 +126,14 @@
                 $('.attraction').each( function(e) {
                     newOrder[$(this).index().toString()] = $(this).attr("data-id");
                 });   
-                newOrder = JSON.stringify(newOrder);
+                $.ajax({
+                    url: "{% url 'city_guide:planner_edit' tour.id %}",
+                    type: 'GET',
+                    data: {order: JSON.stringify(newOrder)},
+                    dataType: 'json'
+                }).done(function(data){
+                    //alert(data);
+                });
             }
         });
         console.log(newOrder);
@@ -196,16 +203,19 @@
     }
 
     $(function () {
-        $("#sortable").sortable({
-            revert: true
-        });
+       // $("#sortable").sortable({
+        //    revert: true
+        //});
         $("#draggable").draggable({
             connectToSortable: "#sortable",
             helper: "clone",
             revert: "invalid"
         });
         $("ul, li").disableSelection();
+        //var sorted = $( ".attraction" ).sortable( "serialize", { key: "sort" } );
+        //console.log(sorted);
     });
+    
 </script>
 <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCYXIhgWd59IDdrJoO38Tz2hbyoYw0u9TU&callback=initMap">
 </script> {% endblock %}

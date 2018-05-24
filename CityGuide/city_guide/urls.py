@@ -25,5 +25,6 @@ urlpatterns = [
     path('attractions/search', views.AttractionsView.as_view(), name="search"),
     path('attractions/sort', views.AttractionsView.as_view(), name="sort"),
     path('planner/<int:pk>', views.PlannerView.as_view(), name='planner'),
-    path('planner/add', views.planner_add, name="planner_add")
+    path('planner/add', views.planner_add, name="planner_add"),
+    path('planner/edit/<int:pk>', views.planner_edit, name="planner_edit")
 ]

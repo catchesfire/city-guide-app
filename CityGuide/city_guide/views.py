@@ -99,12 +99,33 @@ def planner_add(request):
         i += 1
 
     tour.attraction_order = json.dumps(order)
-
     tour.save()
 
     print(tour)
 
     return redirect('city_guide:index')
+
+def planner_edit(request, pk):
+
+    try:
+        tour = Tour.objects.get(id=pk)
+    except:
+        raise Http404("Tour doesn't exist.")
+
+    if request.is_ajax():
+        order = json.loads(request.GET.get("order", ""))
+        tour.attraction_order = json.dumps(order)
+        tour.save()
+
+        data = {
+            'status': 200,
+            'message': 'OK'
+        }
+        return JsonResponse(data)
+
+    return redirect('city_guide:index')
+
+
 
 def profile(request):
     profile = Profile.objects.get(user=request.user)
@@ -301,12 +322,6 @@ def passwordView(request):
             messages.error(request, 'Please correct the error below.')
             return redirect('city_guide:profile')
             
-    
-    
-        
-
-
-
 # to do
 # captcha
 class UserFormView(View):
@@ -361,11 +376,22 @@ class PlannerView(generic.DetailView):
         context = super(PlannerView, self).get_context_data(**kwargs)
         all_orders = Cart.objects.filter(user=self.request.user).last().order_set.all()
 
-        orders = dict(
+        unsorted_orders = dict(
             [
                 (attraction.ticket.attraction, all_orders.filter(ticket_id__in=Ticket.objects.filter(attraction_id=attraction.ticket.attraction.id))) for attraction in Cart.objects.filter(user=self.request.user).last().order_set.all()
             ]
         )
+
+        orders = {}
+
+        positions = json.loads(self.object.attraction_order)
+
+        for i, position in positions.items():
+            for attraction, tickets in unsorted_orders.items():
+                if int(attraction.id) == int(position):
+                    orders[attraction] = tickets
+                    break
+
         context['cart'] = orders
 
         def min_to_hours(time):
