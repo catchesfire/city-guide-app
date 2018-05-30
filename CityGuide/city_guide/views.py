@@ -1,3 +1,5 @@
+import json
+import urllib
 from django.shortcuts import get_object_or_404, render, redirect
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse, Http404
 from city_guide.models import Attraction, Category, Ticket, TicketType, Cart, Tour, Profile, Order, User
@@ -13,6 +15,7 @@ from django.utils import timezone
 from django.contrib.auth.hashers  import check_password
 from django.contrib.auth.forms import PasswordChangeForm
 from .forms import FilterForm, SearchForm, SortForm, UserForm, OrderForm, ProfileForm, UserUpdateForm
+from django.conf import settings
 
 def index(request):
     return render(request, 'city_guide/index.html', {})
@@ -309,6 +312,9 @@ class UserFormView(View):
             user = user_form.save(commit=False)
             profile = profile_form.save(commit=False)
 
+
+
+
             username = user_form.cleaned_data['username']
             password = user_form.cleaned_data['password']
             email = user_form.cleaned_data['email']
@@ -316,20 +322,39 @@ class UserFormView(View):
             lastName = user_form.cleaned_data['last_name']
             address = profile_form.cleaned_data['address']
             phone = profile_form.cleaned_data['phone_number']
-            user.set_password(password)
-            user.save()
-            user.profile.address = address
-            user.profile.phone_number = phone
-            user.profile.save()
+            # ''' Begin reCAPTCHA validation '''
+            recaptcha_response = request.POST.get('g-recaptcha-response')
+            url = 'https://www.google.com/recaptcha/api/siteverify'
+            values = {
+                'secret': settings.GOOGLE_RECAPTCHA_SECRET_KEY,
+                'response': recaptcha_response
+            }
+            data = urllib.parse.urlencode(values).encode()
+            req =  urllib.request.Request(url, data=data)
+            response = urllib.request.urlopen(req)
+            result = json.loads(response.read().decode())
 
-            cart = Cart.objects.create(user=user)
-            cart.save()
 
-            user = authenticate(username=username, password= password)
+            # ''' End reCAPTCHA validation '
+            if result['success']:
+                user.set_password(password)
+                user.save()
+                user.profile.address = address
+                user.profile.phone_number = phone
+                user.profile.save()
 
-            if user is not None:
-                login(request, user)
-                return redirect('city_guide:index')
+
+                user = authenticate(username=username, password= password)
+
+                if user is not None:
+                    cart = Cart.objects.create(user=user)
+                    cart.save()
+                    login(request, user)
+                    messages.success(request, 'New comment added with success!')
+                    return redirect('city_guide:index')
+            else:
+                messages.error(request, 'Invalid reCAPTCHA. Please try again.')
+            
         return render(request, self.template_name, {'user_form': user_form, 'profile_form': profile_form})
 
 class PlannerView(generic.DetailView):

@@ -2,72 +2,65 @@
 {% block body %}
 
 
-<div class="container" style="margin-top: 72px; background-color: #fff">
+<div class="container" style="margin-top: 92px; background-color: #fff">
     <!-- Title -->
-    
-    <div class="container">
-        <h2>Tworzenie nowego konta.</h2>
-        <p>Wprowadź dane</p>
-        {% if user_form.errors %}
-            {% for field in user_form %}
-                {% for error in field.errors %}
-                <div class="alert alert-danger">
-                    <strong>{{ error|escape }}</strong>
-                </div>
+
+    <div class="row">
+        <div class="col">
+            <h2>Tworzenie nowego konta.</h2>
+            <p>Wprowadź dane</p>
+            <form action="" method="POST">
+                {% csrf_token %}
+                {% for field in user_form %}
+                    {% if field.errors %}
+                        <div class="alert alert-danger">
+                            {{ field.errors}}
+                        </div>
+                    {% endif %}
+                    
+                    <div class="form-group row">
+                        
+                        <label class="col-form-label col-sm-3" for="{{field.id_for_label}}">{{field.label}}:</label>
+                        <div class="col-sm-7">
+                            {{field}}
+                        </div>
+                    </div>
                 {% endfor %}
-            {% endfor %}
-            {% for error in user_form.non_field_errors %}
-            <div class="alert alert-danger">
-                <strong>{{ error|escape }}</strong>
-            </div>
-            {% endfor %}
-        {% endif %}
-        <form action="" method="POST">
-            {% csrf_token %}
-            <div class="form-group">
-                <label for="usr">Nazwa uzytkownika:</label>
-                <input type="text" class="form-control" id="usr" name="username">
-            </div>
-            <div class="form-group">
-                <label for="name">Imię:</label>
-                <input type="text" class="form-control" id="name" name="first_name">
-            </div>
-            <div class="form-group">
-                <label for="lastName">Nazwisko:</label>
-                <input type="text" class="form-control" id="lastName" name="last_name">
-            </div>
-            <div class="form-group">
-                <label for="mail">Email:</label>
-                <input type="text" class="form-control" id="mail" name="email">
-            </div>
-            <div class="form-group">
-                <label for="pwd">Halso:</label>
-                <input type="password" class="form-control" id="pwd" name="password">
-            </div>
-            <div class="form-group">
-                <label for="address">Adres:</label>
-                <input type="text" class="form-control" id="address" name="address">
-            </div>
-            <div class="form-group">
-                <label for="phone">Nr telefonu:</label>
-                <input type="text" class="form-control" id="phone" name="phone_number">
-            </div>
-            
-            <!--ok -->
-            <div class="row">
-                <button type="submit" class="btn" >Załóż konto</button> 
-            </div>
-        </form>
-    </div>
+                
+        
+                {% for field in profile_form %}
+                    {% if field.errors %}
+                        <div class="alert alert-danger">
+                            {{ field.errors}}
+                        </div>
+                    {% endif %}
+                    
+                    <div class="form-group row">
+                        
+                        <label class="col-form-label col-sm-3" for="{{field.id_for_label}}">{{field.label}}:</label>
+                        <div class="col-sm-7">
+                            {{field}}
+                        </div>
+                    </div>
+                {% endfor %}
+        
+                <script src='https://www.google.com/recaptcha/api.js'></script>
+                {% if messages %}
+                    {% for message in messages %}
+                        <li class="{{ message.tags }} alert alert-danger">{{ message }}</li>
+                    {% endfor %}
+                {% endif %}
+                <div class="g-recaptcha" data-sitekey="6LdeO1wUAAAAAH38moavAxpg3n0tpU397Z07iYIa"></div>
+        
+                <div class="row">
+                    <div class="col">
+                        <button type="submit" class="btn" >Załóż konto</button> 
 
-
-
-
-    
-    
-    
-
-
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>    
 </div>
 
 {% endblock %}

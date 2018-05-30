@@ -19,11 +19,35 @@ class SortForm(forms.Form):
     sort_key = forms.CharField(max_length=50, required=False)
 
 class UserForm(forms.ModelForm):
-    password = forms.CharField(widget=forms.PasswordInput, min_length=6)
+    def __init__(self, *args, **kwargs):
+        super(UserForm, self).__init__(*args, **kwargs)
+        self.fields['first_name'].label = "Imię"
+        self.fields['last_name'].label = "Nazwisko"
+        self.fields['email'].label = "E-mail"
+        self.fields['username'].label = "Login"
+        self.fields['password'].label = "Hasło"
+
+    password = forms.CharField(widget=forms.PasswordInput(attrs={'class' : 'form-control'}), min_length=6)
 
     class Meta:
         model = User
         fields = ['username', 'email', 'password', 'first_name', 'last_name' ]
+        widgets = {
+            'username' : forms.TextInput(attrs={'class' : 'form-control'}),
+            'email' : forms.EmailInput(attrs={'class' : 'form-control'}),
+            'first_name' : forms.TextInput(attrs={'class' : 'form-control'}),
+            'last_name' : forms.TextInput(attrs={'class' : 'form-control'})
+
+        }
+
+class ProfileForm(forms.ModelForm):
+    class Meta:
+        model = Profile
+        fields = ('address', 'phone_number')
+        widgets = {
+            'address': forms.TextInput(attrs={'class' : 'form-control'}),
+            'phone_number': forms.NumberInput(attrs={'class' : 'form-control'}),
+        }
 
 class UserUpdateForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
@@ -41,14 +65,6 @@ class UserUpdateForm(forms.ModelForm):
             'email': forms.EmailInput(attrs={'class' : 'form-control'})
         }
 
-class ProfileForm(forms.ModelForm):
-    class Meta:
-        model = Profile
-        fields = ('address', 'phone_number')
-        widgets = {
-            'address': forms.TextInput(attrs={'class' : 'form-control'}),
-            'phone_number': forms.NumberInput(attrs={'class' : 'form-control'}),
-        }
 
 
 

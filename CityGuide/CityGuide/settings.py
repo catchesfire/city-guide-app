@@ -131,3 +131,4 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 MEDIA_URL = '/media/'
 # print("base dir path", BASE_DIR)
 # print("MEDIA_ROOT path", MEDIA_ROOT)
+GOOGLE_RECAPTCHA_SECRET_KEY = '6LdeO1wUAAAAADGdlAwLgWvrCL9vSe_R3X2VUFIr'
