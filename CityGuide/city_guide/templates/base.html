@@ -52,7 +52,7 @@
                                         <i class="far fa-user"></i>
                                         {% spaceless %}
                                         {% if user.is_authenticated %}
-                                            <a href="{% url 'city_guide:profile' %}" > Witaj {{ user.get_username }}</a>
+                                            <a href="{% url 'city_guide:profile' %}" class="mr-2" > Witaj, {{ user.get_username }}</a>
                                               
                                              <a href="{% url 'city_guide:logout' %}"> Wyloguj</a>
                                         {% else %} 

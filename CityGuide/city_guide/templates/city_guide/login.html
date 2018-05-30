@@ -1,33 +1,47 @@
-{% extends 'base.html' %}
-{% block body %}
+{% extends 'base.html' %} {% block body %}
 
 
-<div class="container" style="margin-top: 72px; background-color: #fff">
+<div class="container" style="margin-top: 92px; background-color: #fff">
     <!-- Title -->
-    
-    <div class="container">
-        <h2>Logowanie.</h2>
-        <p>Wprowadź dane</p>
-        {% if error_message %}
-        <div class="alert alert-danger">
-            <strong>{{ error_message }}</strong>
+
+    <div class="row logAndRegisterCard">
+        <div class="col">
+            <h1>Zaloguj się</h1>
+            {% if error_message %}
+            <div class="alert alert-danger">
+                <strong>{{ error_message }}</strong>
+            </div>
+            {% endif %}
+            <form action="" method="POST">
+                {% csrf_token %}
+                <div class="form-group">
+                    <label for="usr">Nazwa uzytkownika:</label>
+                    <input type="text" class="form-control" id="usr" name="username">
+                </div>
+                <div class="form-group">
+                    <label for="pwd">Hasło:</label>
+                    <input type="password" class="form-control" id="pwd" name="password">
+                </div>
+                <!--ok -->
+                <div class="row">
+                    <div class="col mb-3">
+                        <button type="submit" class="btn loginBtn">Zaloguj</button>
+                    </div>
+                </div>
+            </form>
         </div>
-        {% endif %}
-        <form action="" method="POST">
-            {% csrf_token %}
-            <div class="form-group">
-                <label for="usr">Nazwa uzytkownika:</label>
-                <input type="text" class="form-control" id="usr" name="username">
-            </div>
-            <div class="form-group">
-                <label for="pwd">Halso:</label>
-                <input type="password" class="form-control" id="pwd" name="password">
-            </div>
-            <!--ok -->
-            <div class="row">
-                <button type="submit" class="btn" >Zaloguj</button> 
-            </div>
-        </form>
+    </div>
+
+
+</div>
+<div class="container" style="margin-top: 15px; background-color: #fff">
+    <!-- Title -->
+
+    <div class="row logAndRegisterCard">
+        <div class="col my-3 registerRef" >
+            <a> Nie masz konta?</a>
+            <a href="{% url 'city_guide:register' %}"> Zarejestruj się!</a>
+        </div>
     </div>
 
 
