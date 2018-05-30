@@ -1,6 +1,4 @@
-{% extends 'base.html' %} 
-{% load staticfiles %} 
-{% block body %}
+{% extends 'base.html' %} {% load staticfiles %} {% block body %}
 <div class="container-fluid px-0">
   <div clas="row">
     <div id="carouselExampleIndicators" class="carousel slide mx-auto" data-ride="carousel">
@@ -64,28 +62,29 @@
     <div class="col">
       <div id="routes">
         <h2>Przykładowe trasy</h2>
-        <div class="row ">
+        {% for tour in tours %}
+        <div class="row mt-5">
           <div class="col">
             <img class="img-fluid" src="https://i.stack.imgur.com/fqKSl.png" alt="Dupa">
           </div>
           <div class="col-7">
             <div class="row">
               <div class="col">
-                <h1>Studenckie życie</h1>
+                <h1>{{tour.tour.name}}</h1>
               </div>
             </div>
             <div class="row">
               <div class="col">
                 <span class="fontForAll">
                   <small>
-                    <i class="fa fa-money-bill-alt "></i> 95zł
+                    <i class="fa fa-money-bill-alt "></i> {{tour.cost}}
                   </small>
                 </span>
               </div>
               <div class="col-9">
                 <span class="fontForAll">
                   <small>
-                    <i class="fa fa-clock"></i> Szczęsliwi czasu nie liczą
+                    <i class="fa fa-clock"></i> {{tour.time}}
                   </small>
                 </span>
               </div>
@@ -94,10 +93,7 @@
               <div class="col">
                 <p class="tourDesc">
                   <small>
-                    Litwo! Ojczyzno moja! Ty jesteś jak zdrowie, Ile cię trzeba cenić, ten tylko się dowie, Kto cię stracił. Dziś piękność twą
-                    w całej ozdobie Widzę i opisuję, bo tęsknię po tobie Panno święta, co Jasnej bronisz Częstochowy I w
-                    Ostrej świecisz Bramie! Ty, co gród zamkowy Nowogródzki ochraniasz z jego wiernym ludem! Jak mnie dziecko
-                    do zdrowia
+                    {{tour.tour.description}}
                   </small>
                 </p>
               </div>
@@ -113,23 +109,28 @@
               </div>
             </div>
             <div class="row">
-              <div class="col">
-                <ul>
+              <div class="col exampleTripAttr">
+                <ul class="list-group mb-3">
                   <small>
-                    <li>attracion1</li>
-                    <li>attracion2</li>
-                    <li>attracion3</li>
+                    {% for attraction in tour.attractions%}
+                    <a href="{% url 'city_guide:attraction' attraction.id %}" class="list-group-item list-group-item-action">{{attraction.name}}</a>
+                    {% endfor %}
                   </small>
                 </ul>
               </div>
             </div>
             <div class="row">
               <div class="col">
-                <button type="button" class="btn btn-light">Przejdz do trasy</button>
+                <a href="{% url 'city_guide:planner' tour.tour.id %}">
+                  <button type="button" class="btn btn-light float-right">
+                    Przejdz do trasy
+                  </button>
+                </a>
               </div>
             </div>
           </div>
         </div>
+        {% endfor %}
       </div>
     </div>
   </div>

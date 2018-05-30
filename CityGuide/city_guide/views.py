@@ -17,7 +17,39 @@ from .forms import FilterForm, SearchForm, SortForm, UserForm, OrderForm, Profil
 import json
 
 def index(request):
-    return render(request, 'city_guide/index.html', {})
+    tours = []
+    all_tours = Tour.objects.all()
+
+    def min_to_hours(time):
+        hours = time // 60
+        minutes = time - hours * 60
+        return str(hours) + " godz. " + str(minutes) + " min"
+
+    for tour in all_tours if Tour.objects.count() < 3 else all_tours[:3]:
+        grouped_orders = dict(
+            [
+                (attraction.ticket.attraction, Cart.objects.filter(user=tour.user).last().order_set.all().filter(ticket_id__in=Ticket.objects.filter(attraction_id=attraction.ticket.attraction.id))) for attraction in Cart.objects.filter(user=tour.user).last().order_set.all()
+            ]
+        )
+
+        total_time = 0
+        attractions = []
+        for attraction in grouped_orders.keys():
+            attractions.append(attraction)
+            total_time += attraction.time_minutes
+    
+        total_cost = 0        
+        for order in Cart.objects.filter(user=tour.user).last().order_set.all():
+            total_cost += order.cost()
+
+        tours.append({
+            'tour': tour,
+            'cost': str(total_cost) + " PLN",
+            'time': min_to_hours(total_time),
+            'attractions': attractions
+        })
+
+    return render(request, 'city_guide/index.html', {'tours': tours})
 
 def logout_user(request):
     logout(request)
@@ -389,7 +421,6 @@ class PlannerView(generic.DetailView):
 
 
     def get_context_data(self, **kwargs):
-        print(self.request)
         context = super(PlannerView, self).get_context_data(**kwargs)
         all_orders = Cart.objects.filter(user=self.request.user).last().order_set.all()
 
@@ -430,3 +461,4 @@ class PlannerView(generic.DetailView):
         context['tour'] = self.object
 
         return context
+        

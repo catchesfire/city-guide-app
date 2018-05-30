@@ -5,6 +5,7 @@ from django.dispatch import receiver
 
 from django.db import connection
 from collections import namedtuple
+# from django.db.models.aggregates import Count
 
 class Category(models.Model):
     name = models.CharField(max_length=25)
@@ -75,7 +76,6 @@ class Tour(models.Model):
     was_order_modified = models.BooleanField(default=False)
 
     user = models.ForeignKey(User, null=True, on_delete=models.SET_NULL)
-
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     address = models.CharField(max_length=100, blank=True, verbose_name="Adres")
