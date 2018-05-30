@@ -12,7 +12,7 @@ from django.contrib import messages
 from django.utils import timezone
 from django.contrib.auth.hashers  import check_password
 from django.contrib.auth.forms import PasswordChangeForm
-from .forms import FilterForm, SearchForm, SortForm, UserForm, OrderForm, ProfileForm, UserUpdateForm
+from .forms import FilterForm, SearchForm, SortForm, UserForm, OrderForm, ProfileForm, UserUpdateForm, TourCreateForm
 
 import json
 
@@ -50,9 +50,10 @@ def cart(request):
 
     for order in all_orders:
         total_cost += order.cost()
-        
 
-    return render(request, template_name, {'cart': orders, 'total_cost': total_cost})
+    form = TourCreateForm(None)
+
+    return render(request, template_name, {'cart': orders, 'total_cost': total_cost, 'tour_create_form' : form})
 
 def cart_order_edit(request):
     order_id = request.GET.get('id', 0)
@@ -81,29 +82,34 @@ def cart_order_edit(request):
 
 @login_required
 def planner_add(request):
-    tour = Tour(name="test", description="test", route="sfsf", date_from=timezone.now(), date_to=timezone.now(), user=request.user)
-    cart = Cart.objects.filter(user=request.user).last()
-    all_orders = cart.order_set.all()    
+    #tour = Tour(name="test", description="test", route="sfsf", date_from=timezone.now(), date_to=timezone.now(), user=request.user)
+    if request.method == "POST":
+        form = TourCreateForm(request.POST)
 
-    attractions = dict(
-        [
-            (attraction.ticket.attraction, all_orders.filter(ticket_id__in=Ticket.objects.filter(attraction_id=attraction.ticket.attraction.id))) for attraction in all_orders
-        ]
-    )
+        if form.is_valid():
+            tour = form.save(commit=False)
 
-    order = {}
+            cart = Cart.objects.filter(user=request.user).last()
+            all_orders = cart.order_set.all()    
 
-    i = 0
-    for attraction in attractions:
-        order[str(i)] = attraction.id
-        i += 1
+            attractions = dict(
+                [
+                    (attraction.ticket.attraction, all_orders.filter(ticket_id__in=Ticket.objects.filter(attraction_id=attraction.ticket.attraction.id))) for attraction in all_orders
+                ]
+            )
 
-    tour.attraction_order = json.dumps(order)
-    tour.save()
+            order = {}
 
-    print(tour)
+            i = 0
+            for attraction in attractions:
+                order[str(i)] = attraction.id
+                i += 1
 
-    return redirect('city_guide:index')
+            tour.attraction_order = json.dumps(order)
+            tour.save()
+            return redirect('city_guide:cart')
+        return redirect('city_guide:cart')
+    return redirect('city_guide:cart')
 
 def planner_edit(request, pk):
 

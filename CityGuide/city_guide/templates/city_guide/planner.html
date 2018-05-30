@@ -1,71 +1,41 @@
-{% extends 'base.html' %} {% load staticfiles %} {% block body %}
-<div class="container" style="margin-top:85px">
-    <div class="row">
-        <h3 class="col">
-            Planowanie podróży
-        </h3>
+{% extends 'base.html' %} 
+{% load staticfiles %} 
+{% block body %}
+<div class="container-fluid standard-container">
+    <div class="row mt-5">
+        <div class="mx-auto">
+            <h3>Planowanie podróży</h3>
+        </div>
     </div>
-</div>
-
-<div class="container">
-    <div class="row">
-        <div class="col">
-            <div class="card cardPlanner">
-                <div class="card-body">
-                    <div class="row">
-                        <div class="col" style="text-align: center">
-                            <h1>
-                                Przebieg podróży
-                            </h1>
-                        </div>
-                    </div>
-
-                    <div class="col">
-                        <div class="row">
-                            <div class="col px-0 mg-0">
-                                <div class="row">
-                                    <div class="col px-0 mg-0">
-                                        <ul id="sortable">
-                                            {% for attraction, orders in cart.items %}
-                                            <li class="ui-state-default attraction" data-lat="{{attraction.location_x}}" data-lng="{{attraction.location_y}}" data-id="{{attraction.id}}">
-                                                <div class="row">
-                                                    <div class="col">
-                                                        <div class="card py-0">
-                                                            <ul class="card-body mb-0">
-                                                                <li class="row">
-                                                                    <div class="col">
-                                                                        <div class="row">
-                                                                            <div class="col attractionTitleInPlanner">
-                                                                                {{attraction}}
-                                                                            </div>
-                                                                            <div class="col-4">
-                                                                                <div class="row">
-                                                                                    <div class="col fa fa-clock px-0 mt-2">
-                                                                                        <span class="fontForAll">
-                                                                                            <small>
-                                                                                                {{attraction.time_minutes}} min
-                                                                                            </small>
-                                                                                        </span>
-                                                                                    </div>
-                                                                                    <div class="col px-0 mg-0">
-                                                                                        <button type="button" class="btn btn-warning btn-sm ">
-                                                                                            <small>Edycja</small>
-                                                                                        </button>
-                                                                                    </div>
-                                                                                    <div class="col px-0 mg-0">
-                                                                                        <button type="button" class="btn btn-danger btn-sm">
-                                                                                            <small>Usuń</small>
-                                                                                        </button>
-                                                                                    </div>
-                                                                                </div>
-                                                                            </div>
-                                                                        </div>
-                                                                    </div>
-                                                                </li>
-                                                            </ul>
-                                                        </div>
-                                                    </div>
+    <div class="row mt-5">
+        <div class="col-5 px-4">
+            <div class="row">
+                <div class="mx-auto">
+                    <h1>Przebieg podróży</h1>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col">
+                    <ul id="sortable">
+                        {% for attraction, orders in cart.items %}
+                        <li class="ui-state-default attraction my-2" data-lat="{{attraction.location_x}}" data-lng="{{attraction.location_y}}" data-id="{{attraction.id}}">
+                            <div class="card">
+                                <div class="card-body">
+                                    <div class="row">
+                                        <div class="col attractionTitleInPlanner">
+                                            {{ attraction }}
+                                        </div>
+                                        <div class="col-4">
+                                            <div class="row">
+                                                <div class="col">
+                                                    <span class="fontForAll">
+                                                        <i class="fa fa-clock"></i> {{ attraction.time_minutes }} min
+                                                    </span>
                                                 </div>
+                                                <div class="col-auto px-1">
+                                                    <button class="btn btn-danger btn-sm float-right ml-2">Usuń</button>
+                                                </div>
+<<<<<<< HEAD
                                             </li>
                                             {% endfor %}
                                         </ul>
@@ -74,39 +44,44 @@
                                                 <button class="btn btn-primary btn-block" id="generateBtn">
                                                     Generuj Trase
                                                 </button>
+=======
+                                                <div class="col-auto px-1">
+                                                    <button class="btn btn-warning btn-sm float-right mr-2">Edycja</button>
+                                                </div>
+>>>>>>> origin/feat/planner
                                             </div>
                                         </div>
                                     </div>
                                 </div>
-
-
                             </div>
-                            <div class="col-5">
-                                <div id="map"></div>
-                            </div>
-                        </div>
-                    </div>
+                        </li>
+                        {% endfor %}
+                        <button class="btn btn-primary btn-block" id="generateBtn">Generuj Trasę</button>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="col px-4">
+            <div class="row">
+                <div class="col">
+                    <div id="map"></div>
                 </div>
             </div>
         </div>
     </div>
-    <div class="row">
+    <div class="row mt-3">
         <div class="col">
-            <div class="card px-0 mx-0">
+            <div class="card">
                 <div class="card-body">
                     <div class="row">
-                        <div class="col fa fa-clock">
-                            <span class="fontForAll">
-                                <small>
-                                    Łączny czas zwiedzania: {{total_time}}
-                                </small>
+                        <div class="col">
+                            <span class="fontforAll">
+                                <i class="fa fa-clock"></i> Łączny czas zwiedzania: {{ total_time }}
                             </span>
                         </div>
-                        <div class="col fas fa-coin">
-                            <span class="fontForAll">
-                                <small>
-                                    Łączny koszt wycieczki: {{total_cost}} PLN
-                                </small>
+                        <div class="col">
+                            <span class="fontforAll">
+                                <i class="fa fa-coin"></i> Łączny koszt wycieczki: {{ total_cost }}
                             </span>
                         </div>
                     </div>
@@ -115,10 +90,11 @@
         </div>
     </div>
 </div>
+{% endblock %} 
 
+{% block javascripts %} 
 
-
-{% endblock %} {% block javascripts %} {{ block.super }}
+{{ block.super }}
 
 <script>
     let newOrder = {};
@@ -152,6 +128,11 @@
 
         directionsDisplay.setMap(map);
 
+<<<<<<< HEAD
+=======
+        calculateAndDisplayRoute(directionsService, directionsDisplay);
+
+>>>>>>> origin/feat/planner
         document.getElementById('generateBtn').addEventListener('click', function () {
             calculateAndDisplayRoute(directionsService, directionsDisplay);
         });
@@ -257,8 +238,13 @@
         //var sorted = $( ".attraction" ).sortable( "serialize", { key: "sort" } );
     });
 
+<<<<<<< HEAD
 
 
+=======
+>>>>>>> origin/feat/planner
 </script>
 <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCYXIhgWd59IDdrJoO38Tz2hbyoYw0u9TU&callback=initMap">
-</script> {% endblock %}
+</script> 
+
+{% endblock %}

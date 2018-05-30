@@ -67,9 +67,9 @@ class Order(models.Model):
         return self.ticket.attraction.time_minutes
 
 class Tour(models.Model):
-    name = models.CharField(max_length=50)
+    name = models.CharField(max_length=50, verbose_name="Nazwa")
     discount = models.IntegerField(default=0)
-    description = models.CharField(max_length=500)
+    description = models.CharField(max_length=500, verbose_name="Opis")
     route = models.CharField(max_length=1000)
     date_from = models.DateField()
     date_to = models.DateField()
