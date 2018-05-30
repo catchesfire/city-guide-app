@@ -62,14 +62,17 @@ class Order(models.Model):
 
     def cost(self):
         return self.ticket.price * self.quantity
+    
+    def time(self):
+        return self.ticket.attraction.time_minutes
 
 class Tour(models.Model):
-    name = models.CharField(max_length=50)
+    name = models.CharField(max_length=50, verbose_name="Nazwa")
     discount = models.IntegerField(default=0)
-    description = models.CharField(max_length=500)
+    description = models.CharField(max_length=500, verbose_name="Opis")
     route = models.CharField(max_length=1000)
-    date_from = models.DateField()
-    date_to = models.DateField()
+    attraction_order = models.TextField(default="{}")
+    was_order_modified = models.BooleanField(default=False)
 
     user = models.ForeignKey(User, null=True, on_delete=models.SET_NULL)
 

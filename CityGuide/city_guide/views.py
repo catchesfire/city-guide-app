@@ -14,17 +14,18 @@ from django.contrib import messages
 from django.utils import timezone
 from django.contrib.auth.hashers  import check_password
 from django.contrib.auth.forms import PasswordChangeForm
-from .forms import FilterForm, SearchForm, SortForm, UserForm, OrderForm, ProfileForm, UserUpdateForm
-from django.conf import settings
+from .forms import FilterForm, SearchForm, SortForm, UserForm, OrderForm, ProfileForm, UserUpdateForm, TourCreateForm
+
+
 
 def index(request):
     return render(request, 'city_guide/index.html', {})
 
-def logoutUser(request):
+def logout_user(request):
     logout(request)
     return redirect('city_guide:index')
 
-def cartDetails(request):
+def cart_details(request):
     if request.is_ajax():
         cart = Cart.objects.filter(user=request.user).last()
         orders = cart.order_set.all()
@@ -36,7 +37,7 @@ def cartDetails(request):
         return JsonResponse(data)
     return redirect('city_guide:cart')
 
-def cartView(request):
+def cart(request):
     template_name = 'city_guide/cart.html'
     cart = Cart.objects.filter(user=request.user).last()
     all_orders = cart.order_set.all()
@@ -51,9 +52,10 @@ def cartView(request):
 
     for order in all_orders:
         total_cost += order.cost()
-        
 
-    return render(request, template_name, {'cart': orders, 'total_cost': total_cost})
+    form = TourCreateForm(None)
+
+    return render(request, template_name, {'cart': orders, 'total_cost': total_cost, 'tour_create_form' : form})
 
 def cart_order_edit(request):
     order_id = request.GET.get('id', 0)
@@ -80,8 +82,62 @@ def cart_order_edit(request):
         return JsonResponse(data)
     return redirect('city_guide:cart')
 
-# def profileView(request):
-#     profile = Profile.objects.get(user=request.user)
+@login_required
+def planner_add(request):
+    #tour = Tour(name="test", description="test", route="sfsf", date_from=timezone.now(), date_to=timezone.now(), user=request.user)
+    if request.method == "POST":
+        form = TourCreateForm(request.POST)
+
+        if form.is_valid():
+            tour = form.save(commit=False)
+
+            cart = Cart.objects.filter(user=request.user).last()
+            all_orders = cart.order_set.all()    
+
+            attractions = dict(
+                [
+                    (attraction.ticket.attraction, all_orders.filter(ticket_id__in=Ticket.objects.filter(attraction_id=attraction.ticket.attraction.id))) for attraction in all_orders
+                ]
+            )
+
+            order = {}
+
+            i = 0
+            for attraction in attractions:
+                order[str(i)] = attraction.id
+                i += 1
+
+            tour.attraction_order = json.dumps(order)
+            tour.save()
+            return redirect('city_guide:cart')
+        return redirect('city_guide:cart')
+    return redirect('city_guide:cart')
+
+def planner_edit(request, pk):
+
+    try:
+        tour = Tour.objects.get(id=pk)
+    except:
+        raise Http404("Tour doesn't exist.")
+
+    if request.is_ajax():
+        order = json.loads(request.GET.get("order", ""))
+        tour.attraction_order = json.dumps(order)
+        tour.was_order_modified = True
+        tour.save()
+
+        data = {
+            'status': 200,
+            'message': 'OK'
+        }
+        return JsonResponse(data)
+
+    return redirect('city_guide:index')
+
+
+
+def profile(request):
+    profile = Profile.objects.get(user=request.user)
 
 #     return render(request, 'city_guide/profile.html', {'profile': profile})
 
@@ -165,7 +221,7 @@ class AttractionsView(generic.ListView):
 
         return render(request, self.template_name, {"filter_form": filter_form, "attractions_obj": Attraction.objects.all().order_by('name'), "categories": Category.objects.all()})
 
-def AddToCart(request):
+def cart_add(request):
     order_form_class = OrderForm
 
     if request.method == 'POST' and request.is_ajax():
@@ -201,7 +257,6 @@ def AddToCart(request):
     }  
 
     return JsonResponse(data)
-
 
 class AttracionView(generic.DetailView):
     model = Attraction
@@ -285,13 +340,7 @@ def passwordView(request):
         else:
             messages.error(request, 'Please correct the error below.')
             return redirect('city_guide:profile')
-
-
-    
-        
-
-
-
+            
 # to do
 # captcha
 class UserFormView(View):
@@ -360,10 +409,48 @@ class UserFormView(View):
 class PlannerView(generic.DetailView):
     model = Tour
     template_name = 'city_guide/planner.html'
-    # context_object_name = 'tour_obj'    
+    context_object_name = 'tour'    
 
-    # def get_context_data(self, **kwargs):
-    #     context = super(Tour, self).get_context_data(**kwargs)
-    #     context['tour_obj'] = Tour.user_set.all()
-    #     return context
 
+    def get_context_data(self, **kwargs):
+        print(self.request)
+        context = super(PlannerView, self).get_context_data(**kwargs)
+        all_orders = Cart.objects.filter(user=self.request.user).last().order_set.all()
+
+        unsorted_orders = dict(
+            [
+                (attraction.ticket.attraction, all_orders.filter(ticket_id__in=Ticket.objects.filter(attraction_id=attraction.ticket.attraction.id))) for attraction in Cart.objects.filter(user=self.request.user).last().order_set.all()
+            ]
+        )
+
+        orders = {}
+
+        positions = json.loads(self.object.attraction_order)
+
+        for i, position in positions.items():
+            for attraction, tickets in unsorted_orders.items():
+                if int(attraction.id) == int(position):
+                    orders[attraction] = tickets
+                    break
+
+        context['cart'] = orders
+
+        def min_to_hours(time):
+            hours = time // 60
+            minutes = time - hours * 60
+
+            return str(hours) + " godz. " + str(minutes) + " min"
+
+        tot_time = 0
+        for attraction in orders.keys():
+            tot_time += attraction.time_minutes
+
+        tot_cost = 0
+        for order in all_orders:
+            tot_cost += order.cost()
+
+        context['total_time'] = min_to_hours(tot_time)
+        context['total_cost'] = tot_cost
+        context['tour'] = self.object
+
+        return context
