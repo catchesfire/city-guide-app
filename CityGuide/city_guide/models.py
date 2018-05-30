@@ -71,8 +71,6 @@ class Tour(models.Model):
     discount = models.IntegerField(default=0)
     description = models.CharField(max_length=500, verbose_name="Opis")
     route = models.CharField(max_length=1000)
-    date_from = models.DateField()
-    date_to = models.DateField()
     attraction_order = models.TextField(default="{}")
     was_order_modified = models.BooleanField(default=False)
 

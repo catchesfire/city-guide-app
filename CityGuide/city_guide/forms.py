@@ -59,10 +59,8 @@ class TourCreateForm(forms.ModelForm):
     
     class Meta:
         model = Tour
-        fields = [ 'name', 'description', 'date_from', 'date_to']
+        fields = [ 'name', 'description']
         widgets = {
             'name' : forms.TextInput(attrs={'class' : 'form-control'}),
-            'description' : forms.Textarea(attrs={'class' : 'form-control'}),
-            'date_from' : forms.SelectDateWidget(attrs={'class' : 'form-control'}),
-            'date_to' : forms.SelectDateWidget(attrs={'class' : 'form-control'})
+            'description' : forms.Textarea(attrs={'class' : 'form-control'})
         }
