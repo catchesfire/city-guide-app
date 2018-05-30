@@ -161,11 +161,13 @@ slider {
 h1 {
     font-family: 'Roboto Condensed', sans-serif;
     font-size: 2em;
+    margin-top: 10px;
 }
 
 h2 {
     font-family: 'Roboto Condensed', sans-serif;
     font-size: 2.5em;
+    margin-top: 10px;
     color: #864d3f;
 }
 
@@ -227,6 +229,21 @@ h3 {
 .attractionTitleInPlanner{
     font-family: 'Roboto Condensed', sans-serif;
     font-size: 1.1em;
+    
+}
+
+.registerRef{
+    text-align: center;
+}
+
+.logAndRegisterCard{
+    margin: auto;
+    max-width: 400px;
+    max-height: 500px;
+}
+
+.loginBtn{
+    float: right;
 }
 
 ul{
