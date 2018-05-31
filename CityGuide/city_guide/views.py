@@ -104,8 +104,9 @@ def planner_add(request):
             for attraction in attractions:
                 order[str(i)] = attraction.id
                 i += 1
-
+            tour.tour = "D :)"
             tour.attraction_order = json.dumps(order)
+            tour.user = request.user
             tour.save()
             return redirect('city_guide:cart')
         return redirect('city_guide:cart')
