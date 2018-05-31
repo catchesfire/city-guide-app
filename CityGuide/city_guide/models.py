@@ -51,14 +51,19 @@ class Ticket(models.Model):
     def __str__(self):
         return self.ticket_type.__str__() + " " + str(self.price) + "zl"
 
-class Cart(models.Model):
-    user = models.ForeignKey(User, null=True, on_delete=models.DO_NOTHING)
+class Tour(models.Model):
+    name = models.CharField(max_length=50, verbose_name="Nazwa")
+    description = models.CharField(max_length=500, verbose_name="Opis")
+    attraction_order = models.TextField(default="{}")
+    was_order_modified = models.BooleanField(default=False)
+
+    user = models.ForeignKey(User, null=True, on_delete=models.SET_NULL)
 
 class Order(models.Model):
     quantity = models.IntegerField(default=1)
     date = models.DateField(null=True, blank=True)
 
-    cart = models.ForeignKey(Cart, on_delete=models.CASCADE)
+    tour = models.ForeignKey(Tour, on_delete=models.CASCADE)
     ticket = models.ForeignKey(Ticket, null=True, on_delete=models.SET_NULL)
 
     def cost(self):
@@ -67,15 +72,6 @@ class Order(models.Model):
     def time(self):
         return self.ticket.attraction.time_minutes
 
-class Tour(models.Model):
-    name = models.CharField(max_length=50, verbose_name="Nazwa")
-    discount = models.IntegerField(default=0)
-    description = models.CharField(max_length=500, verbose_name="Opis")
-    route = models.CharField(max_length=1000)
-    attraction_order = models.TextField(default="{}")
-    was_order_modified = models.BooleanField(default=False)
-
-    user = models.ForeignKey(User, null=True, on_delete=models.SET_NULL)
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     address = models.CharField(max_length=100, blank=True, verbose_name="Adres")

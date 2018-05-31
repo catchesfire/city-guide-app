@@ -1,6 +1,6 @@
 from django.shortcuts import get_object_or_404, render, redirect
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse, Http404
-from city_guide.models import Attraction, Category, Ticket, TicketType, Cart, Tour, Profile, Order, User
+from city_guide.models import Attraction, Category, Ticket, TicketType, Tour, Profile, Order, User
 from django.template import loader
 from django.views import View, generic
 from itertools import chain
@@ -18,28 +18,33 @@ import json
 
 def index(request):
     tours = []
-    all_tours = Tour.objects.all()
-
+    all_tours = Tour.objects.filter(user_id = 1)
+    if all_tours.count() > 3:
+        all_tours = all_tours[:3]
+    
     def min_to_hours(time):
         hours = time // 60
         minutes = time - hours * 60
         return str(hours) + " godz. " + str(minutes) + " min"
 
-    for tour in all_tours if Tour.objects.count() < 3 else all_tours[:3]:
-        grouped_orders = dict(
-            [
-                (attraction.ticket.attraction, Cart.objects.filter(user=tour.user).last().order_set.all().filter(ticket_id__in=Ticket.objects.filter(attraction_id=attraction.ticket.attraction.id))) for attraction in Cart.objects.filter(user=tour.user).last().order_set.all()
-            ]
-        )
+    for tour in all_tours:
+        all_orders = tour.order_set.all()
+
+        grouped_orders = {}
+
+        for order in all_orders:
+            grouped_orders[order.ticket.attraction] = all_orders.filter(ticket_id__in=Ticket.objects.filter(attraction_id = order.ticket.attraction.id))
 
         total_time = 0
+        
         attractions = []
-        for attraction in grouped_orders.keys():
+
+        for attraction in grouped_orders:
             attractions.append(attraction)
             total_time += attraction.time_minutes
-    
-        total_cost = 0        
-        for order in Cart.objects.filter(user=tour.user).last().order_set.all():
+
+        total_cost = 0
+        for order in all_orders:
             total_cost += order.cost()
 
         tours.append({
@@ -57,11 +62,10 @@ def logout_user(request):
 
 def cart_details(request):
     if request.is_ajax():
-        cart = Cart.objects.filter(user=request.user).last()
-        orders = cart.order_set.all()
+        cart = request.session.get('cart', {})
 
         data = {
-            'count' : orders.count()
+            'count' : len(cart)
         }
 
         return JsonResponse(data)
@@ -69,77 +73,103 @@ def cart_details(request):
 
 def cart(request):
     template_name = 'city_guide/cart.html'
-    cart = Cart.objects.filter(user=request.user).last()
-    all_orders = cart.order_set.all()
 
-    orders = dict(
-        [
-            (attraction.ticket.attraction, all_orders.filter(ticket_id__in=Ticket.objects.filter(attraction_id=attraction.ticket.attraction.id))) for attraction in all_orders
-        ]
-    )
+    cart = request.session.get('cart', {})
 
+    orders = {}
     total_cost = 0
 
-    for order in all_orders:
-        total_cost += order.cost()
+    for attraction_id, tickets in cart.items():
+        attraction = Attraction.objects.get(pk=attraction_id)
+        if tickets:
+            orders[attraction] = {}
+        for ticket_id, quantity in tickets.items():
+            if quantity > 0:
+                ticket = Ticket.objects.get(pk = ticket_id)
+                orders[attraction][ticket] = {}
+                orders[attraction][ticket]['id'] = ticket.id
+                orders[attraction][ticket]['quantity'] = quantity
+                orders[attraction][ticket]['cost'] = ticket.price * quantity
+                total_cost += ticket.price * quantity
+    print(cart)
+    # cart = Cart.objects.filter(user=request.user).last()
+    # all_orders = cart.order_set.all()
+
+    # orders = dict(
+    #     [
+    #         (attraction.ticket.attraction, all_orders.filter(ticket_id__in=Ticket.objects.filter(attraction_id=attraction.ticket.attraction.id))) for attraction in all_orders
+    #     ]
+    # )
+
+    # total_cost = 0
+
+    # for attraction, orders in cart.items():
+    #     for order in orders:
+    #         total_cost += order.cost()
 
     form = TourCreateForm(None)
 
     return render(request, template_name, {'cart': orders, 'total_cost': total_cost, 'tour_create_form' : form})
 
 def cart_order_edit(request):
-    order_id = request.GET.get('id', 0)
-    try:
-        order = Order.objects.get(pk=order_id)
-    except:
-        raise Http404("Order doesn't exist.")
-    
-    if request.is_ajax():
-        quantity = request.GET.get('quantity', 0)
-        
-        order.quantity = int(quantity)
-        if order.quantity >= 0:
-            order.save()
-            data = {
-                'status' : 200,
-                'message' : 'Item has been changed.'
-            }
-        else:
-            data = {
-                'status': 400,
-                'message': "Amount can't be negative."
-            }
-        return JsonResponse(data)
+    tid = request.GET.get('id', 0)
+    quantity = request.GET.get('quantity', 0)
+    quantity = int(quantity)
+    cart = request.session.get('cart', {})
+
+    for attraction_id, tickets in cart.items():
+        for ticket_id in tickets:
+            if ticket_id == tid:
+                if quantity > 0:
+                    cart[str(attraction_id)][str(ticket_id)] = quantity
+                    request.session['cart'] = cart
+                    request.session.modified = True
+                    data = {
+                        'status' : 200,
+                        'message' : 'An item has been changed.'
+                    }
+                else:
+                    if str(attraction_id) in cart:
+                        if str(ticket_id) in cart[str(attraction_id)]:
+                            del cart[str(attraction_id)][str(ticket_id)]
+                            if not cart[str(attraction_id)]:
+                                del cart[str(attraction_id)]
+                            request.session['cart'] = cart
+                            request.session.modified = True
+                    data = {
+                        'status' : 400,
+                        'message' : "Amount can't be negative."
+                    }
+                return JsonResponse(data)
+
     return redirect('city_guide:cart')
 
 @login_required
 def planner_add(request):
-    #tour = Tour(name="test", description="test", route="sfsf", date_from=timezone.now(), date_to=timezone.now(), user=request.user)
     if request.method == "POST":
         form = TourCreateForm(request.POST)
 
         if form.is_valid():
             tour = form.save(commit=False)
+            cart = request.session.get('cart', {})
 
-            cart = Cart.objects.filter(user=request.user).last()
-            all_orders = cart.order_set.all()    
-
-            attractions = dict(
-                [
-                    (attraction.ticket.attraction, all_orders.filter(ticket_id__in=Ticket.objects.filter(attraction_id=attraction.ticket.attraction.id))) for attraction in all_orders
-                ]
-            )
-
-            order = {}
+            orders = {}
 
             i = 0
-            for attraction in attractions:
-                order[str(i)] = attraction.id
+            for attraction_id in cart:
+                orders[str(i)] = attraction_id
                 i += 1
-            tour.tour = "D :)"
-            tour.attraction_order = json.dumps(order)
+
+            tour.attraction_order = json.dumps(orders)
             tour.user = request.user
             tour.save()
+
+            for attraction_id, tickets in cart.items():
+                for ticket_id, quantity in tickets.items():
+                    ticket = Ticket.objects.get(pk = ticket_id)
+                    order = Order(quantity=quantity, date=timezone.now(), tour=tour, ticket=ticket)
+                    order.save()
+            
             return redirect('city_guide:cart')
         return redirect('city_guide:cart')
     return redirect('city_guide:cart')
@@ -259,27 +289,27 @@ def cart_add(request):
         order_form = order_form_class(request.POST)
 
         if order_form.is_valid():
+
+            cart = request.session.get('cart', {})
+
             quantity = request.POST.get('quantity', 1)
-            date = request.POST.get('date', timezone.now())
-            ticket_id = request.POST.get('ticket_id', 1)
-            cart = Cart.objects.filter(user=request.user).last()
-            ticket = Ticket.objects.get(pk=ticket_id)
+            ticket_id = request.POST['ticket_id']
+            ticket = Ticket.objects.get(pk = ticket_id)
+            attraction = ticket.attraction
 
-            new_order, created = cart.order_set.get_or_create(ticket_id=ticket_id)            
-
-            if created:
-                new_order.date = date
-                new_order.quantity = quantity
-                new_order.cart = cart
-                new_order.ticket = ticket
+            if str(attraction.id) in cart:
+                cart[str(attraction.id)][str(ticket.id)] += int(quantity)
             else:
-                new_order.quantity += int(quantity)
-            
+                cart[str(attraction.id)] = {}
+                cart[str(attraction.id)][str(ticket.id)] = int(quantity)
+            request.session['cart'] = cart
+            request.session.modified = True
+
             data = {
                 'status': 'ok'
             }
 
-            new_order.save()
+            # new_order.save()
 
             return JsonResponse(data)
 
@@ -405,8 +435,6 @@ class UserFormView(View):
             user.profile.phone_number = phone
             user.profile.save()
 
-            cart = Cart.objects.create(user=user)
-            cart.save()
 
             user = authenticate(username=username, password= password)
 
@@ -423,13 +451,24 @@ class PlannerView(generic.DetailView):
 
     def get_context_data(self, **kwargs):
         context = super(PlannerView, self).get_context_data(**kwargs)
-        all_orders = Cart.objects.filter(user=self.request.user).last().order_set.all()
+        cart = self.request.session.get('cart', {})
 
-        unsorted_orders = dict(
-            [
-                (attraction.ticket.attraction, all_orders.filter(ticket_id__in=Ticket.objects.filter(attraction_id=attraction.ticket.attraction.id))) for attraction in Cart.objects.filter(user=self.request.user).last().order_set.all()
-            ]
-        )
+        total_cost = 0
+
+        unsorted_orders = {}
+
+        for attraction_id, tickets in cart.items():
+            attraction = Attraction.objects.get(pk=attraction_id)
+            if tickets:
+                unsorted_orders[attraction] = {}
+            for ticket_id, quantity in tickets.items():
+                if quantity > 0:
+                    ticket = Ticket.objects.get(pk = ticket_id)
+                    unsorted_orders[attraction][ticket] = {}
+                    unsorted_orders[attraction][ticket]['id'] = ticket.id
+                    unsorted_orders[attraction][ticket]['quantity'] = quantity
+                    unsorted_orders[attraction][ticket]['cost'] = ticket.price * quantity
+                    total_cost += ticket.price * quantity
 
         orders = {}
 
@@ -440,6 +479,8 @@ class PlannerView(generic.DetailView):
                 if int(attraction.id) == int(position):
                     orders[attraction] = tickets
                     break
+
+        print(orders)
 
         context['cart'] = orders
 
@@ -453,12 +494,8 @@ class PlannerView(generic.DetailView):
         for attraction in orders.keys():
             tot_time += attraction.time_minutes
 
-        tot_cost = 0
-        for order in all_orders:
-            tot_cost += order.cost()
-
         context['total_time'] = min_to_hours(tot_time)
-        context['total_cost'] = tot_cost
+        context['total_cost'] = total_cost
         context['tour'] = self.object
 
         return context
