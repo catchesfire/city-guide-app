@@ -1,7 +1,7 @@
 from django import forms
 from django.contrib.auth.models import User
 from django.db.models import Max, Min
-from city_guide.models import Attraction, Category, Ticket, Order, Profile, Tour
+from city_guide.models import Attraction, Category, Ticket, Order, Profile, Tour, UserBreak
 from django.utils import timezone
 
 class FilterForm(forms.Form):
@@ -63,4 +63,13 @@ class TourCreateForm(forms.ModelForm):
         widgets = {
             'name' : forms.TextInput(attrs={'class' : 'form-control'}),
             'description' : forms.Textarea(attrs={'class' : 'form-control'})
+        }
+
+class AddBreakForm(forms.ModelForm):
+    class Meta:
+        model = UserBreak
+        fields = [ 'name', 'time' ]
+        widgets = {
+            'name' : forms.TextInput(attrs={'class': 'form-control'}),
+            'time' : forms.NumberInput(attrs={'class': 'form-control'})
         }

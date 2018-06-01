@@ -13,7 +13,7 @@ from django.utils import timezone
 from django.contrib.auth.hashers  import check_password
 from django.contrib.auth.forms import PasswordChangeForm
 from django.contrib.auth.mixins import LoginRequiredMixin
-from .forms import FilterForm, SearchForm, SortForm, UserForm, OrderForm, ProfileForm, UserUpdateForm, TourCreateForm
+from .forms import FilterForm, SearchForm, SortForm, UserForm, OrderForm, ProfileForm, UserUpdateForm, TourCreateForm, AddBreakForm
 
 import json
 
@@ -145,6 +145,8 @@ def planner_add(request):
                 orders[str(i)] = attraction_id
                 i += 1
 
+            user_breaks = {}
+
             tour.attraction_order = json.dumps(orders)
             tour.user = request.user
             tour.save()
@@ -172,13 +174,44 @@ def planner_edit(request, pk):
         tour.attraction_order = json.dumps(order)
         tour.was_order_modified = True
         tour.save()
-
+        print(order)
         data = {
             'status': 200,
             'message': 'OK'
         }
         return JsonResponse(data)
 
+    return redirect('city_guide:index')
+
+def planner_add_break(request, pk):
+    try:
+        tour = Tour.objects.get(id = pk)
+    except:
+        raise Http404("Tour doesn't exist.")
+
+    if request.method == "POST" and request.is_ajax():
+        user_break_form = AddBreakForm(request.POST)
+
+        if user_break_form.is_valid():
+            user_break = user_break_form.save(commit=False)
+            user_break.tour = tour
+            user_break.save()
+
+            attraction_order = json.loads(tour.attraction_order)
+            i = len(attraction_order)
+            attraction_order[str(i)] = {}
+            attraction_order[str(i)]['break'] = user_break.id
+            tour.attraction_order = json.dumps(attraction_order)
+            tour.save()
+            data = {
+                'status' : 200,
+                'message' : 'OK'
+            }
+        data = {
+            'status': 400,
+            'message': 'Wrong number'
+        }
+        return JsonResponse(data)
     return redirect('city_guide:index')
 
 def profile(request):
@@ -436,25 +469,35 @@ class PlannerView(LoginRequiredMixin, generic.DetailView):
         context = super(PlannerView, self).get_context_data(**kwargs)
 
         all_orders = self.object.order_set.all()
+        all_breaks = self.object.userbreak_set.all()
         total_cost = 0
 
         unsorted_orders = {}
 
         for order in all_orders:
             unsorted_orders[order.ticket.attraction] = all_orders.filter(ticket_id__in=Ticket.objects.filter(attraction_id=order.ticket.attraction.id))
+        
+        unsorted_breaks = {}
+
 
         orders = {}
-
         positions = json.loads(self.object.attraction_order)
 
-        for i, position in positions.items():
-            for attraction, tickets in unsorted_orders.items():
-                if int(attraction.id) == int(position):
-                    orders[attraction] = tickets
-                    break
-
-        print(orders)
-
+        for i, types in positions.items():
+            for type_name, attraction_id in types.items():
+                if type_name == "attraction":
+                    for attraction, ticket in unsorted_orders.items():
+                        if int(attraction.id) == int(attraction_id):
+                            orders[attraction] = {}
+                            orders[attraction]['type'] = "attraction"
+                            orders[attraction]['items'] = ticket
+                            break
+                else:
+                    user_break = self.object.userbreak_set.get(pk=attraction_id)
+                    orders[user_break] = {}
+                    orders[user_break]['type'] = 'break'
+                    orders[user_break]['items'] = user_break
+                    
         context['cart'] = orders
 
         def min_to_hours(time):
@@ -464,12 +507,14 @@ class PlannerView(LoginRequiredMixin, generic.DetailView):
             return str(hours) + " godz. " + str(minutes) + " min"
 
         tot_time = 0
-        for attraction in orders.keys():
-            tot_time += attraction.time_minutes
+        # for attraction in orders.keys():
+        #     tot_time += attraction.time_minutes
+        
 
         context['total_time'] = min_to_hours(tot_time)
         context['total_cost'] = total_cost
         context['tour'] = self.object
+        context['break_form'] = AddBreakForm(None)
 
         return context
         

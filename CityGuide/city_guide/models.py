@@ -5,6 +5,8 @@ from django.dispatch import receiver
 
 from django.db import connection
 from collections import namedtuple
+
+import json
 # from django.db.models.aggregates import Count
 
 class Category(models.Model):
@@ -58,6 +60,15 @@ class Tour(models.Model):
     was_order_modified = models.BooleanField(default=False)
 
     user = models.ForeignKey(User, null=True, on_delete=models.SET_NULL)
+
+    def get_user_breaks(self):
+        return json.loads(self.user_breaks)
+
+class UserBreak(models.Model):
+    name = models.CharField(max_length=30)
+    time = models.IntegerField(default=1)
+
+    tour = models.ForeignKey(Tour, on_delete=models.CASCADE)
 
 class Order(models.Model):
     quantity = models.IntegerField(default=1)
