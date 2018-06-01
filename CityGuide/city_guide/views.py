@@ -12,6 +12,7 @@ from django.contrib import messages
 from django.utils import timezone
 from django.contrib.auth.hashers  import check_password
 from django.contrib.auth.forms import PasswordChangeForm
+from django.contrib.auth.mixins import LoginRequiredMixin
 from .forms import FilterForm, SearchForm, SortForm, UserForm, OrderForm, ProfileForm, UserUpdateForm, TourCreateForm
 
 import json
@@ -91,22 +92,6 @@ def cart(request):
                 orders[attraction][ticket]['quantity'] = quantity
                 orders[attraction][ticket]['cost'] = ticket.price * quantity
                 total_cost += ticket.price * quantity
-    print(cart)
-    # cart = Cart.objects.filter(user=request.user).last()
-    # all_orders = cart.order_set.all()
-
-    # orders = dict(
-    #     [
-    #         (attraction.ticket.attraction, all_orders.filter(ticket_id__in=Ticket.objects.filter(attraction_id=attraction.ticket.attraction.id))) for attraction in all_orders
-    #     ]
-    # )
-
-    # total_cost = 0
-
-    # for attraction, orders in cart.items():
-    #     for order in orders:
-    #         total_cost += order.cost()
-
     form = TourCreateForm(None)
 
     return render(request, template_name, {'cart': orders, 'total_cost': total_cost, 'tour_create_form' : form})
@@ -174,6 +159,7 @@ def planner_add(request):
         return redirect('city_guide:cart')
     return redirect('city_guide:cart')
 
+@login_required
 def planner_edit(request, pk):
 
     try:
@@ -194,8 +180,6 @@ def planner_edit(request, pk):
         return JsonResponse(data)
 
     return redirect('city_guide:index')
-
-
 
 def profile(request):
     profile = Profile.objects.get(user=request.user)
@@ -343,7 +327,6 @@ class UserLogFormView(View):
 
         return render(request, self.template_name, {'error_message' : error})    
 
-
 @login_required
 @transaction.atomic
 def update_profile(request):
@@ -443,32 +426,22 @@ class UserFormView(View):
                 return redirect('city_guide:index')
         return render(request, self.template_name, {'user_form': user_form, 'profile_form': profile_form})
 
-class PlannerView(generic.DetailView):
+class PlannerView(LoginRequiredMixin, generic.DetailView):
+    login_url = '/login/'
     model = Tour
     template_name = 'city_guide/planner.html'
     context_object_name = 'tour'    
 
-
     def get_context_data(self, **kwargs):
         context = super(PlannerView, self).get_context_data(**kwargs)
-        cart = self.request.session.get('cart', {})
 
+        all_orders = self.object.order_set.all()
         total_cost = 0
 
         unsorted_orders = {}
 
-        for attraction_id, tickets in cart.items():
-            attraction = Attraction.objects.get(pk=attraction_id)
-            if tickets:
-                unsorted_orders[attraction] = {}
-            for ticket_id, quantity in tickets.items():
-                if quantity > 0:
-                    ticket = Ticket.objects.get(pk = ticket_id)
-                    unsorted_orders[attraction][ticket] = {}
-                    unsorted_orders[attraction][ticket]['id'] = ticket.id
-                    unsorted_orders[attraction][ticket]['quantity'] = quantity
-                    unsorted_orders[attraction][ticket]['cost'] = ticket.price * quantity
-                    total_cost += ticket.price * quantity
+        for order in all_orders:
+            unsorted_orders[order.ticket.attraction] = all_orders.filter(ticket_id__in=Ticket.objects.filter(attraction_id=order.ticket.attraction.id))
 
         orders = {}
 

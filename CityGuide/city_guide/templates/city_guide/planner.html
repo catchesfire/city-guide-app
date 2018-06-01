@@ -1,6 +1,41 @@
 {% extends 'base.html' %} 
 {% load staticfiles %} 
 {% block body %}
+<div class="modal fade add-break" tabindex="-1" role="dialog" aria-labelledby="Dodaj przerwę" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Dodaj przerwę</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form action="{% url 'city_guide:planner_add_break' tour.id %}" method="POST">
+                    {% comment %}
+                    {% csrf_token %}
+                    {% for field in break_form %}
+                    {% if field.errors %}
+                    <div class="alert alert-danger">
+                        {{ field.errors}}
+                    </div>
+                    {% endif %}
+                    <div class="form-group row">
+                        <label class="col-form-label col-sm-3" for="{{field.id_for_label}}">{{field.label}}:</label>
+                        <div class="col-sm-9">
+                            {{field}}
+                        </div>
+                    </div>
+                    {% endfor %}
+                    {% endcomment %}
+                    <div class="col offset-sm-3">
+                        <button type="submit" class="btn btn-primary">Dodaj</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
 <div class="container-fluid standard-container">
     <div class="row mt-5">
         <div class="mx-auto">
@@ -21,10 +56,27 @@
             </div>
             <div class="row">
                 <div class="col">
+                    <div class="form-group form-check">
+                        <input type="checkbox" class="form-check-input" id="is-start-point" checked>
+                        <label class="form-check-label" for="is-start-point">Chcę ustawić startu</label>
+                    </div>
                     <div class="form-group row">
                         <label for="start-location-input" class="col-form-label col-sm-4">Punkt startowy</label>
-                        <div class="col-sm-8">
+                        <div class="col-sm">
                             <input type="text" id="start-location-input" class="form-control">
+                        </div>
+                        <div class="col-sm-auto">
+                            <button class="btn btn-primary" id="my-location-btn">Moja lokalizacja</button>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label for="transport" class="col-form-label col-sm-4">Podróżuję</label>
+                        <div class="col-sm">
+                            <select id="transport" class="form-control">
+                                <option value="DRIVING">Samochodem</option>
+                                <option value="WALKING">Pieszo</option>
+                                <option value="BICYCLING">Rowerem</option>
+                            </select>
                         </div>
                     </div>
                 </div>
@@ -32,6 +84,7 @@
             <div class="row">
                 <div class="col">
                     <ul id="sortable">
+                        <button class="btn btn-sm btn-success" data-toggle="modal" data-target=".add-break">Dodaj przerwę</button>
                         {% for attraction, orders in cart.items %}
                         <li class="ui-state-default attraction my-2" data-lat="{{attraction.location_x}}" data-lng="{{attraction.location_y}}" data-id="{{attraction.id}}">
                             <div class="card">
@@ -54,6 +107,12 @@
                                                     <button class="btn btn-warning btn-sm float-right mr-2">Edycja</button>
                                                 </div>
                                             </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col">
+                                            Wskazówki dojścia
+                                            <div class="route-steps" style="display: none;"></div>
                                         </div>
                                     </div>
                                 </div>
@@ -93,6 +152,11 @@
             </div>
         </div>
     </div>
+    <div class="row">
+        <div class="col">
+            <div id="directions-panel"></div>
+        </div>
+    </div>
 </div>
 {% endblock %} 
 
@@ -103,8 +167,72 @@
 <script>
     let newOrder = {};
     let order = "{{tour.attraction_order}}";
+    let startPoint;
+    let isStartPoint = $('#is-start-point')[0].checked;
+    let startLocationInput = $('#start-location-input');
+    let startLocation = localStorage.getItem('start-point');
     let dirty = "{{tour.was_order_modified}}" == "True" ? true : false;
+
     order = JSON.parse(order.replace(/&quot;/g, "\""));
+
+    $('#start-location-input').prop('disabled', !($('#is-start-point')[0].checked));
+
+    $('#is-start-point').on('change', function(){
+        $('#start-location-input').prop('disabled', !($('#is-start-point')[0].checked));
+        isStartPoint = $('#is-start-point')[0].checked;     
+    });
+
+    $('#my-location-btn').on('click', function(){
+        $('#map').html("ladowanie");
+        navigator.geolocation.getCurrentPosition((position) => {
+            myPos = {
+                lat: position.coords.latitude,
+                lng: position.coords.longitude
+            }
+            getAjax();
+            function getAjax(){
+                $.ajax({
+                    url: 'https://maps.googleapis.com/maps/api/geocode/json?latlng=' + myPos.lat + ',' + myPos.lng + '&key=AIzaSyCYXIhgWd59IDdrJoO38Tz2hbyoYw0u9TU'
+                }).done(function(data){
+                    if(data.status == "OK"){
+                        let address = data.results[0]['formatted_address'];
+                        startLocationInput.val(address);
+                        localStorage.setItem('start-point', address);
+                        initMap();
+                    } else{
+                        setTimeout(getAjax, 1000);
+                    }
+                });
+            }
+        }, () => {
+           alert("to do");
+        });
+    });
+
+    $('#generateBtn').on('click', function(){
+        if(startLocationInput.val() != ""){
+            getAjax();
+            function getAjax(){
+                $.ajax({
+                    url: apiUrl = 'https://maps.google.com/maps/api/geocode/json?address=' + startLocationInput.val() + '&key=AIzaSyCYXIhgWd59IDdrJoO38Tz2hbyoYw0u9TU'
+                }).done(function(data){
+                    if(data.status == "OK"){
+                        let address = data.results[0]['formatted_address'];
+                        startLocation = address;
+                        startLocationInput.val(address);
+                        localStorage.setItem('start-point', address);
+                        initMap();
+                    } else{
+                        setTimeout(getAjax, 1000);
+                    }
+                });
+            }
+        } else{
+            localStorage.setItem('start-point', "");
+            initMap();
+        }
+    });
+
     $(function () {
         $('#sortable').sortable({
             update: function (event, ui) {
@@ -122,6 +250,7 @@
     })
 
     function initMap() {
+        isStartPoint = $('#is-start-point')[0].checked;        
         var directionsService = new google.maps.DirectionsService;
         var directionsDisplay = new google.maps.DirectionsRenderer;
         var map = new google.maps.Map(document.getElementById('map'), {
@@ -131,133 +260,179 @@
 
         directionsDisplay.setMap(map);
 
-        calculateAndDisplayRoute(directionsService, directionsDisplay);
-        document.getElementById('generateBtn').addEventListener('click', function () {
-            let address = $('#start-location-input').val();
-            localStorage.setItem('start-point', address);
-            calculateAndDisplayRoute(directionsService, directionsDisplay);
-        });
+        let lat_beg = parseFloat($('.attraction').first().attr('data-lat'));
+        let lng_beg = parseFloat($('.attraction').first().attr('data-lng'));  
+
+        if(isStartPoint && startLocation != "" && startLocation != undefined){
+            getAjax();
+            function getAjax(){
+                $.ajax({
+                    url: apiUrl = 'https://maps.google.com/maps/api/geocode/json?address=' + startLocation + '&key=AIzaSyCYXIhgWd59IDdrJoO38Tz2hbyoYw0u9TU'
+                }).done(function(data){
+                    if(data.status == "OK"){
+                        let address = data.results[0]['formatted_address'];
+                        startLocation = address;
+                        startLocationInput.val(address);
+                        calculateAndDisplayRoute(directionsService, directionsDisplay, data.results[0].geometry.location);
+                    } else{
+                        setTimeout(getAjax, 1000);
+                    }
+                });
+            }
+        } else{
+            calculateAndDisplayRoute(directionsService, directionsDisplay, {lat: lat_beg, lng: lng_beg});
+        }
     }
 
-    let startPoint;
-
-    function getStartPoint(data){
-        let address = data.results[0]['formatted_address'];
-        $('#start-location-input').val(address);
-        localStorage.setItem('start-point', address);
-        startPoint = data.results[0].geometry.location;
-        console.log(startPoint);
-    }
-
-    function calculateAndDisplayRoute(directionsService, directionsDisplay) {
+    function calculateAndDisplayRoute(directionsService, directionsDisplay, pos) {
         var waypts = [];
-        let myPos = {};
-
-        let apiUrl;
+        let coords;
+        let transport = $('#transport').val();
+        
+        console.log(pos);
     
-        navigator.geolocation.getCurrentPosition((position) => {
-            myPos = {
-                lat: position.coords.latitude,
-                lng: position.coords.longitude
-            }
+        $('.attraction').not(':last').each(function () {
+            if(!isStartPoint && $(this).is(':first-child'))
+                return;
 
-            if(localStorage.getItem('start-point') == null || localStorage.getItem('start-point') == ""){
-                apiUrl = 'http://maps.googleapis.com/maps/api/geocode/json?latlng=' + myPos.lat + ',' + myPos.lng + '&sensor=true';
-            } else{
-                apiUrl = 'http://maps.google.com/maps/api/geocode/json?address=' + localStorage.getItem('start-point');
-            }
-
-            $.ajax({
-                url: apiUrl,
-            }).done(function(data){
-                if(data.status == "OVER_QUERY_LIMIT"){
-                    alert("Zbyt dużo zapytań.");
-                    return;
-                }
-                
-                let address = data.results[0]['formatted_address'];
-                $('#start-location-input').val(address);
-                localStorage.setItem('start-point', address);
-                startPoint = data.results[0].geometry.location;
-
-                $('.attraction').each(function () {
-                    if (!($(this).attr('data-lat') === $('.attraction').last().attr('data-lat') && $(this).attr('data-lng') === $('.attraction').last().attr('data-lng'))) {
-                        let lat = parseFloat($(this).attr('data-lat'));
-                        let lng = parseFloat($(this).attr('data-lng'));
-                        waypts.push({
-                            location: new google.maps.LatLng({ lat: lat, lng: lng }),
-                            stopover: true
-                        });
-                    }
-                });
-    
-                let lat_end = parseFloat($('.attraction').last().attr('data-lat'));
-                let lng_end = parseFloat($('.attraction').last().attr('data-lng'));
-                let dirty = "{{tour.was_order_modified}}";
-                directionsService.route({
-                    origin: new google.maps.LatLng({ lat: startPoint.lat, lng: startPoint.lng }),
-                    destination: new google.maps.LatLng({ lat: lat_end, lng: lng_end }),
-                    waypoints: waypts,
-                    optimizeWaypoints: dirty == "False" ? true : false,
-                    travelMode: 'DRIVING'
-                }, function (response, status) {
-                    if (status === 'OK') {
-                        directionsDisplay.setDirections(response);
-                        var route = response.routes[0];
-                        var summaryPanel = document.getElementById('directions-panel');
-                        //summaryPanel.innerHTML = '';
-                        // For each route, display summary information.
-                        for (var i = 0; i < route.legs.length; i++) {
-                            var routeSegment = i + 1;
-                            //summaryPanel.innerHTML += '<b>Route Segment: ' + routeSegment; //do pdf
-                            //summaryPanel.innerHTML += route.legs[i].distance.text + '<br><br>';
-                        }
-                    } else {
-                        window.alert('Directions request failed due to ' + status);
-                    }
-                });
-            });
-        }, () => {
-            $('.attraction').each(function () {
-                if (!($(this).attr('data-lat') === $('.attraction').first().attr('data-lat') && $(this).attr('data-lng') === $('.attraction').first().attr('data-lng'))
-                    && !($(this).attr('data-lat') === $('.attraction').last().attr('data-lat') && $(this).attr('data-lng') === $('.attraction').last().attr('data-lng'))) {
-
-                    let lat = parseFloat($(this).attr('data-lat'));
-                    let lng = parseFloat($(this).attr('data-lng'));
-                    waypts.push({
-                        location: new google.maps.LatLng({ lat: lat, lng: lng }),
-                        stopover: true
-                    });
-                }
-            });
-
-            let lat_beg = parseFloat($('.attraction').first().attr('data-lat'));
-            let lng_beg = parseFloat($('.attraction').first().attr('data-lng'));
-            let lat_end = parseFloat($('.attraction').last().attr('data-lat'));
-            let lng_end = parseFloat($('.attraction').last().attr('data-lng'));
-            directionsService.route({
-                origin: new google.maps.LatLng({ lat: lat_beg, lng: lng_beg }),
-                destination: new google.maps.LatLng({ lat: lat_end, lng: lng_end }),
-                waypoints: waypts,
-                optimizeWaypoints: dirty == "False" ? true : false,
-                travelMode: 'DRIVING'
-            }, function (response, status) {
-                if (status === 'OK') {
-                    directionsDisplay.setDirections(response);
-                    var route = response.routes[0];
-                    var summaryPanel = document.getElementById('directions-panel');
-                    //summaryPanel.innerHTML = '';
-                    // For each route, display summary information.
-                    for (var i = 0; i < route.legs.length; i++) {
-                        var routeSegment = i + 1;
-                        //summaryPanel.innerHTML += '<b>Route Segment: ' + routeSegment; //do pdf
-                        //summaryPanel.innerHTML += route.legs[i].distance.text + '<br><br>';
-                    }
-                } else {
-                    window.alert('Directions request failed due to ' + status);
-                }
+            let lat = parseFloat($(this).attr('data-lat'));
+            let lng = parseFloat($(this).attr('data-lng'));
+            waypts.push({
+                location: new google.maps.LatLng({ lat: lat, lng: lng }),
+                stopover: true
             });
         });
+
+        let lat_end = parseFloat($('.attraction').last().attr('data-lat'));
+        let lng_end = parseFloat($('.attraction').last().attr('data-lng'));
+        if(!startLocation){
+            let lat_beg = parseFloat($('.attraction').first().attr('data-lat'));
+            let lng_beg = parseFloat($('.attraction').first().attr('data-lng'));                    
+            coords = { lat: lat_beg, lng: lng_beg };
+        } else{
+            coords = { lat: pos.lat, lng: pos.lng };
+        }
+
+        directionsService.route({
+            origin: new google.maps.LatLng(coords),
+            destination: new google.maps.LatLng({ lat: lat_end, lng: lng_end }),
+            waypoints: waypts,
+            optimizeWaypoints: dirty ? false : true,
+            travelMode: transport
+        }, function (response, status) {
+            if (status === 'OK') {
+                directionsDisplay.setDirections(response);
+                var route = response.routes[0];
+                var summaryPanel = document.getElementById('directions-panel');
+                summaryPanel.innerHTML = '';
+                // For each route, display summary information.
+                console.log(route);
+                var i = 0;
+                $('.route-steps').each(function(){
+                    $(this).html("");
+                })
+                $('.attraction').each(function(){
+                    steps = $(this).find('.route-steps');
+                    var string = "";
+                    for(var j = 0; j < route.legs[i].steps.length; j++){
+                        string += route.legs[i].steps[j].instructions + "<br>";
+                    }
+                    steps.html(string);
+
+                    if(i < route.legs.length)
+                        i++;
+                });
+                //if(isStartPoint){
+                    //d = document.createElement('div');
+                   // $(d).attr('id', "block-0");
+                   // d.innerHTML += route.legs[0].start_address + ' to ';
+                  //  d.innerHTML += route.legs[0].end_address + '<br>';
+                   // d.innerHTML += route.legs[0].distance.text + '<br><br>';
+                 //   $('#sortable').prepend(d);
+                //}
+                //$('.attraction').not
+                //for (var i = 0; i < route.legs.length; i++) {
+                    //var routeSegment = i + 1;
+                       // summaryPanel.innerHTML += '<b>Route Segment: ' + routeSegment +
+                        //    '</b><br>';
+                      //  summaryPanel.innerHTML += route.legs[i].start_address + ' to ';
+                    //    summaryPanel.innerHTML += route.legs[i].end_address + '<br>';
+                  //      summaryPanel.innerHTML += route.legs[i].distance.text + '<br><br>';
+                //}
+            } else {
+                window.alert('Directions request failed due to ' + status);
+            }
+        });
+
+
+        // navigator.geolocation.getCurrentPosition((position) => {
+        //     myPos = {
+        //         lat: position.coords.latitude,
+        //         lng: position.coords.longitude
+        //     }
+
+        //     if(localStorage.getItem('start-point') == null || localStorage.getItem('start-point') == ""){
+        //         apiUrl = 'http://maps.googleapis.com/maps/api/geocode/json?latlng=' + myPos.lat + ',' + myPos.lng + '&sensor=true';
+        //     } else{
+        //         apiUrl = 'http://maps.google.com/maps/api/geocode/json?address=' + localStorage.getItem('start-point');
+        //     }
+
+        //     $.ajax({
+        //         url: apiUrl,
+        //     }).done(function(data){
+        //         if(data.status == "OVER_QUERY_LIMIT"){
+        //             alert("Zbyt dużo zapytań.");
+        //             return 8;
+        //         }
+                
+        //         let address = data.results[0]['formatted_address'];
+        //         $('#start-location-input').val(address);
+        //         localStorage.setItem('start-point', address);
+        //         startPoint = data.results[0].geometry.location;
+
+                
+        //     });
+        // }, () => {
+        //     $('.attraction').each(function () {
+        //         if (!($(this).attr('data-lat') === $('.attraction').first().attr('data-lat') && $(this).attr('data-lng') === $('.attraction').first().attr('data-lng'))
+        //             && !($(this).attr('data-lat') === $('.attraction').last().attr('data-lat') && $(this).attr('data-lng') === $('.attraction').last().attr('data-lng'))) {
+
+        //             let lat = parseFloat($(this).attr('data-lat'));
+        //             let lng = parseFloat($(this).attr('data-lng'));
+        //             waypts.push({
+        //                 location: new google.maps.LatLng({ lat: lat, lng: lng }),
+        //                 stopover: true
+        //             });
+        //         }
+        //     });
+
+        //     let lat_beg = parseFloat($('.attraction').first().attr('data-lat'));
+        //     let lng_beg = parseFloat($('.attraction').first().attr('data-lng'));
+        //     let lat_end = parseFloat($('.attraction').last().attr('data-lat'));
+        //     let lng_end = parseFloat($('.attraction').last().attr('data-lng'));
+        //     directionsService.route({
+        //         origin: new google.maps.LatLng({ lat: lat_beg, lng: lng_beg }),
+        //         destination: new google.maps.LatLng({ lat: lat_end, lng: lng_end }),
+        //         waypoints: waypts,
+        //         optimizeWaypoints: dirty == "False" ? true : false,
+        //         travelMode: 'DRIVING'
+        //     }, function (response, status) {
+        //         if (status === 'OK') {
+        //             directionsDisplay.setDirections(response);
+        //             var route = response.routes[0];
+        //             var summaryPanel = document.getElementById('directions-panel');
+        //             //summaryPanel.innerHTML = '';
+        //             // For each route, display summary information.
+        //             for (var i = 0; i < route.legs.length; i++) {
+        //                 var routeSegment = i + 1;
+        //                 //summaryPanel.innerHTML += '<b>Route Segment: ' + routeSegment; //do pdf
+        //                 //summaryPanel.innerHTML += route.legs[i].distance.text + '<br><br>';
+        //             }
+        //         } else {
+        //             window.alert('Directions request failed due to ' + status);
+        //         }
+        //     });
+        // });
     }
 
     $(function () {
