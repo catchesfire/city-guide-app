@@ -85,7 +85,7 @@
                     <button class="btn btn-sm btn-success" data-toggle="modal" data-target=".add-break">Dodaj przerwę</button>                                            
                     <ul id="sortable">
                         {% for attraction, orders in cart.items %}
-                        <li class="ui-state-default attraction my-2" data-lat="{{attraction.location_x}}" data-lng="{{attraction.location_y}}" data-id="{{attraction.id}}" data-type="{{orders.type}}">
+                        <li class="ui-state-default order-item {{ orders.type }} my-2" data-lat="{{attraction.location_x}}" data-lng="{{attraction.location_y}}" data-id="{{attraction.id}}" data-type="{{orders.type}}">
                             {% if orders.type == "break" %}
                             <div class="card alert-info">
                             {% else %}
@@ -190,18 +190,34 @@
 
 {{ block.super }}
 
-<script>
+<script type="text/javascript">
+    let mapId = 'map';
+    let waypts = "{{ waypoints }}";
+    waypts = JSON.parse(waypts.replace(/&quot;/g, "\""));
+    let dirty = "{{tour.was_order_modified}} == True" ? true : false;
+    var startLocation = localStorage.getItem('start-point');
+    if(!startLocation){
+        localStorage.setItem('is-start-point', false);
+        startLocation = localStorage.getItem('start-point');
+        $('#is-start-point').prop('checked', false);
+    }
+
+    if(localStorage.getItem('is-start-point') == "true"){
+        $('#is-start-point').prop('checked', true);
+    } else{
+        $('#is-start-point').prop('checked', false);
+    }
+    
+    $('#start-location-input').prop('disabled', !($('#is-start-point')[0].checked));
+</script>
+<script type="text/javascript" src="{% static 'js/map.js' %}"></script>
+<script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCYXIhgWd59IDdrJoO38Tz2hbyoYw0u9TU"></script> 
+<script type="text/javascript">
+    init(waypts);
     let newOrder = {};
     let order = "{{tour.attraction_order}}";
-    let startPoint;
-    let isStartPoint = $('#is-start-point')[0].checked;
-    let startLocationInput = $('#start-location-input');
-    let startLocation = localStorage.getItem('start-point');
-    let dirty = "{{tour.was_order_modified}}" == "True" ? true : false;
 
     order = JSON.parse(order.replace(/&quot;/g, "\""));
-
-    $('#start-location-input').prop('disabled', !($('#is-start-point')[0].checked));
 
     $('#add-break-form').submit(function(e){
         let url = $(this).attr("action");
@@ -220,25 +236,26 @@
 
     $('#is-start-point').on('change', function(){
         $('#start-location-input').prop('disabled', !($('#is-start-point')[0].checked));
-        isStartPoint = $('#is-start-point')[0].checked;     
+        isStartPoint = $('#is-start-point')[0].checked;
+        localStorage.setItem('is-start-point', isStartPoint);     
     });
 
     $('#my-location-btn').on('click', function(){
-        $('#map').html("ladowanie");
         navigator.geolocation.getCurrentPosition((position) => {
-            myPos = {
+            origin = {
                 lat: position.coords.latitude,
                 lng: position.coords.longitude
             }
             getAjax();
             function getAjax(){
                 $.ajax({
-                    url: 'https://maps.googleapis.com/maps/api/geocode/json?latlng=' + myPos.lat + ',' + myPos.lng + '&key=AIzaSyCYXIhgWd59IDdrJoO38Tz2hbyoYw0u9TU'
+                    url: 'https://maps.googleapis.com/maps/api/geocode/json?latlng=' + position.coords.latitude + ',' + position.coords.longitude + '&key=AIzaSyCYXIhgWd59IDdrJoO38Tz2hbyoYw0u9TU'
                 }).done(function(data){
                     if(data.status == "OK"){
                         let address = data.results[0]['formatted_address'];
                         startLocationInput.val(address);
                         localStorage.setItem('start-point', address);
+                        startLocation = address;
                         initMap();
                     } else{
                         setTimeout(getAjax, 1000);
@@ -277,13 +294,12 @@
     $(function () {
         $('#sortable').sortable({
             update: function (event, ui) {
-                $('.attraction').each(function (e) {
+                $('.order-item').each(function (e) {
                     let type = $(this).attr("data-type");
                     //let type = "attraction";
                     let id = $(this).attr("data-id");
                     newOrder[$(this).index().toString()] = {};
                     newOrder[$(this).index().toString()][type] = id;
-                    console.log(newOrder);
                 });
                 $.ajax({
                     url: "{% url 'city_guide:planner_edit' tour.id %}",
@@ -293,127 +309,7 @@
                 });
             }
         });
-    })
-
-    function initMap() {
-        isStartPoint = $('#is-start-point')[0].checked;        
-        var directionsService = new google.maps.DirectionsService;
-        var directionsDisplay = new google.maps.DirectionsRenderer;
-        var map = new google.maps.Map(document.getElementById('map'), {
-            zoom: 6,
-            center: { lat: 41.85, lng: -87.65 }
-        });
-
-        directionsDisplay.setMap(map);
-
-        let lat_beg = parseFloat($('.attraction').first().attr('data-lat'));
-        let lng_beg = parseFloat($('.attraction').first().attr('data-lng'));  
-
-        if(isStartPoint && startLocation != "" && startLocation != undefined){
-            getAjax();
-            function getAjax(){
-                $.ajax({
-                    url: apiUrl = 'https://maps.google.com/maps/api/geocode/json?address=' + startLocation + '&key=AIzaSyCYXIhgWd59IDdrJoO38Tz2hbyoYw0u9TU'
-                }).done(function(data){
-                    if(data.status == "OK"){
-                        let address = data.results[0]['formatted_address'];
-                        startLocation = address;
-                        startLocationInput.val(address);
-                        calculateAndDisplayRoute(directionsService, directionsDisplay, data.results[0].geometry.location);
-                    } else{
-                        setTimeout(getAjax, 1000);
-                    }
-                });
-            }
-        } else{
-            calculateAndDisplayRoute(directionsService, directionsDisplay, {lat: lat_beg, lng: lng_beg});
-        }
-    }
-
-    function calculateAndDisplayRoute(directionsService, directionsDisplay, pos) {
-        var waypts = [];
-        let coords;
-        let transport = $('#transport').val();
-        
-        console.log(pos);
-    
-        $('.attraction').not(':last').each(function () {
-            if(!isStartPoint && $(this).is(':first-child'))
-                return;
-            
-            let lat = parseFloat($(this).attr('data-lat'));
-            let lng = parseFloat($(this).attr('data-lng'));
-
-            if(isNaN(lat) || isNaN(lng))
-                return;
-
-            waypts.push({
-                location: new google.maps.LatLng({ lat: lat, lng: lng }),
-                stopover: true
-            });
-        });
-
-        let lat_end = parseFloat($('.attraction').last().attr('data-lat'));
-        let lng_end = parseFloat($('.attraction').last().attr('data-lng'));
-        if(!startLocation){
-            let lat_beg = parseFloat($('.attraction').first().attr('data-lat'));
-            let lng_beg = parseFloat($('.attraction').first().attr('data-lng'));                    
-            coords = { lat: lat_beg, lng: lng_beg };
-        } else{
-            coords = { lat: pos.lat, lng: pos.lng };
-        }
-
-        directionsService.route({
-            origin: new google.maps.LatLng(coords),
-            destination: new google.maps.LatLng({ lat: lat_end, lng: lng_end }),
-            waypoints: waypts,
-            optimizeWaypoints: dirty ? false : true,
-            travelMode: transport
-        }, function (response, status) {
-            if (status === 'OK') {
-                directionsDisplay.setDirections(response);
-                var route = response.routes[0];
-                var summaryPanel = document.getElementById('directions-panel');
-                summaryPanel.innerHTML = '';
-                // For each route, display summary information.
-                console.log(route);
-                var i = 0;
-                $('.route-steps').each(function(){
-                    $(this).html("");
-                })
-                $('.attraction').each(function(){
-                    steps = $(this).find('.route-steps');
-                    var string = "";
-                    for(var j = 0; j < route.legs[i].steps.length; j++){
-                        string += route.legs[i].steps[j].instructions + "<br>";
-                    }
-                    steps.html(string);
-
-                    if(i < route.legs.length)
-                        i++;
-                });
-                //if(isStartPoint){
-                    //d = document.createElement('div');
-                   // $(d).attr('id', "block-0");
-                   // d.innerHTML += route.legs[0].start_address + ' to ';
-                  //  d.innerHTML += route.legs[0].end_address + '<br>';
-                   // d.innerHTML += route.legs[0].distance.text + '<br><br>';
-                 //   $('#sortable').prepend(d);
-                //}
-                //$('.attraction').not
-                //for (var i = 0; i < route.legs.length; i++) {
-                    //var routeSegment = i + 1;
-                       // summaryPanel.innerHTML += '<b>Route Segment: ' + routeSegment +
-                        //    '</b><br>';
-                      //  summaryPanel.innerHTML += route.legs[i].start_address + ' to ';
-                    //    summaryPanel.innerHTML += route.legs[i].end_address + '<br>';
-                  //      summaryPanel.innerHTML += route.legs[i].distance.text + '<br><br>';
-                //}
-            } else {
-                window.alert('Directions request failed due to ' + status);
-            }
-        });
-    }
+    });
 
     $(function () {
         // $("#sortable").sortable({
@@ -429,7 +325,5 @@
     });
 
 </script>
-<script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCYXIhgWd59IDdrJoO38Tz2hbyoYw0u9TU&callback=initMap">
-</script> 
 
 {% endblock %}

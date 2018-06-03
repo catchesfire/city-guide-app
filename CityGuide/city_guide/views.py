@@ -464,25 +464,36 @@ class PlannerView(LoginRequiredMixin, generic.DetailView):
     model = Tour
     template_name = 'city_guide/planner.html'
     context_object_name = 'tour'    
+    
+    waypoints = {}
+
+    def render_to_response(self, context, **response_kwargs):
+        """ Allow AJAX requests to be handled more gracefully """
+        if self.request.is_ajax():
+            return JsonResponse(self.waypoints, safe=False, **response_kwargs)
+        else:
+            return super(generic.DetailView,self).render_to_response(context, **response_kwargs)
 
     def get_context_data(self, **kwargs):
         context = super(PlannerView, self).get_context_data(**kwargs)
 
         all_orders = self.object.order_set.all()
         all_breaks = self.object.userbreak_set.all()
-        total_cost = 0
 
         unsorted_orders = {}
+        total_cost = 0
 
         for order in all_orders:
             unsorted_orders[order.ticket.attraction] = all_orders.filter(ticket_id__in=Ticket.objects.filter(attraction_id=order.ticket.attraction.id))
-        
-        unsorted_breaks = {}
+            total_cost += order.cost()
 
+        unsorted_breaks = {}
+        waypoints = self.waypoints
 
         orders = {}
         positions = json.loads(self.object.attraction_order)
 
+        j = 0
         for i, types in positions.items():
             for type_name, attraction_id in types.items():
                 if type_name == "attraction":
@@ -491,6 +502,10 @@ class PlannerView(LoginRequiredMixin, generic.DetailView):
                             orders[attraction] = {}
                             orders[attraction]['type'] = "attraction"
                             orders[attraction]['items'] = ticket
+                            waypoints[str(j)] = {}
+                            waypoints[str(j)]['lat'] = float(attraction.location_x)
+                            waypoints[str(j)]['lng'] = float(attraction.location_y)
+                            j += 1
                             break
                 else:
                     user_break = self.object.userbreak_set.get(pk=attraction_id)
@@ -499,6 +514,8 @@ class PlannerView(LoginRequiredMixin, generic.DetailView):
                     orders[user_break]['items'] = user_break
                     
         context['cart'] = orders
+        context['waypoints'] = json.dumps(waypoints)
+        # print(waypoints)
 
         def min_to_hours(time):
             hours = time // 60
@@ -507,9 +524,11 @@ class PlannerView(LoginRequiredMixin, generic.DetailView):
             return str(hours) + " godz. " + str(minutes) + " min"
 
         tot_time = 0
-        # for attraction in orders.keys():
-        #     tot_time += attraction.time_minutes
-        
+        for key, items in orders.items():
+            if items['type'] == 'attraction':
+                tot_time += key.time_minutes
+            else:
+                tot_time += key.time        
 
         context['total_time'] = min_to_hours(tot_time)
         context['total_cost'] = total_cost

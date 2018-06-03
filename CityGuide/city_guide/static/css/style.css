@@ -1,7 +1,14 @@
 /* GLOBAL */
 
 body {
-    background-color: #ededed;
+    background-image: url('../images/bg.png');
+    background-repeat:no-repeat;
+    background-position:center center;
+    background-attachment:fixed;
+    -o-background-size: 100% 100%, auto;
+    -moz-background-size: 100% 100%, auto;
+    -webkit-background-size: 100% 100%, auto;
+    background-size: 100% 100%, auto;
     padding: 0px;
     margin: 0;
 }
@@ -252,10 +259,12 @@ ul {
 
 #sortable {
     padding-left: 0px;
+    max-height: 525px;
+    overflow-y: auto;
 }
 
 #map {
-    height: 600px;
+    height: 800px;
 }
 
 exampleTripAttr{

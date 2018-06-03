@@ -57,7 +57,7 @@
     </div>
   </div>
 </div>
-<div class="container">
+<div class="container standard-container mt-0">
   <div class="row">
     <div class="col">
       <div id="routes">
@@ -65,7 +65,9 @@
         {% for tour in tours %}
         <div class="row mt-5">
           <div class="col">
-            <img class="img-fluid" src="https://i.stack.imgur.com/fqKSl.png" alt="Dupa">
+            <div class="map" id="map-{{ tour.tour.id }}" data-tour-id=" {{ tour.tour.id }}" data-url="{% url 'city_guide:planner' tour.tour.id %}" style="height: 100%"></div>
+            <!-- <div class="map" data-url="{% url 'city_guide:planner' tour.tour.id %}"></div> -->
+            <!-- <img class="img-fluid" data-url="{% url 'city_guide:planner' tour.tour.id %}" src="https://i.stack.imgur.com/fqKSl.png" alt="Dupa"> -->
           </div>
           <div class="col-7">
             <div class="row">
@@ -135,4 +137,40 @@
     </div>
   </div>
 </div>
+{% endblock %}
+
+{% block javascripts %}
+{{ block.super }}
+<script>
+  var waypts;
+  var mapId;
+  var dirty = false;
+
+  function waypoint(data){
+    waypts = data;
+    transport = "DRIVING";
+  }
+  $('.map').each(function(){
+    let tourId = $(this).attr("data-tour-id");
+    let mapId = $(this).attr("id");
+    $.ajax({
+      url : $(this).attr('data-url')
+    }).done(function(data){
+      waypoint(data);
+      init(data, mapId);
+      //d();
+    });
+  });
+  //let mapId = 'map';
+  //let waypts = "{{ waypoints }}";
+  //waypts = JSON.parse(waypts.replace(/&quot;/g, "\""));
+</script>
+<script src="{% static 'js/map.js' %}"></script>
+<script>
+  //fuu("map-4");
+</script>
+<script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCYXIhgWd59IDdrJoO38Tz2hbyoYw0u9TU"></script> 
+<script>
+
+</script>
 {% endblock %}
