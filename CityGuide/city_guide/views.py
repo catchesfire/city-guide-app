@@ -144,7 +144,8 @@ def planner_add(request):
 
             i = 0
             for attraction_id in cart:
-                orders[str(i)] = attraction_id
+                orders[str(i)] = {}
+                orders[str(i)]['attraction'] = attraction_id
                 i += 1
 
             user_breaks = {}
@@ -159,7 +160,7 @@ def planner_add(request):
                     order = Order(quantity=quantity, date=timezone.now(), tour=tour, ticket=ticket)
                     order.save()
             
-            return redirect('city_guide:cart')
+            return redirect('city_guide:planner', pk=tour.id)
         return redirect('city_guide:cart')
     return redirect('city_guide:cart')
 

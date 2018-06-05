@@ -66,6 +66,12 @@ body {
 
 /* #region Atrakcje */
 
+#attraction-jump {
+    height: 288px;
+    margin-top: 72px;
+    background: url('../images/przygoda.png') #ededed center center no-repeat;
+}
+
 .attrDeck {
     margin-bottom: 20px;
 }
@@ -282,4 +288,12 @@ exampleTripAttr {
     position: absolute;
     bottom: 0;
     right: 0;
+}
+
+.edge-detail {
+    font-size: 80%;
+}
+
+.detail-table {
+    display: none;
 }

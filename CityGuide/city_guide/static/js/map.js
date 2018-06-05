@@ -5,24 +5,24 @@ let startLocationInput;
 startLocation = localStorage.getItem('start-point');
 var transport = "DRIVING";
 
-if(!startLocation){
+if (!startLocation) {
     localStorage.setItem('start-point', "");
     startLocation = "";
-} else{
-    if($("#start-location-input").length){
+} else {
+    if ($("#start-location-input").length) {
         startLocationInput = $("#start-location-input");
         startLocationInput.val(localStorage.getItem('start-point'));
     }
 }
 
-if($("#is-start-point").length){
+if ($("#is-start-point").length) {
     isStartPoint = $('#is-start-point')[0].checked;
 }
 
 var origin = {};
 var destination = {};
 
-function init(way, id = "map"){
+function init(way, id = "map") {
     mapId = id;
     startLocationInput = $('#start-location-input');
 
@@ -32,12 +32,12 @@ function init(way, id = "map"){
     };
 
     var wayptsSize = Object.keys(way).length;
-    
+
     destination = {
         lat: way[wayptsSize - 1].lat,
         lng: way[wayptsSize - 1].lng
     };
-    
+
     initMap();
 }
 
@@ -51,23 +51,23 @@ function initMap() {
 
     directionsDisplay.setMap(map);
 
-    if(isStartPoint && startLocation != "" && startLocation != undefined){
+    if (isStartPoint && startLocation != "" && startLocation != undefined) {
         getAjax();
-        function getAjax(){
+        function getAjax() {
             $.ajax({
                 url: apiUrl = 'https://maps.google.com/maps/api/geocode/json?address=' + startLocation + '&key=AIzaSyCYXIhgWd59IDdrJoO38Tz2hbyoYw0u9TU'
-            }).done(function(data){
-                if(data.status == "OK"){
+            }).done(function (data) {
+                if (data.status == "OK") {
                     let address = data.results[0]['formatted_address'];
                     startLocation = address;
                     startLocationInput.val(address);
                     calculateAndDisplayRoute(directionsService, directionsDisplay, data.results[0].geometry.location);
-                } else{
+                } else {
                     setTimeout(getAjax, 1000);
                 }
             });
         }
-    } else{
+    } else {
         calculateAndDisplayRoute(directionsService, directionsDisplay);
     }
 }
@@ -75,7 +75,7 @@ function initMap() {
 function calculateAndDisplayRoute(directionsService, directionsDisplay, pos = {}) {
     waypoints = [];
 
-    if($('#transport').length){
+    if ($('#transport').length) {
         transport = $('#transport').val();
     }
 
@@ -85,7 +85,7 @@ function calculateAndDisplayRoute(directionsService, directionsDisplay, pos = {}
         lng: waypts[0].lng
     }
 
-    if(isStartPoint){
+    if (isStartPoint) {
         i = 0;
         origin = {
             lat: pos.lat,
@@ -93,7 +93,7 @@ function calculateAndDisplayRoute(directionsService, directionsDisplay, pos = {}
         }
     }
 
-    for(i; i < Object.keys(waypts).length - 1; i++){
+    for (i; i < Object.keys(waypts).length - 1; i++) {
         waypoints.push({
             location: new google.maps.LatLng({ lat: waypts[i].lat, lng: waypts[i].lng }),
             stopover: true
@@ -110,6 +110,14 @@ function calculateAndDisplayRoute(directionsService, directionsDisplay, pos = {}
         if (status === 'OK') {
             directionsDisplay.setDirections(response);
             var route = response.routes[0];
+            route.legs.forEach((edge, i) => {
+                i = i+1
+                document.getElementById("start_" + i).innerHTML = edge.start_address;
+                document.getElementById("end_" + i).innerHTML = edge.end_address;
+                document.getElementById("distance_" + i).innerHTML = edge.distance.text;
+                document.getElementById("duration_" + i).innerHTML = edge.duration.text;
+            });
+
             //var summaryPanel = document.getElementById('directions-panel');
             //summaryPanel.innerHTML = '';
             // For each route, display summary information.
@@ -130,21 +138,21 @@ function calculateAndDisplayRoute(directionsService, directionsDisplay, pos = {}
             //        i++;
             //});
             //if(isStartPoint){
-                //d = document.createElement('div');
-               // $(d).attr('id', "block-0");
-               // d.innerHTML += route.legs[0].start_address + ' to ';
-              //  d.innerHTML += route.legs[0].end_address + '<br>';
-               // d.innerHTML += route.legs[0].distance.text + '<br><br>';
-             //   $('#sortable').prepend(d);
+            //d = document.createElement('div');
+            // $(d).attr('id', "block-0");
+            // d.innerHTML += route.legs[0].start_address + ' to ';
+            //  d.innerHTML += route.legs[0].end_address + '<br>';
+            // d.innerHTML += route.legs[0].distance.text + '<br><br>';
+            //   $('#sortable').prepend(d);
             //}
             //$('.attraction').not
             //for (var i = 0; i < route.legs.length; i++) {
-                //var routeSegment = i + 1;
-                   // summaryPanel.innerHTML += '<b>Route Segment: ' + routeSegment +
-                    //    '</b><br>';
-                  //  summaryPanel.innerHTML += route.legs[i].start_address + ' to ';
-                //    summaryPanel.innerHTML += route.legs[i].end_address + '<br>';
-              //      summaryPanel.innerHTML += route.legs[i].distance.text + '<br><br>';
+            //var routeSegment = i + 1;
+            // summaryPanel.innerHTML += '<b>Route Segment: ' + routeSegment +
+            //    '</b><br>';
+            //  summaryPanel.innerHTML += route.legs[i].start_address + ' to ';
+            //    summaryPanel.innerHTML += route.legs[i].end_address + '<br>';
+            //      summaryPanel.innerHTML += route.legs[i].distance.text + '<br><br>';
             //}
         } else {
             window.alert('Directions request failed due to ' + status);
