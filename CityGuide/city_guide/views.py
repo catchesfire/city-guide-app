@@ -263,6 +263,8 @@ class AttracionView(generic.DetailView):
     template_name = 'city_guide/attraction.html'
     context_object_name = 'attraction_obj'
 
+
+
 class UserLogFormView(View):
     template_name = 'city_guide/login.html'
     

@@ -2,13 +2,13 @@
 {% block body %}
 
 
-<div class="container" style="margin-top: 92px; background-color: #fff">
+<div class="container standard-container">
     <!-- Title -->
 
-    <div class="row">
+    <div class="row logAndRegisterCard">
         <div class="col">
-            <h2>Tworzenie nowego konta.</h2>
-            <p>Wprowadź dane</p>
+            <h1>Tworzenie nowego konta</h1>
+            <!-- <h4>Wprowadź dane</h4> -->
             <form action="" method="POST">
                 {% csrf_token %}
                 {% for field in user_form %}
@@ -21,7 +21,7 @@
                     <div class="form-group row">
                         
                         <label class="col-form-label col-sm-3" for="{{field.id_for_label}}">{{field.label}}:</label>
-                        <div class="col-sm-7">
+                        <div class="col-sm-9">
                             {{field}}
                         </div>
                     </div>
@@ -38,7 +38,7 @@
                     <div class="form-group row">
                         
                         <label class="col-form-label col-sm-3" for="{{field.id_for_label}}">{{field.label}}:</label>
-                        <div class="col-sm-7">
+                        <div class="col-sm-9">
                             {{field}}
                         </div>
                     </div>
@@ -50,11 +50,11 @@
                         <li class="{{ message.tags }} alert alert-danger">{{ message }}</li>
                     {% endfor %}
                 {% endif %}
-                <div class="g-recaptcha" data-sitekey="6LdeO1wUAAAAAH38moavAxpg3n0tpU397Z07iYIa"></div>
+                <div class="g-recaptcha mx-auto"  data-sitekey="6LdeO1wUAAAAAH38moavAxpg3n0tpU397Z07iYIa"></div>
         
-                <div class="row">
-                    <div class="col">
-                        <button type="submit" class="btn" >Załóż konto</button> 
+                <div class="row ">
+                    <div class="col mb-3">
+                        <button type="submit" class="btn loginBtn" >Załóż konto</button> 
 
                     </div>
                 </div>

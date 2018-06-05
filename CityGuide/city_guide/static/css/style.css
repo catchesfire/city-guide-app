@@ -11,7 +11,7 @@ body {
 }
 
 .standard-container {
-    margin-top: 70px;
+    margin-top: 92px;
     background-color: #fff;
     min-height: 600px;
     padding-top: 10px;
@@ -239,7 +239,7 @@ h3 {
 .logAndRegisterCard{
     margin: auto;
     max-width: 400px;
-    max-height: 500px;
+    max-height: 560px;
 }
 
 .loginBtn{
@@ -256,4 +256,10 @@ ul{
 
 #map{
     height: 600px;
+}
+
+.g-recaptcha{
+
+    
+    margin-bottom: 10px;
 }
