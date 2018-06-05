@@ -217,10 +217,7 @@ def planner_add_break(request, pk):
         return JsonResponse(data)
     return redirect('city_guide:index')
 
-def profile(request):
-    profile = Profile.objects.get(user=request.user)
 
-#     return render(request, 'city_guide/profile.html', {'profile': profile})
 
 class AttractionsView(generic.ListView):
     filter_form_class = FilterForm
@@ -374,17 +371,34 @@ def update_profile(request):
     password_form = PasswordChangeForm(request.user)
     tours = Tour.objects.filter(user=request.user)
 
-    print(password_form.fields)
     password_form.fields['old_password'].label = "Stare hasło"
     password_form.fields['new_password1'].label = "Nowe hasło"
-    password_form.fields['new_password2'].label = "Potrwierdź nowe hasło"
+    password_form.fields['new_password2'].label = "Potwierdź hasło"
 
     password_form.fields['old_password'].widget.attrs['class'] = 'form-control'
+    password_form.fields['new_password1'].widget.attrs['class'] = 'form-control'
+    password_form.fields['new_password2'].widget.attrs['class'] = 'form-control'
     
     # for tour in tours:
 
     #     for order in Cart.objects.filter(user=request.user).last().order_set.all():
 
+    timetab = {}
+    costtab = {}
+
+    for t in tours:
+        all_orders = t.order_set.all()
+        all_breaks = t.userbreak_set.all()
+        total_time = 0
+        total_cost = 0
+        for o in all_orders:
+            total_time += o.time()
+            total_cost += o.cost()
+        for b in all_breaks:
+            total_time += b.time
+
+        timetab[t.id] = t.min_to_hours(total_time)
+        costtab[t.id] = t.add_currency(total_cost)
 
 
 
@@ -392,7 +406,9 @@ def update_profile(request):
         'user_form': user_form,
         'profile_form': profile_form,
         'password_form': password_form,
-        'tours': tours
+        'tours': tours,
+        'timetab': timetab,
+        'costtab': costtab
 
         
     })

@@ -297,3 +297,30 @@ exampleTripAttr {
 .detail-table {
     display: none;
 }
+
+.profile-form-group-left {
+    padding-left: 30px;
+    padding-right: 15px;
+}
+
+.profile-form-group-right {
+    padding-left: 15px;
+    padding-right: 30px;
+}
+
+.mr-30 {
+    margin-right: 30px;
+}
+
+.mr-15 {
+    margin-right: 15px;
+}
+
+.mt-30 {
+    margin-top: 30px;
+}
+
+.px-30 {
+    padding-left: 30px;
+    padding-right: 30px;
+}
