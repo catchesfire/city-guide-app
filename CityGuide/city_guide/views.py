@@ -559,7 +559,7 @@ class PlannerView(LoginRequiredMixin, generic.DetailView):
                 tot_time += key.time        
 
         context['total_time'] = min_to_hours(tot_time)
-        context['total_cost'] = total_cost
+        context['total_cost'] = str(total_cost) + " PLN"
         context['tour'] = self.object
         context['break_form'] = AddBreakForm(None)
 
