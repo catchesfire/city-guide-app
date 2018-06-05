@@ -256,14 +256,14 @@
                         startLocationInput.val(address);
                         localStorage.setItem('start-point', address);
                         startLocation = address;
-                        initMap();
+                        location.reload();
                     } else{
                         setTimeout(getAjax, 1000);
                     }
                 });
             }
         }, () => {
-           alert("to do");
+           alert("Wystąpił błąd podczas pobierania lokalizacji.\n Zezwoliłeś na udostępnienie Twojej lokalizacji?");
         });
     });
 
@@ -279,7 +279,7 @@
                         startLocation = address;
                         startLocationInput.val(address);
                         localStorage.setItem('start-point', address);
-                        initMap();
+                        location.reload();
                     } else{
                         setTimeout(getAjax, 1000);
                     }
@@ -287,7 +287,7 @@
             }
         } else{
             localStorage.setItem('start-point', "");
-            initMap();
+            location.reload();
         }
     });
 
