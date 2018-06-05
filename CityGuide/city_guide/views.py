@@ -94,6 +94,7 @@ def cart(request):
                 orders[attraction][ticket]['id'] = ticket.id
                 orders[attraction][ticket]['quantity'] = quantity
                 orders[attraction][ticket]['cost'] = ticket.price * quantity
+                orders[attraction][ticket]['name'] = ticket.ticket_type
                 total_cost += ticket.price * quantity
     form = TourCreateForm(None)
 
@@ -129,6 +130,23 @@ def cart_order_edit(request):
                         'message' : "Amount can't be negative."
                     }
                 return JsonResponse(data)
+
+    return redirect('city_guide:cart')
+
+def cart_order_delete(request):
+    attr_id = request.GET.get('id', 0)
+    cart = request.session.get('cart', {})
+
+    for attraction_id, tickets in cart.items():
+        if attraction_id == attr_id:
+            del cart[str(attraction_id)]
+            request.session['cart'] = cart
+            request.session.modified = True
+            data = {
+                        'status' : 200,
+                        'message' : "OK."
+                    }
+            return JsonResponse(data)
 
     return redirect('city_guide:cart')
 
@@ -218,10 +236,7 @@ def planner_add_break(request, pk):
         return JsonResponse(data)
     return redirect('city_guide:index')
 
-def profile(request):
-    profile = Profile.objects.get(user=request.user)
 
-#     return render(request, 'city_guide/profile.html', {'profile': profile})
 
 class AttractionsView(generic.ListView):
     filter_form_class = FilterForm
@@ -375,17 +390,34 @@ def update_profile(request):
     password_form = PasswordChangeForm(request.user)
     tours = Tour.objects.filter(user=request.user)
 
-    print(password_form.fields)
     password_form.fields['old_password'].label = "Stare hasło"
     password_form.fields['new_password1'].label = "Nowe hasło"
-    password_form.fields['new_password2'].label = "Potrwierdź nowe hasło"
+    password_form.fields['new_password2'].label = "Potwierdź hasło"
 
     password_form.fields['old_password'].widget.attrs['class'] = 'form-control'
+    password_form.fields['new_password1'].widget.attrs['class'] = 'form-control'
+    password_form.fields['new_password2'].widget.attrs['class'] = 'form-control'
     
     # for tour in tours:
 
     #     for order in Cart.objects.filter(user=request.user).last().order_set.all():
 
+    timetab = {}
+    costtab = {}
+
+    for t in tours:
+        all_orders = t.order_set.all()
+        all_breaks = t.userbreak_set.all()
+        total_time = 0
+        total_cost = 0
+        for o in all_orders:
+            total_time += o.time()
+            total_cost += o.cost()
+        for b in all_breaks:
+            total_time += b.time
+
+        timetab[t.id] = t.min_to_hours(total_time)
+        costtab[t.id] = t.add_currency(total_cost)
 
 
 
@@ -393,7 +425,9 @@ def update_profile(request):
         'user_form': user_form,
         'profile_form': profile_form,
         'password_form': password_form,
-        'tours': tours
+        'tours': tours,
+        'timetab': timetab,
+        'costtab': costtab
 
         
     })
@@ -546,8 +580,6 @@ class PlannerView(ExemplaryPlannerMixin, generic.DetailView):
                     
         context['cart'] = orders
         context['waypoints'] = json.dumps(waypoints)
-        print(waypoints)
-        # print(waypoints)
 
         def min_to_hours(time):
             hours = time // 60
@@ -563,7 +595,7 @@ class PlannerView(ExemplaryPlannerMixin, generic.DetailView):
                 tot_time += key.time        
 
         context['total_time'] = min_to_hours(tot_time)
-        context['total_cost'] = total_cost
+        context['total_cost'] = str(total_cost) + " PLN"
         context['tour'] = self.object
         context['break_form'] = AddBreakForm(None)
         

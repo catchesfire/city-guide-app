@@ -2,9 +2,9 @@
 
 body {
     background-image: url('../images/bg.png');
-    background-repeat:no-repeat;
-    background-position:center center;
-    background-attachment:fixed;
+    background-repeat: no-repeat;
+    background-position: center center;
+    background-attachment: fixed;
     -o-background-size: 100% 100%, auto;
     -moz-background-size: 100% 100%, auto;
     -webkit-background-size: 100% 100%, auto;
@@ -66,7 +66,7 @@ body {
 
 /* #region Atrakcje */
 
-#attraction-jump{
+#attraction-jump {
     height: 288px;
     margin-top: 72px;
     background: url('../images/przygoda.png') #ededed center center no-repeat;
@@ -238,17 +238,17 @@ h3 {
     font-size: 1.1em;
 }
 
-.registerRef{
+.registerRef {
     text-align: center;
 }
 
-.logAndRegisterCard{
+.logAndRegisterCard {
     margin: auto;
     max-width: 400px;
     max-height: 560px;
 }
 
-.loginBtn{
+.loginBtn {
     float: right;
 }
 
@@ -266,20 +266,61 @@ ul {
     height: 800px;
 }
 
-exampleTripAttr{
+exampleTripAttr {
     overflow-y: auto;
+    max-height: 135px;
 }
 
-#map{
+#map {
     height: 600px;
 }
 
-.g-recaptcha{
-
-    
+.g-recaptcha {
     margin-bottom: 10px;
 }
-.filter-nav-container{
+
+.filter-nav-container {
     margin-top: 72px;
     margin-bottom: -72px;
+}
+
+.details-button {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+}
+
+.edge-detail {
+    font-size: 80%;
+}
+
+.detail-table {
+    display: none;
+}
+
+.profile-form-group-left {
+    padding-left: 30px;
+    padding-right: 15px;
+}
+
+.profile-form-group-right {
+    padding-left: 15px;
+    padding-right: 30px;
+}
+
+.mr-30 {
+    margin-right: 30px;
+}
+
+.mr-15 {
+    margin-right: 15px;
+}
+
+.mt-30 {
+    margin-top: 30px;
+}
+
+.px-30 {
+    padding-left: 30px;
+    padding-right: 30px;
 }

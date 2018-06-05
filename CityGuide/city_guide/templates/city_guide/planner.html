@@ -15,9 +15,7 @@
             <div class="modal-body">
                 <form action="{% url 'city_guide:planner_add_break' tour.id %}" id="add-break-form" method="POST">
                     {% csrf_token %}
-                    <input type="hidden" name="id">
-                    {% for field in break_form %}
-                    {% if field.errors %}
+                    <input type="hidden" name="id"> {% for field in break_form %} {% if field.errors %}
                     <div class="alert alert-danger">
                         {{ field.errors}}
                     </div>
@@ -86,71 +84,97 @@
             {% block custom %}
             <div class="row">
                 <div class="col">
-                    <button class="btn btn-sm btn-success" data-toggle="modal" data-target=".add-break">Dodaj przerwę</button>                                            
+                    <button class="btn btn-sm btn-success" data-toggle="modal" data-target=".add-break">Dodaj przerwę</button>
                     <ul id="sortable">
                         {% for attraction, orders in cart.items %}
-                        <li class="ui-state-default order-item {{ orders.type }} my-2" data-lat="{{attraction.location_x}}" data-lng="{{attraction.location_y}}" data-id="{{attraction.id}}" data-type="{{orders.type}}">
+                        <li class="ui-state-default order-item {{ orders.type }} my-2" data-lat="{{attraction.location_x}}" data-lng="{{attraction.location_y}}"
+                            data-id="{{attraction.id}}" data-type="{{orders.type}}">
                             {% if orders.type == "break" %}
                             <div class="card alert-info">
-                            {% else %}
-                            <div class="card">
-                            {% endif %}
-                                <div class="card-body">
-                                    {% if orders.type == "attraction" %}
-                                    <div class="row">
-                                        <div class="col attractionTitleInPlanner">
-                                            {{ attraction }}
-                                        </div>
-                                        <div class="col-4">
-                                            <div class="row">
-                                                <div class="col">
-                                                    <span class="fontForAll">
-                                                        <i class="fa fa-clock"></i> {{ attraction.time_minutes }} min
-                                                    </span>
-                                                </div>
-                                                <div class="col-auto px-1">
-                                                    <button class="btn btn-danger btn-sm float-right ml-2">Usuń</button>
-                                                </div>
-                                                <div class="col-auto px-1">
-                                                    <button class="btn btn-warning btn-sm float-right mr-2">Edycja</button>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="row">
-                                        <div class="col">
-                                            Wskazówki dojścia
-                                            <div class="route-steps" style="display: none;"></div>
-                                        </div>
-                                    </div>
-                                    {% else %}
-                                    <div class="row">
-                                        <div class="col attractionTitleInPlanner">
-                                            {{ attraction.name }}
-                                        </div>
-                                        <div class="col-4">
-                                            <div class="row">
-                                                <div class="col">
-                                                    <span class="fontForAll">
-                                                        <i class="fa fa-clock"></i> {{ attraction.time }} min
-                                                    </span>
-                                                </div>
-                                                <div class="col-auto px-1">
-                                                    <button class="btn btn-danger btn-sm float-right ml-2">Usuń</button>
-                                                </div>
-                                                <div class="col-auto px-1">
-                                                    <button class="btn btn-warning btn-sm float-right mr-2">Edycja</button>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
+                                {% else %}
+                                <div class="card">
                                     {% endif %}
+                                    <div class="card-body">
+                                        {% if orders.type == "attraction" %}
+                                        <div class="row">
+                                            <div class="col attractionTitleInPlanner">
+                                                {{ attraction }}
+                                            </div>
+                                            <div class="col-4">
+                                                <div class="row">
+                                                    <div class="col">
+                                                        <span class="fontForAll">
+                                                            <i class="fa fa-clock"></i> {{ attraction.time_minutes }} min
+                                                        </span>
+                                                    </div>
+                                                    <div class="col-auto px-1">
+                                                        <button class="btn btn-success btn-sm float-right details-button" data-id="{{forloop.counter}}">
+                                                            <i class="fas fa-angle-double-down"></i>
+                                                        </button>
+                                                    </div>
+                                                    <div class="col-auto px-1">
+                                                        <button class="btn btn-danger btn-sm float-right mr-2">
+                                                            <i class="far fa-trash-alt"></i>
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col">
+                                                Wskazówki dojścia
+                                                <div class="route-steps" style="display: none;"></div>
+                                            </div>
+                                        </div>
+                                        <div class="detail-table" id="detail-table-{{forloop.counter}}">
+                                            <table class="table mt-2">
+                                                <thead>
+                                                    <tr>
+                                                        <th class="px-0">Początek</th>
+                                                        <th class="px-0">Koniec</th>
+                                                        <th class="px-0">Dystans</th>
+                                                        <th class="px-0">Czas</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody class="edge-detail">
+                                                    <tr>
+                                                        <th class="px-0" style="font-weight: normal" id="start_{{forloop.counter}}">--</th>
+                                                        <td class="px-0" id="end_{{forloop.counter}}">--</td>
+                                                        <td class="px-0" id="distance_{{forloop.counter}}">--</td>
+                                                        <td class="px-0" id="duration_{{forloop.counter}}">--</td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                        {% else %}
+                                        <div class="row">
+                                            <div class="col attractionTitleInPlanner">
+                                                {{ attraction.name }}
+                                            </div>
+                                            <div class="col-4">
+                                                <div class="row">
+                                                    <div class="col">
+                                                        <span class="fontForAll">
+                                                            <i class="fa fa-clock"></i> {{ attraction.time }} min
+                                                        </span>
+                                                    </div>
+                                                    <div class="col-auto px-1">
+                                                        <button class="btn btn-danger btn-sm float-right ml-2">Usuń</button>
+                                                    </div>
+                                                    <div class="col-auto px-1">
+                                                        <button class="btn btn-warning btn-sm float-right mr-2">Edycja</button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        {% endif %}
+                                    </div>
                                 </div>
-                            </div>
                         </li>
                         {% endfor %}
-                        <button class="btn btn-primary btn-block mt-2" id="generateBtn">Generuj Trasę</button>
                     </ul>
+                    <button class="btn btn-primary btn-block mt-2" id="generateBtn">Generuj Trasę</button>
+                    </div>
                 </div>
             </div>
             {% endblock %}
@@ -162,173 +186,178 @@
                 </div>
             </div>
         </div>
-    </div>
-    <div class="row mt-3">
-        <div class="col">
-            <div class="card">
-                <div class="card-body">
-                    <div class="row">
-                        <div class="col">
-                            <span class="fontforAll">
-                                <i class="fa fa-clock"></i> Łączny czas zwiedzania: {{ total_time }}
-                            </span>
-                        </div>
-                        <div class="col">
-                            <span class="fontforAll">
-                                <i class="fa fa-coin"></i> Łączny koszt wycieczki: {{ total_cost }}
-                            </span>
+        <div class="row mt-3">
+            <div class="col">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col">
+                                <span class="fontforAll">
+                                    <h5>
+                                        <i class="fa fa-clock"></i>
+                                        Czas zwiedzania:
+                                        <span class="ml-1">{{ total_time }}</span>
+                                    </h5>
+                                </span>
+                            </div>
+                            <div class="col">
+                                <span class="fontforAll">
+                                    <h5>
+                                        <i class="fas fa-coins"></i>
+                                        Koszt wycieczki:
+                                        <span class="ml-1">{{ total_cost }}</span>
+                                    </h5>
+                                </span>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
-    <div class="row">
-        <div class="col">
-            <div id="directions-panel"></div>
+        <div class="row">
+            <div class="col">
+                <div id="directions-panel"></div>
+            </div>
         </div>
     </div>
-</div>
-{% endblock %} 
+    {% endblock %} {% block javascripts %} {{ block.super }}
 
-{% block javascripts %} 
+    <script type="text/javascript">
+        let mapId = 'map';
+        let waypts = "{{ waypoints }}";
+        waypts = JSON.parse(waypts.replace(/&quot;/g, "\""));
+        let dirty = "{{tour.was_order_modified}} == True" ? true : false;
+        var startLocation = localStorage.getItem('start-point');
+        if (!startLocation) {
+            localStorage.setItem('is-start-point', false);
+            startLocation = localStorage.getItem('start-point');
+            $('#is-start-point').prop('checked', false);
+        }
 
-{{ block.super }}
+        if (localStorage.getItem('is-start-point') == "true") {
+            $('#is-start-point').prop('checked', true);
+        } else {
+            $('#is-start-point').prop('checked', false);
+        }
 
-<script type="text/javascript">
-    let mapId = 'map';
-    let waypts = "{{ waypoints }}";
-    waypts = JSON.parse(waypts.replace(/&quot;/g, "\""));
-    let dirty = "{{tour.was_order_modified}} == True" ? true : false;
-    var startLocation = localStorage.getItem('start-point');
-    if(!startLocation){
-        localStorage.setItem('is-start-point', false);
-        startLocation = localStorage.getItem('start-point');
-        $('#is-start-point').prop('checked', false);
-    }
+        $('#start-location-input').prop('disabled', !($('#is-start-point')[0].checked));
+    </script>
+    <script type="text/javascript" src="{% static 'js/map.js' %}"></script>
+    <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCYXIhgWd59IDdrJoO38Tz2hbyoYw0u9TU"></script>
+    <script type="text/javascript">
+        $(".details-button").on("click", function () {
+            $("#detail-table-" + $(this).attr("data-id")).slideToggle("slow");
+        });
 
-    if(localStorage.getItem('is-start-point') == "true"){
-        $('#is-start-point').prop('checked', true);
-    } else{
-        $('#is-start-point').prop('checked', false);
-    }
-    
-    $('#start-location-input').prop('disabled', !($('#is-start-point')[0].checked));
-</script>
-<script type="text/javascript" src="{% static 'js/map.js' %}"></script>
-<script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCYXIhgWd59IDdrJoO38Tz2hbyoYw0u9TU"></script> 
-<script type="text/javascript">
-    init(waypts);
-    let newOrder = {};
-    let order = "{{tour.attraction_order}}";
+        init(waypts);
+        let newOrder = {};
+        let order = "{{tour.attraction_order}}";
 
-    order = JSON.parse(order.replace(/&quot;/g, "\""));
+        order = JSON.parse(order.replace(/&quot;/g, "\""));
 
-    $('#add-break-form').submit(function(e){
-        let url = $(this).attr("action");
+        $('#add-break-form').submit(function (e) {
+            let url = $(this).attr("action");
 
-        $.ajax({
-            url: url,
-            type: 'POST',
-            data: $(this).serialize(),
-            success: function (data) {
+            $.ajax({
+                url: url,
+                type: 'POST',
+                data: $(this).serialize(),
+                success: function (data) {
+                    location.reload();
+                }
+            });
+
+            e.preventDefault();
+        });
+
+        $('#is-start-point').on('change', function () {
+            $('#start-location-input').prop('disabled', !($('#is-start-point')[0].checked));
+            isStartPoint = $('#is-start-point')[0].checked;
+            localStorage.setItem('is-start-point', isStartPoint);
+        });
+
+        $('#my-location-btn').on('click', function () {
+            navigator.geolocation.getCurrentPosition((position) => {
+                origin = {
+                    lat: position.coords.latitude,
+                    lng: position.coords.longitude
+                }
+                getAjax();
+                function getAjax() {
+                    $.ajax({
+                        url: 'https://maps.googleapis.com/maps/api/geocode/json?latlng=' + position.coords.latitude + ',' + position.coords.longitude + '&key=AIzaSyCYXIhgWd59IDdrJoO38Tz2hbyoYw0u9TU'
+                    }).done(function (data) {
+                        if (data.status == "OK") {
+                            let address = data.results[0]['formatted_address'];
+                            startLocationInput.val(address);
+                            localStorage.setItem('start-point', address);
+                            startLocation = address;
+                            location.reload();
+                        } else {
+                            setTimeout(getAjax, 1000);
+                        }
+                    });
+                }
+            }, () => {
+                alert("Wystąpił błąd podczas pobierania lokalizacji.\n Zezwoliłeś na udostępnienie Twojej lokalizacji?");
+            });
+        });
+
+        $('#generateBtn').on('click', function () {
+            if (startLocationInput.val() != "") {
+                getAjax();
+                function getAjax() {
+                    $.ajax({
+                        url: apiUrl = 'https://maps.google.com/maps/api/geocode/json?address=' + startLocationInput.val() + '&key=AIzaSyCYXIhgWd59IDdrJoO38Tz2hbyoYw0u9TU'
+                    }).done(function (data) {
+                        if (data.status == "OK") {
+                            let address = data.results[0]['formatted_address'];
+                            startLocation = address;
+                            startLocationInput.val(address);
+                            localStorage.setItem('start-point', address);
+                            location.reload();
+                        } else {
+                            setTimeout(getAjax, 1000);
+                        }
+                    });
+                }
+            } else {
+                localStorage.setItem('start-point', "");
                 location.reload();
             }
         });
 
-        e.preventDefault();
-    });
-
-    $('#is-start-point').on('change', function(){
-        $('#start-location-input').prop('disabled', !($('#is-start-point')[0].checked));
-        isStartPoint = $('#is-start-point')[0].checked;
-        localStorage.setItem('is-start-point', isStartPoint);     
-    });
-
-    $('#my-location-btn').on('click', function(){
-        navigator.geolocation.getCurrentPosition((position) => {
-            origin = {
-                lat: position.coords.latitude,
-                lng: position.coords.longitude
-            }
-            getAjax();
-            function getAjax(){
-                $.ajax({
-                    url: 'https://maps.googleapis.com/maps/api/geocode/json?latlng=' + position.coords.latitude + ',' + position.coords.longitude + '&key=AIzaSyCYXIhgWd59IDdrJoO38Tz2hbyoYw0u9TU'
-                }).done(function(data){
-                    if(data.status == "OK"){
-                        let address = data.results[0]['formatted_address'];
-                        startLocationInput.val(address);
-                        localStorage.setItem('start-point', address);
-                        startLocation = address;
-                        location.reload();
-                    } else{
-                        setTimeout(getAjax, 1000);
-                    }
-                });
-            }
-        }, () => {
-           alert("Wystąpił błąd podczas pobierania lokalizacji.\n Zezwoliłeś na udostępnienie Twojej lokalizacji?");
+        $(function () {
+            $('#sortable').sortable({
+                update: function (event, ui) {
+                    $('.order-item').each(function (e) {
+                        let type = $(this).attr("data-type");
+                        //let type = "attraction";
+                        let id = $(this).attr("data-id");
+                        newOrder[$(this).index().toString()] = {};
+                        newOrder[$(this).index().toString()][type] = id;
+                    });
+                    $.ajax({
+                        url: "{% url 'city_guide:planner_edit' tour.id %}",
+                        type: 'GET',
+                        data: { order: JSON.stringify(newOrder) },
+                        dataType: 'json'
+                    });
+                }
+            });
         });
-    });
 
-    $('#generateBtn').on('click', function(){
-        if(startLocationInput.val() != ""){
-            getAjax();
-            function getAjax(){
-                $.ajax({
-                    url: apiUrl = 'https://maps.google.com/maps/api/geocode/json?address=' + startLocationInput.val() + '&key=AIzaSyCYXIhgWd59IDdrJoO38Tz2hbyoYw0u9TU'
-                }).done(function(data){
-                    if(data.status == "OK"){
-                        let address = data.results[0]['formatted_address'];
-                        startLocation = address;
-                        startLocationInput.val(address);
-                        localStorage.setItem('start-point', address);
-                        location.reload();
-                    } else{
-                        setTimeout(getAjax, 1000);
-                    }
-                });
-            }
-        } else{
-            localStorage.setItem('start-point', "");
-            location.reload();
-        }
-    });
-
-    $(function () {
-        $('#sortable').sortable({
-            update: function (event, ui) {
-                $('.order-item').each(function (e) {
-                    let type = $(this).attr("data-type");
-                    //let type = "attraction";
-                    let id = $(this).attr("data-id");
-                    newOrder[$(this).index().toString()] = {};
-                    newOrder[$(this).index().toString()][type] = id;
-                });
-                $.ajax({
-                    url: "{% url 'city_guide:planner_edit' tour.id %}",
-                    type: 'GET',
-                    data: { order: JSON.stringify(newOrder) },
-                    dataType: 'json'
-                });
-            }
+        $(function () {
+            // $("#sortable").sortable({
+            //    revert: true
+            //});
+            $("#draggable").draggable({
+                connectToSortable: "#sortable",
+                helper: "clone",
+                revert: "invalid"
+            });
+            $("ul, li").disableSelection();
+            //var sorted = $( ".attraction" ).sortable( "serialize", { key: "sort" } );
         });
-    });
 
-    $(function () {
-        // $("#sortable").sortable({
-        //    revert: true
-        //});
-        $("#draggable").draggable({
-            connectToSortable: "#sortable",
-            helper: "clone",
-            revert: "invalid"
-        });
-        $("ul, li").disableSelection();
-        //var sorted = $( ".attraction" ).sortable( "serialize", { key: "sort" } );
-    });
-
-</script>
-
-{% endblock %}
+    </script> {% endblock %}

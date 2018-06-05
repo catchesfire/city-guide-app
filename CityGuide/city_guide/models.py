@@ -64,6 +64,25 @@ class Tour(models.Model):
     def get_user_breaks(self):
         return json.loads(self.user_breaks)
 
+    def min_to_hours(self, time):
+        days = time // 1440
+
+        if days > 0:
+            time -= 1440 * days
+
+        hours = time // 60
+        time -= 60 * hours
+        minutes = time         
+
+        return (
+            (str(days) + (" dzień " if days == 1 else " dni ") if days > 0 else "") 
+            + (str(hours) + " godz. " if hours > 0 else "")
+            + (str(minutes) + " min" if minutes > 0 else "")
+        )
+
+    def add_currency(self, value):
+        return str(value) + " PLN"
+
 class UserBreak(models.Model):
     name = models.CharField(max_length=30)
     time = models.IntegerField(default=1)
