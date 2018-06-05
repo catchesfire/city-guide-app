@@ -2,6 +2,7 @@
 {% load staticfiles %} 
 {% block title%} Planowanie trasy {% endblock %} 
 {% block body %}
+{% block modals %}
 <div class="modal fade add-break" tabindex="-1" role="dialog" aria-labelledby="Dodaj przerwę" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -36,6 +37,7 @@
         </div>
     </div>
 </div>
+{% endblock %}
 <div class="container-fluid standard-container">
     <div class="row mt-5">
         <div class="mx-auto">
@@ -81,6 +83,7 @@
                     </div>
                 </div>
             </div>
+            {% block custom %}
             <div class="row">
                 <div class="col">
                     <button class="btn btn-sm btn-success" data-toggle="modal" data-target=".add-break">Dodaj przerwę</button>                                            
@@ -150,6 +153,7 @@
                     </ul>
                 </div>
             </div>
+            {% endblock %}
         </div>
         <div class="col px-4">
             <div class="row">

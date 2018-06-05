@@ -16,6 +16,7 @@ from django.contrib.auth.hashers  import check_password
 from django.contrib.auth.forms import PasswordChangeForm
 from django.contrib.auth.mixins import LoginRequiredMixin
 from .forms import FilterForm, SearchForm, SortForm, UserForm, OrderForm, ProfileForm, UserUpdateForm, TourCreateForm, AddBreakForm
+from .mixins import ExemplaryPlannerMixin
 
 
 
@@ -488,10 +489,10 @@ class UserFormView(View):
             
         return render(request, self.template_name, {'user_form': user_form, 'profile_form': profile_form})
 
-class PlannerView(LoginRequiredMixin, generic.DetailView):
+class PlannerView(ExemplaryPlannerMixin, generic.DetailView):
     login_url = '/login/'
     model = Tour
-    template_name = 'city_guide/planner.html'
+    # template_name = 'city_guide/planner_examplary.html'
     context_object_name = 'tour'    
     
     waypoints = {}
@@ -505,6 +506,7 @@ class PlannerView(LoginRequiredMixin, generic.DetailView):
 
     def get_context_data(self, **kwargs):
         context = super(PlannerView, self).get_context_data(**kwargs)
+        self.waypoints = {}
 
         all_orders = self.object.order_set.all()
         all_breaks = self.object.userbreak_set.all()
@@ -544,6 +546,7 @@ class PlannerView(LoginRequiredMixin, generic.DetailView):
                     
         context['cart'] = orders
         context['waypoints'] = json.dumps(waypoints)
+        print(waypoints)
         # print(waypoints)
 
         def min_to_hours(time):
@@ -563,6 +566,6 @@ class PlannerView(LoginRequiredMixin, generic.DetailView):
         context['total_cost'] = total_cost
         context['tour'] = self.object
         context['break_form'] = AddBreakForm(None)
-
+        
         return context
         

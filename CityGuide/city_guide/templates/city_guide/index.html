@@ -65,7 +65,7 @@
         {% for tour in tours %}
         <div class="row mt-5">
           <div class="col">
-            <div class="map" id="map-{{ tour.tour.id }}" data-tour-id=" {{ tour.tour.id }}" data-url="{% url 'city_guide:planner' tour.tour.id %}" style="height: 100%"></div>
+            <div class="map" id="map-{{ tour.tour.id }}" data-tour-id="{{ tour.tour.id }}" data-url="{% url 'city_guide:planner' tour.tour.id %}" style="height: 100%"></div>
             <!-- <div class="map" data-url="{% url 'city_guide:planner' tour.tour.id %}"></div> -->
             <!-- <img class="img-fluid" data-url="{% url 'city_guide:planner' tour.tour.id %}" src="https://i.stack.imgur.com/fqKSl.png" alt="Dupa"> -->
           </div>
@@ -147,6 +147,7 @@
   var dirty = false;
 
   function waypoint(data){
+    waypts = {};
     waypts = data;
     transport = "DRIVING";
   }
@@ -156,6 +157,7 @@
     $.ajax({
       url : $(this).attr('data-url')
     }).done(function(data){
+      console.log(mapId);
       waypoint(data);
       init(data, mapId);
       //d();

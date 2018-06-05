@@ -23,8 +23,12 @@ var origin = {};
 var destination = {};
 
 function init(way, id = "map"){
+    // waypts = [];
+    waypoints = [];
     mapId = id;
     startLocationInput = $('#start-location-input');
+
+    console.log(waypts);
 
     origin = {
         lat: way[0].lat,
