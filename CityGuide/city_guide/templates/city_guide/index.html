@@ -1,6 +1,4 @@
-{% extends 'base.html' %} 
-{% load staticfiles %} 
-{% block body %}
+{% extends 'base.html' %} {% load staticfiles %} {% block title%} City Guide {% endblock %}  {% block body %}
 <div class="container-fluid px-0">
   <div clas="row">
     <div id="carouselExampleIndicators" class="carousel slide mx-auto" data-ride="carousel">
@@ -59,33 +57,36 @@
     </div>
   </div>
 </div>
-<div class="container">
+<div class="container standard-container mt-0">
   <div class="row">
     <div class="col">
       <div id="routes">
         <h2>Przykładowe trasy</h2>
-        <div class="row ">
+        {% for tour in tours %}
+        <div class="row mt-5">
           <div class="col">
-            <img class="img-fluid" src="https://i.stack.imgur.com/fqKSl.png" alt="Dupa">
+            <div class="map" id="map-{{ tour.tour.id }}" data-tour-id=" {{ tour.tour.id }}" data-url="{% url 'city_guide:planner' tour.tour.id %}" style="height: 100%"></div>
+            <!-- <div class="map" data-url="{% url 'city_guide:planner' tour.tour.id %}"></div> -->
+            <!-- <img class="img-fluid" data-url="{% url 'city_guide:planner' tour.tour.id %}" src="https://i.stack.imgur.com/fqKSl.png" alt="Dupa"> -->
           </div>
           <div class="col-7">
             <div class="row">
               <div class="col">
-                <h1>Studenckie życie</h1>
+                <h1>{{tour.tour.name}}</h1>
               </div>
             </div>
             <div class="row">
               <div class="col">
                 <span class="fontForAll">
                   <small>
-                    <i class="fa fa-money-bill-alt "></i> 95zł
+                    <i class="fa fa-money-bill-alt "></i> {{tour.cost}}
                   </small>
                 </span>
               </div>
               <div class="col-9">
                 <span class="fontForAll">
                   <small>
-                    <i class="fa fa-clock"></i> Szczęsliwi czasu nie liczą
+                    <i class="fa fa-clock"></i> {{tour.time}}
                   </small>
                 </span>
               </div>
@@ -94,10 +95,7 @@
               <div class="col">
                 <p class="tourDesc">
                   <small>
-                    Litwo! Ojczyzno moja! Ty jesteś jak zdrowie, Ile cię trzeba cenić, ten tylko się dowie, Kto cię stracił. Dziś piękność twą
-                    w całej ozdobie Widzę i opisuję, bo tęsknię po tobie Panno święta, co Jasnej bronisz Częstochowy I w
-                    Ostrej świecisz Bramie! Ty, co gród zamkowy Nowogródzki ochraniasz z jego wiernym ludem! Jak mnie dziecko
-                    do zdrowia
+                    {{tour.tour.description}}
                   </small>
                 </p>
               </div>
@@ -113,25 +111,66 @@
               </div>
             </div>
             <div class="row">
-              <div class="col">
-                <ul>
+              <div class="col exampleTripAttr">
+                <ul class="list-group mb-3">
                   <small>
-                    <li>attracion1</li>
-                    <li>attracion2</li>
-                    <li>attracion3</li>
+                    {% for attraction in tour.attractions%}
+                    <a href="{% url 'city_guide:attraction' attraction.id %}" class="list-group-item list-group-item-action">{{attraction.name}}</a>
+                    {% endfor %}
                   </small>
                 </ul>
               </div>
             </div>
             <div class="row">
               <div class="col">
-                <button type="button" class="btn btn-light">Przejdz do trasy</button>
+                <a href="{% url 'city_guide:planner' tour.tour.id %}">
+                  <button type="button" class="btn btn-light float-right">
+                    Przejdz do trasy
+                  </button>
+                </a>
               </div>
             </div>
           </div>
         </div>
+        {% endfor %}
       </div>
     </div>
   </div>
 </div>
+{% endblock %}
+
+{% block javascripts %}
+{{ block.super }}
+<script>
+  var waypts;
+  var mapId;
+  var dirty = false;
+
+  function waypoint(data){
+    waypts = data;
+    transport = "DRIVING";
+  }
+  $('.map').each(function(){
+    let tourId = $(this).attr("data-tour-id");
+    let mapId = $(this).attr("id");
+    $.ajax({
+      url : $(this).attr('data-url')
+    }).done(function(data){
+      waypoint(data);
+      init(data, mapId);
+      //d();
+    });
+  });
+  //let mapId = 'map';
+  //let waypts = "{{ waypoints }}";
+  //waypts = JSON.parse(waypts.replace(/&quot;/g, "\""));
+</script>
+<script src="{% static 'js/map.js' %}"></script>
+<script>
+  //fuu("map-4");
+</script>
+<script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCYXIhgWd59IDdrJoO38Tz2hbyoYw0u9TU"></script> 
+<script>
+
+</script>
 {% endblock %}

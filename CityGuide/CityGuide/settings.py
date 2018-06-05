@@ -78,8 +78,8 @@ WSGI_APPLICATION = 'CityGuide.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': '6226_cityguide',
-        'USER': '6226_cityguide',
+        'NAME': '6226_cityguide_t',
+        'USER': '6226_cityguide_t',
         'PASSWORD': 'panda1wielkimi',
         'HOST': 'catchesfire.atthost24.pl',
         'PORT': '3306'

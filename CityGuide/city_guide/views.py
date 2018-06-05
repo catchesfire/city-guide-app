@@ -2,7 +2,7 @@ import json
 import urllib
 from django.shortcuts import get_object_or_404, render, redirect
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse, Http404
-from city_guide.models import Attraction, Category, Ticket, TicketType, Cart, Tour, Profile, Order, User
+from city_guide.models import Attraction, Category, Ticket, TicketType, Tour, Profile, Order, User
 from django.template import loader
 from django.views import View, generic
 from itertools import chain
@@ -14,12 +14,50 @@ from django.contrib import messages
 from django.utils import timezone
 from django.contrib.auth.hashers  import check_password
 from django.contrib.auth.forms import PasswordChangeForm
-from .forms import FilterForm, SearchForm, SortForm, UserForm, OrderForm, ProfileForm, UserUpdateForm, TourCreateForm
+from django.contrib.auth.mixins import LoginRequiredMixin
+from .forms import FilterForm, SearchForm, SortForm, UserForm, OrderForm, ProfileForm, UserUpdateForm, TourCreateForm, AddBreakForm
 
 
 
 def index(request):
-    return render(request, 'city_guide/index.html', {})
+    tours = []
+    all_tours = Tour.objects.filter(user_id = 1)
+    if all_tours.count() > 3:
+        all_tours = all_tours[:3]
+    
+    def min_to_hours(time):
+        hours = time // 60
+        minutes = time - hours * 60
+        return str(hours) + " godz. " + str(minutes) + " min"
+
+    for tour in all_tours:
+        all_orders = tour.order_set.all()
+
+        grouped_orders = {}
+
+        for order in all_orders:
+            grouped_orders[order.ticket.attraction] = all_orders.filter(ticket_id__in=Ticket.objects.filter(attraction_id = order.ticket.attraction.id))
+
+        total_time = 0
+        
+        attractions = []
+
+        for attraction in grouped_orders:
+            attractions.append(attraction)
+            total_time += attraction.time_minutes
+
+        total_cost = 0
+        for order in all_orders:
+            total_cost += order.cost()
+
+        tours.append({
+            'tour': tour,
+            'cost': str(total_cost) + " PLN",
+            'time': min_to_hours(total_time),
+            'attractions': attractions
+        })
+
+    return render(request, 'city_guide/index.html', {'tours': tours})
 
 def logout_user(request):
     logout(request)
@@ -27,11 +65,10 @@ def logout_user(request):
 
 def cart_details(request):
     if request.is_ajax():
-        cart = Cart.objects.filter(user=request.user).last()
-        orders = cart.order_set.all()
+        cart = request.session.get('cart', {})
 
         data = {
-            'count' : orders.count()
+            'count' : len(cart)
         }
 
         return JsonResponse(data)
@@ -39,80 +76,94 @@ def cart_details(request):
 
 def cart(request):
     template_name = 'city_guide/cart.html'
-    cart = Cart.objects.filter(user=request.user).last()
-    all_orders = cart.order_set.all()
 
-    orders = dict(
-        [
-            (attraction.ticket.attraction, all_orders.filter(ticket_id__in=Ticket.objects.filter(attraction_id=attraction.ticket.attraction.id))) for attraction in all_orders
-        ]
-    )
+    cart = request.session.get('cart', {})
 
+    orders = {}
     total_cost = 0
 
-    for order in all_orders:
-        total_cost += order.cost()
-
+    for attraction_id, tickets in cart.items():
+        attraction = Attraction.objects.get(pk=attraction_id)
+        if tickets:
+            orders[attraction] = {}
+        for ticket_id, quantity in tickets.items():
+            if quantity > 0:
+                ticket = Ticket.objects.get(pk = ticket_id)
+                orders[attraction][ticket] = {}
+                orders[attraction][ticket]['id'] = ticket.id
+                orders[attraction][ticket]['quantity'] = quantity
+                orders[attraction][ticket]['cost'] = ticket.price * quantity
+                total_cost += ticket.price * quantity
     form = TourCreateForm(None)
 
     return render(request, template_name, {'cart': orders, 'total_cost': total_cost, 'tour_create_form' : form})
 
 def cart_order_edit(request):
-    order_id = request.GET.get('id', 0)
-    try:
-        order = Order.objects.get(pk=order_id)
-    except:
-        raise Http404("Order doesn't exist.")
-    
-    if request.is_ajax():
-        quantity = request.GET.get('quantity', 0)
-        
-        order.quantity = int(quantity)
-        if order.quantity >= 0:
-            order.save()
-            data = {
-                'status' : 200,
-                'message' : 'Item has been changed.'
-            }
-        else:
-            data = {
-                'status': 400,
-                'message': "Amount can't be negative."
-            }
-        return JsonResponse(data)
+    tid = request.GET.get('id', 0)
+    quantity = request.GET.get('quantity', 0)
+    quantity = int(quantity)
+    cart = request.session.get('cart', {})
+
+    for attraction_id, tickets in cart.items():
+        for ticket_id in tickets:
+            if ticket_id == tid:
+                if quantity > 0:
+                    cart[str(attraction_id)][str(ticket_id)] = quantity
+                    request.session['cart'] = cart
+                    request.session.modified = True
+                    data = {
+                        'status' : 200,
+                        'message' : 'An item has been changed.'
+                    }
+                else:
+                    if str(attraction_id) in cart:
+                        if str(ticket_id) in cart[str(attraction_id)]:
+                            del cart[str(attraction_id)][str(ticket_id)]
+                            if not cart[str(attraction_id)]:
+                                del cart[str(attraction_id)]
+                            request.session['cart'] = cart
+                            request.session.modified = True
+                    data = {
+                        'status' : 400,
+                        'message' : "Amount can't be negative."
+                    }
+                return JsonResponse(data)
+
     return redirect('city_guide:cart')
 
 @login_required
 def planner_add(request):
-    #tour = Tour(name="test", description="test", route="sfsf", date_from=timezone.now(), date_to=timezone.now(), user=request.user)
     if request.method == "POST":
         form = TourCreateForm(request.POST)
 
         if form.is_valid():
             tour = form.save(commit=False)
+            cart = request.session.get('cart', {})
 
-            cart = Cart.objects.filter(user=request.user).last()
-            all_orders = cart.order_set.all()    
-
-            attractions = dict(
-                [
-                    (attraction.ticket.attraction, all_orders.filter(ticket_id__in=Ticket.objects.filter(attraction_id=attraction.ticket.attraction.id))) for attraction in all_orders
-                ]
-            )
-
-            order = {}
+            orders = {}
 
             i = 0
-            for attraction in attractions:
-                order[str(i)] = attraction.id
+            for attraction_id in cart:
+                orders[str(i)] = attraction_id
                 i += 1
 
-            tour.attraction_order = json.dumps(order)
+            user_breaks = {}
+
+            tour.attraction_order = json.dumps(orders)
+            tour.user = request.user
             tour.save()
+
+            for attraction_id, tickets in cart.items():
+                for ticket_id, quantity in tickets.items():
+                    ticket = Ticket.objects.get(pk = ticket_id)
+                    order = Order(quantity=quantity, date=timezone.now(), tour=tour, ticket=ticket)
+                    order.save()
+            
             return redirect('city_guide:cart')
         return redirect('city_guide:cart')
     return redirect('city_guide:cart')
 
+@login_required
 def planner_edit(request, pk):
 
     try:
@@ -125,7 +176,7 @@ def planner_edit(request, pk):
         tour.attraction_order = json.dumps(order)
         tour.was_order_modified = True
         tour.save()
-
+        print(order)
         data = {
             'status': 200,
             'message': 'OK'
@@ -134,7 +185,36 @@ def planner_edit(request, pk):
 
     return redirect('city_guide:index')
 
+def planner_add_break(request, pk):
+    try:
+        tour = Tour.objects.get(id = pk)
+    except:
+        raise Http404("Tour doesn't exist.")
 
+    if request.method == "POST" and request.is_ajax():
+        user_break_form = AddBreakForm(request.POST)
+
+        if user_break_form.is_valid():
+            user_break = user_break_form.save(commit=False)
+            user_break.tour = tour
+            user_break.save()
+
+            attraction_order = json.loads(tour.attraction_order)
+            i = len(attraction_order)
+            attraction_order[str(i)] = {}
+            attraction_order[str(i)]['break'] = user_break.id
+            tour.attraction_order = json.dumps(attraction_order)
+            tour.save()
+            data = {
+                'status' : 200,
+                'message' : 'OK'
+            }
+        data = {
+            'status': 400,
+            'message': 'Wrong number'
+        }
+        return JsonResponse(data)
+    return redirect('city_guide:index')
 
 def profile(request):
     profile = Profile.objects.get(user=request.user)
@@ -228,27 +308,27 @@ def cart_add(request):
         order_form = order_form_class(request.POST)
 
         if order_form.is_valid():
+
+            cart = request.session.get('cart', {})
+
             quantity = request.POST.get('quantity', 1)
-            date = request.POST.get('date', timezone.now())
-            ticket_id = request.POST.get('ticket_id', 1)
-            cart = Cart.objects.filter(user=request.user).last()
-            ticket = Ticket.objects.get(pk=ticket_id)
+            ticket_id = request.POST['ticket_id']
+            ticket = Ticket.objects.get(pk = ticket_id)
+            attraction = ticket.attraction
 
-            new_order, created = cart.order_set.get_or_create(ticket_id=ticket_id)            
-
-            if created:
-                new_order.date = date
-                new_order.quantity = quantity
-                new_order.cart = cart
-                new_order.ticket = ticket
+            if str(attraction.id) in cart:
+                cart[str(attraction.id)][str(ticket.id)] += int(quantity)
             else:
-                new_order.quantity += int(quantity)
-            
+                cart[str(attraction.id)] = {}
+                cart[str(attraction.id)][str(ticket.id)] = int(quantity)
+            request.session['cart'] = cart
+            request.session.modified = True
+
             data = {
                 'status': 'ok'
             }
 
-            new_order.save()
+            # new_order.save()
 
             return JsonResponse(data)
 
@@ -283,7 +363,6 @@ class UserLogFormView(View):
             error = 'Invalid username or password.'
 
         return render(request, self.template_name, {'error_message' : error})    
-
 
 @login_required
 @transaction.atomic
@@ -408,34 +487,63 @@ class UserFormView(View):
             
         return render(request, self.template_name, {'user_form': user_form, 'profile_form': profile_form})
 
-class PlannerView(generic.DetailView):
+class PlannerView(LoginRequiredMixin, generic.DetailView):
+    login_url = '/login/'
     model = Tour
     template_name = 'city_guide/planner.html'
     context_object_name = 'tour'    
+    
+    waypoints = {}
 
+    def render_to_response(self, context, **response_kwargs):
+        """ Allow AJAX requests to be handled more gracefully """
+        if self.request.is_ajax():
+            return JsonResponse(self.waypoints, safe=False, **response_kwargs)
+        else:
+            return super(generic.DetailView,self).render_to_response(context, **response_kwargs)
 
     def get_context_data(self, **kwargs):
-        print(self.request)
         context = super(PlannerView, self).get_context_data(**kwargs)
-        all_orders = Cart.objects.filter(user=self.request.user).last().order_set.all()
 
-        unsorted_orders = dict(
-            [
-                (attraction.ticket.attraction, all_orders.filter(ticket_id__in=Ticket.objects.filter(attraction_id=attraction.ticket.attraction.id))) for attraction in Cart.objects.filter(user=self.request.user).last().order_set.all()
-            ]
-        )
+        all_orders = self.object.order_set.all()
+        all_breaks = self.object.userbreak_set.all()
+
+        unsorted_orders = {}
+        total_cost = 0
+
+        for order in all_orders:
+            unsorted_orders[order.ticket.attraction] = all_orders.filter(ticket_id__in=Ticket.objects.filter(attraction_id=order.ticket.attraction.id))
+            total_cost += order.cost()
+
+        unsorted_breaks = {}
+        waypoints = self.waypoints
 
         orders = {}
-
         positions = json.loads(self.object.attraction_order)
 
-        for i, position in positions.items():
-            for attraction, tickets in unsorted_orders.items():
-                if int(attraction.id) == int(position):
-                    orders[attraction] = tickets
-                    break
-
+        j = 0
+        for i, types in positions.items():
+            for type_name, attraction_id in types.items():
+                if type_name == "attraction":
+                    for attraction, ticket in unsorted_orders.items():
+                        if int(attraction.id) == int(attraction_id):
+                            orders[attraction] = {}
+                            orders[attraction]['type'] = "attraction"
+                            orders[attraction]['items'] = ticket
+                            waypoints[str(j)] = {}
+                            waypoints[str(j)]['lat'] = float(attraction.location_x)
+                            waypoints[str(j)]['lng'] = float(attraction.location_y)
+                            j += 1
+                            break
+                else:
+                    user_break = self.object.userbreak_set.get(pk=attraction_id)
+                    orders[user_break] = {}
+                    orders[user_break]['type'] = 'break'
+                    orders[user_break]['items'] = user_break
+                    
         context['cart'] = orders
+        context['waypoints'] = json.dumps(waypoints)
+        # print(waypoints)
 
         def min_to_hours(time):
             hours = time // 60
@@ -444,15 +552,16 @@ class PlannerView(generic.DetailView):
             return str(hours) + " godz. " + str(minutes) + " min"
 
         tot_time = 0
-        for attraction in orders.keys():
-            tot_time += attraction.time_minutes
-
-        tot_cost = 0
-        for order in all_orders:
-            tot_cost += order.cost()
+        for key, items in orders.items():
+            if items['type'] == 'attraction':
+                tot_time += key.time_minutes
+            else:
+                tot_time += key.time        
 
         context['total_time'] = min_to_hours(tot_time)
-        context['total_cost'] = tot_cost
+        context['total_cost'] = total_cost
         context['tour'] = self.object
+        context['break_form'] = AddBreakForm(None)
 
         return context
+        

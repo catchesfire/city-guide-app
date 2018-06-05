@@ -1,7 +1,4 @@
-{% extends 'base.html' %}
-{% load staticfiles %}
-{% block title%} Koszyk {% endblock %}
-{% block body %}
+{% extends 'base.html' %} {% load staticfiles %} {% block title%} Koszyk {% endblock %} {% block body %}
 <div class="modal fade create-tour" tabindex="-1" role="dialog" aria-labelledby="Utwórz planer" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -13,9 +10,7 @@
             </div>
             <div class="modal-body">
                 <form action="{% url 'city_guide:planner_add' %}" method="POST">
-                    {% csrf_token %}
-                    {% for field in tour_create_form %}
-                    {% if field.errors %}
+                    {% csrf_token %} {% for field in tour_create_form %} {% if field.errors %}
                     <div class="alert alert-danger">
                         {{ field.errors}}
                     </div>
@@ -58,25 +53,32 @@
                 {% for attraction, orders in cart.items %}
                 <tr>
                     <td class="align-middle">{{ forloop.counter }}</td>
-                    <td class="align-middle"><img src="{{attraction.main_photo.url}}" class="img-fluid cart-img" alt="Muzeum"/></td>
+                    <td class="align-middle">
+                        <img src="{{attraction.main_photo.url}}" class="img-fluid cart-img" alt="Muzeum" />
+                    </td>
                     <td class="align-middle">{{attraction}}</td>
                     <td class="align-middle">
-                        {% for order in orders %}
+                        {% for ticket, ticket_detail in orders.items %}
 
                         <div class="form-group row my-0">
-                            <label for="input-ticket-normal-1" class="col-sm-4 col-form-label">{{ order.ticket.ticket_type.name }}</label>
+                            <label for="input-ticket-normal-1" class="col-sm-4 col-form-label">{{ ticket.name }}</label>
                             <div class="col-sm-4">
-                                <input type="number" class="form-control" id="input-ticket-{{ order.id }}" value="{{ order.quantity }}" data-order-id="{{ order.id }}">
+                                <input type="number" class="form-control" id="input-ticket-{{ ticket_detail.id }}" value="{{ ticket_detail.quantity }}" data-ticket-id="{{ ticket_detail.id }}">
                             </div>
                             <div class="float-left align-middle">
-                                    <button class="btn btn-success btn-sm add-to-order" data-order-id="{{ order.id }}" data-button-type="add">+</button>
-                                    <button class="btn btn-danger btn-sm subtract-from-order" data-order-id="{{ order.id }}" data-button-type="subtract">-</button>
-                                </div>
+                                <button class="btn btn-success btn-sm add-to-order" data-ticket-id="{{ ticket_detail.id }}" data-button-type="add">+</button>
+                                <button class="btn btn-danger btn-sm subtract-from-order" data-ticket-id="{{ ticket_detail.id }}" data-button-type="subtract">-</button>
+                            </div>
                             <div class="col col-form-label">
-                                {{ order.cost }} zł
+                                {{ ticket_detail.cost }} zł
                             </div>
                         </div>
                         {% endfor %}
+                    </td>
+                    <td class="align-middle">
+                        <button class="btn btn-danger btn-sm">
+                            <i class="far fa-trash-alt"></i>
+                        </button>
                     </td>
                 </tr>
                 {% endfor %}
@@ -85,12 +87,19 @@
     </div>
     <div class="row">
         <div class="col">
-            <div class="float-right">
-                Całkowity koszt: {{ total_cost }} zł
-                <button class="btn btn-primary btn-sm" data-toggle="modal" data-target=".create-tour">Planuj włajasz</button>
+            <div class="col">
+                <div class="float-right">
+                    <h5 class="ml-5">
+                        Całkowity koszt: {{ total_cost }} zł
+                    </h5>
+                </div>
+
+                <div>
+                    <button class="btn btn-primary btn-block" data-toggle="modal" data-target=".create-tour">Zaplanuj trasę</button>
+                </div>
             </div>
         </div>
-    </div>    
+    </div>
     {% else %}
     <div class="row">
         <div class="col">
@@ -101,47 +110,44 @@
     </div>
     {% endif %}
 </div>
-{% endblock %}
-{% block javascripts %}
-{{ block.super }}
+{% endblock %} {% block javascripts %} {{ block.super }}
 <script>
-    function addToOrder(id, quantity, type="add"){
-        if(type == "add"){
-            $('#input-ticket-' + id).val(++quantity);        
+    function addToOrder(id, quantity, type = "add") {
+        if (type == "add") {
+            $('#input-ticket-' + id).val(++quantity);
         }
 
-        if(type == "subtract"){
-            $('#input-ticket-' + id).val(--quantity);        
+        if (type == "subtract") {
+            $('#input-ticket-' + id).val(--quantity);
         }
 
-        if(quantity >= 0){
+        if (quantity >= 0) {
             $.get(
                 "{% url 'city_guide:cart_order_edit' %}",
-                {id: id, quantity: quantity}
-            ).done(function(data){
-                if(data.status == 200){
-                    location.reload();
-                }
+                { id: id, quantity: quantity }
+            ).done(function (data) {
+                //if(data.status == 200){
+                location.reload();
+                //}
             });
         }
 
     }
-    $('.add-to-order').on('click', function(){
-        let id = $(this).attr('data-order-id');
-        let quantity = $('#input-ticket-'+id).val();
+    $('.add-to-order').on('click', function () {
+        let id = $(this).attr('data-ticket-id');
+        let quantity = $('#input-ticket-' + id).val();
         let button = $(this).attr('data-button-type');
 
         addToOrder(id, quantity, button);
-        
+
     });
 
-    $('.subtract-from-order').on('click', function(){
-        let id = $(this).attr('data-order-id');
-        let quantity = $('#input-ticket-'+id).val();
+    $('.subtract-from-order').on('click', function () {
+        let id = $(this).attr('data-ticket-id');
+        let quantity = $('#input-ticket-' + id).val();
         let button = $(this).attr('data-button-type');
 
         addToOrder(id, quantity, button);
-        
+
     });
-</script>
-{% endblock %}
+</script> {% endblock %}

@@ -6,6 +6,9 @@ from django.dispatch import receiver
 from django.db import connection
 from collections import namedtuple
 
+import json
+# from django.db.models.aggregates import Count
+
 class Category(models.Model):
     name = models.CharField(max_length=25)
     
@@ -50,14 +53,28 @@ class Ticket(models.Model):
     def __str__(self):
         return self.ticket_type.__str__() + " " + str(self.price) + "zl"
 
-class Cart(models.Model):
-    user = models.ForeignKey(User, null=True, on_delete=models.DO_NOTHING)
+class Tour(models.Model):
+    name = models.CharField(max_length=50, verbose_name="Nazwa")
+    description = models.CharField(max_length=500, verbose_name="Opis")
+    attraction_order = models.TextField(default="{}")
+    was_order_modified = models.BooleanField(default=False)
+
+    user = models.ForeignKey(User, null=True, on_delete=models.SET_NULL)
+
+    def get_user_breaks(self):
+        return json.loads(self.user_breaks)
+
+class UserBreak(models.Model):
+    name = models.CharField(max_length=30)
+    time = models.IntegerField(default=1)
+
+    tour = models.ForeignKey(Tour, on_delete=models.CASCADE)
 
 class Order(models.Model):
     quantity = models.IntegerField(default=1)
     date = models.DateField(null=True, blank=True)
 
-    cart = models.ForeignKey(Cart, on_delete=models.CASCADE)
+    tour = models.ForeignKey(Tour, on_delete=models.CASCADE)
     ticket = models.ForeignKey(Ticket, null=True, on_delete=models.SET_NULL)
 
     def cost(self):
@@ -65,16 +82,6 @@ class Order(models.Model):
     
     def time(self):
         return self.ticket.attraction.time_minutes
-
-class Tour(models.Model):
-    name = models.CharField(max_length=50, verbose_name="Nazwa")
-    discount = models.IntegerField(default=0)
-    description = models.CharField(max_length=500, verbose_name="Opis")
-    route = models.CharField(max_length=1000)
-    attraction_order = models.TextField(default="{}")
-    was_order_modified = models.BooleanField(default=False)
-
-    user = models.ForeignKey(User, null=True, on_delete=models.SET_NULL)
 
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
