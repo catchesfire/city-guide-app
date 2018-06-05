@@ -144,14 +144,6 @@ body {
     color: white;
 }
 
-.filterCard {
-    margin-top: 20px;
-    padding: 15px;
-    background-color: #2d4079;
-    color: white;
-    display: none;
-}
-
 .sliderValues {
     border: 0;
     color: white;
@@ -226,17 +218,18 @@ h3 {
 }
 
 .filterCard {
-    margin-top: 20px;
+    margin-top: 10px;
+    margin-bottom: 10px;
     padding: 15px;
     background-color: #2d4079;
     color: white;
     display: none;
+    border-radius: 0;
 }
 
 .attractionTitleInPlanner {
     font-family: 'Roboto Condensed', sans-serif;
     font-size: 1.1em;
-    
 }
 
 .registerRef{
@@ -269,4 +262,9 @@ ul {
 
 exampleTripAttr{
     overflow-y: auto;
+}
+
+.filter-nav-container{
+    margin-top: 72px;
+    margin-bottom: -72px;
 }
