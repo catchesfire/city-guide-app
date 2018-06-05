@@ -66,6 +66,12 @@ body {
 
 /* #region Atrakcje */
 
+#attraction-jump{
+    height: 288px;
+    margin-top: 72px;
+    background: url('../images/przygoda.png') #ededed center center no-repeat;
+}
+
 .attrDeck {
     margin-bottom: 20px;
 }
