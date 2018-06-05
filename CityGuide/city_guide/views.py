@@ -93,6 +93,7 @@ def cart(request):
                 orders[attraction][ticket]['id'] = ticket.id
                 orders[attraction][ticket]['quantity'] = quantity
                 orders[attraction][ticket]['cost'] = ticket.price * quantity
+                orders[attraction][ticket]['name'] = ticket.ticket_type
                 total_cost += ticket.price * quantity
     form = TourCreateForm(None)
 
@@ -128,6 +129,23 @@ def cart_order_edit(request):
                         'message' : "Amount can't be negative."
                     }
                 return JsonResponse(data)
+
+    return redirect('city_guide:cart')
+
+def cart_order_delete(request):
+    attr_id = request.GET.get('id', 0)
+    cart = request.session.get('cart', {})
+
+    for attraction_id, tickets in cart.items():
+        if attraction_id == attr_id:
+            del cart[str(attraction_id)]
+            request.session['cart'] = cart
+            request.session.modified = True
+            data = {
+                        'status' : 200,
+                        'message' : "OK."
+                    }
+            return JsonResponse(data)
 
     return redirect('city_guide:cart')
 
@@ -560,7 +578,6 @@ class PlannerView(LoginRequiredMixin, generic.DetailView):
                     
         context['cart'] = orders
         context['waypoints'] = json.dumps(waypoints)
-        # print(waypoints)
 
         def min_to_hours(time):
             hours = time // 60
