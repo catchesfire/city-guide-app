@@ -15,6 +15,7 @@ from django.utils import timezone
 from django.contrib.auth.hashers  import check_password
 from django.contrib.auth.forms import PasswordChangeForm
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.conf import settings
 from .forms import FilterForm, SearchForm, SortForm, UserForm, OrderForm, ProfileForm, UserUpdateForm, TourCreateForm, AddBreakForm
 
 
@@ -422,10 +423,10 @@ def profileView(request):
             user_form.save()
             profile_form.save()
             print(":::::")
-            messages.success(request, ('Your profile was successfully updated!'))
+            messages.success(request, ('Twój profil został pomyslnie zmieniony!'))
             return redirect('city_guide:profile')
-        # else:
-            # messages.error(request, _('Please correct the error below.'))
+        else:
+            messages.error(request, 'Nie udało się zmienić profilu.')
 
 def passwordView(request):
     if request.method == 'POST':
@@ -433,19 +434,20 @@ def passwordView(request):
         if password_form.is_valid():
             user = password_form.save()
             update_session_auth_hash(request, user)  # Important!
-            messages.success(request, 'Your password was successfully updated!')
+            messages.success(request, 'Twoje hasło zostało pomyslnie zmienione!')
             return redirect('city_guide:profile')
         else:
-            messages.error(request, 'Please correct the error below.')
+            messages.error(request, 'Nie udało się zmienić hasła.')
             return redirect('city_guide:profile')
             
 # to do
 # captcha
+
 class UserFormView(View):
     user_form_class = UserForm
     profile_form_class = ProfileForm
     template_name = 'city_guide/registration.html'
-
+    
     def get(self,request):
         user_form = self.user_form_class(None)
         profile_form = self.profile_form_class(None)
@@ -494,10 +496,7 @@ class UserFormView(View):
                 user = authenticate(username=username, password= password)
 
                 if user is not None:
-                    cart = Cart.objects.create(user=user)
-                    cart.save()
                     login(request, user)
-                    messages.success(request, 'New comment added with success!')
                     return redirect('city_guide:index')
             else:
                 messages.error(request, 'Invalid reCAPTCHA. Please try again.')

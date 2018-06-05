@@ -23,11 +23,12 @@ class UserForm(forms.ModelForm):
         super(UserForm, self).__init__(*args, **kwargs)
         self.fields['first_name'].label = "Imię"
         self.fields['last_name'].label = "Nazwisko"
-        self.fields['email'].label = "E-mail"
-        self.fields['username'].label = "Login"
-        self.fields['password'].label = "Hasło"
+        self.fields['email'].label = "E-mail*"
+        self.fields['username'].label = "Login*"
+        self.fields['password'].label = "Hasło*"
 
     password = forms.CharField(widget=forms.PasswordInput(attrs={'class' : 'form-control'}), min_length=6)
+    email = forms.EmailField(widget=forms.EmailInput(attrs={'class' : 'form-control'}),required=True)
 
     class Meta:
         model = User
