@@ -8,92 +8,128 @@
 <div class="container standard-container" >
         <div class="row">
             <div class="col">
-                <h1>Twoje dane</h1>
-                <form class="form" action="{% url 'city_guide:profile_update' %}" method="post">
-                    {% csrf_token %}
-                    {% for field in user_form %}
-                    {% if field.errors %}
-                    <div class="alert alert-danger">
-                        {{ field.errors}}
+                <div class="row">
+                    <div class="col">
+                        <h1 class=" profile-form-group-left mb-3">Twoje dane</h1>
                     </div>
-                    {% endif %}
-                    
-                    <div class="form-group row">
-                        
-                        <label class="col-form-label col-sm-3" for="{{field.id_for_label}}">{{field.label}}:</label>
-                        <div class="col-sm-7">
-                            {{field}}
-                        </div>
+                </div>
+                <div class="row ">
+                    <div class="col ">
+                        <form class="form X" action="{% url 'city_guide:profile_update' %}" method="post">
+                            {% csrf_token %}
+                            {% for field in user_form %}
+                            {% if field.errors %}
+                            <div class="alert alert-danger profile-form-group-left">
+                                {{ field.errors}}
+                            </div>
+                            {% endif %}
+                            <div class="form-group row profile-form-group-left">
+                                <label class="col-form-label col-sm-4" for="{{field.id_for_label}}">{{field.label}}:</label>
+                                <div class="col-sm-8 pl-0">
+                                    {{field}}
+                                </div>
+                            </div>
+                            {% endfor %}
+                            {% for field in profile_form %}
+                            {% if field.errors %}
+                            <div class="alert alert-danger profile-form-group-left">
+                                {{ field.errors}}
+                            </div>
+                            {% endif %}
+                            <div class="form-group row profile-form-group-left">
+                                <label class="col-form-label col-sm-4 pr-0" for="{{field.id_for_label}}">{{field.label}}:</label>
+                                <div class="col-sm-8 pl-0">
+                                    {{field}}
+                                </div>
+                            </div>
+                            {% endfor %}
+                            
+                            <button class="btn btn-primary mr-15 float-right" type="submit">Zapisz</button>
+                        </form>
                     </div>
-                    {% endfor %}
-                    {% for field in profile_form %}
-                    {% if field.errors %}
-                    <div class="alert alert-danger">
-                        {{ field.errors}}
-                    </div>
-                    {% endif %}
-                    <div class="form-group row">
-                        <label class="col-form-label col-sm-3" for="{{field.id_for_label}}">{{field.label}}:</label>
-                        <div class="col-sm-7">
-                            {{field}}
-                        </div>
-                    </div>
-                    {% endfor %}
-                    
-                    <button class="btn btn-primary" type="submit">Save changes</button>
-                </form>
+                </div>
             </div>
             <div class="col">
-                <h1>Zmień hasło</h1>
-                <form class="form" action="{% url 'city_guide:profile_change' %}" method="post">
-                {% csrf_token %}
-                {% for field in password_form %}
-                    {% if field.errors %}
-                    <div class="alert alert-danger">
-                        {{ field.errors}}
+                <div class="row">
+                    <div class="col">
+                        <h1 class="profile-form-group-right mb-3">Zmień hasło</h1>
                     </div>
-                    {% endif %}
-                    
-                    <div class="form-group row">
-                        
-                        <label class="col-form-label col-sm-3" for="{{field.id_for_label}}">{{field.label}}:</label>
-                        <div class="col-sm-7">
-                            {{field}}
-                        </div>
+                </div>
+
+                <div class="row">
+                    <div class="col">
+                        <form class="form" action="{% url 'city_guide:profile_change' %}" method="post">
+                        {% csrf_token %}
+                        {% for field in password_form %}
+                            {% if field.errors %}
+                            <div class="alert alert-danger profile-form-group-right">
+                                {{ field.errors}}
+                            </div>
+                            {% endif %}
+                            
+                            <div class="form-group row profile-form-group-right">
+                                <label class="col-form-label col-sm-4" for="{{field.id_for_label}}">{{field.label}}:</label>
+                                <div class="col-sm-8 pl-0">
+                                    {{field}}
+                                </div>
+                            </div>
+                            {% endfor %}
+                            <button class="btn btn-primary mr-30 float-right" type="submit">Zapisz</button>
+                            
+                        </form>
                     </div>
-                    {% endfor %}
-                    <button class="btn btn-primary" type="submit">Save changes</button>
-                    
-                </form>
+                </div>
             </div>
         </div>
 
         <div class="row">
-            <h1>Twoje zapisane trasy</h1>
-            <table class="table table-borderless">
-                <thead>
-                  <tr>
-                    <th>#</th>
-                    <th>Nazwa</th>
-                    <th>Czas trwania</th>
-                    <th>Koszt</th>
-                    <th>Akcja</th>
-                  </tr>
-                </thead>
-                <tbody>
-                    {% for tour in tours %}
-                    
-                    <tr>
-                        <td>{{forloop.counter}}</td>
-                        <td>{{tour.name}}</td>
-                        <td></td>
-                        <td>1 m2</td>
-                        <td><a href="{% url 'city_guide:planner' tour.id %}"><button>Szczegóły</button></a></td>
-                    </tr>
-                    
-                    {% endfor %}
-                </tbody>
-            </table>
+            <div class="col">
+                <div class="row">
+                    <div class="col">
+                        <h1 class="profile-form-group-left mt-30 mb-3">Twoje zapisane trasy</h1>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col px-30">
+                        <table class="table table-responsive-xl">
+                            <thead>
+                              <tr>
+                                <th>#</th>
+                                <th>Nazwa</th>
+                                <th>Czas trwania</th>
+                                <th>Koszt</th>
+                                <th>Akcja</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                                {% for tour in tours %}
+                                
+                                <tr>
+                                    <td>{{forloop.counter}}</td>
+                                    <td>{{tour.name}}</td>
+                                    <td>
+                                        {% for id,time in timetab.items %}
+                                            {% if tour.id == id  %}
+                                                {{time}}
+                                            {% endif %}
+                                        {% endfor %}
+                                    </td>
+                                    <td>
+                                        {% for id,cost in costtab.items %}
+                                            {% if tour.id == id  %}
+                                                {{cost}}
+                                            {% endif %}
+                                        {% endfor %}
+                                    </td>
+                                    <td><a href="{% url 'city_guide:planner' tour.id %}"><button class="btn-default btn">Szczegóły</button></a></td>
+                                </tr>
+                                
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
         </div>
         
     

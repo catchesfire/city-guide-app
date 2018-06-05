@@ -64,6 +64,14 @@ class Tour(models.Model):
     def get_user_breaks(self):
         return json.loads(self.user_breaks)
 
+    def min_to_hours(self, time):
+        hours = time // 60
+        minutes = time - hours * 60
+        return str(hours) + " godz. " + str(minutes) + " min"
+
+    def add_currency(self, value):
+        return str(value) + " PLN"
+
 class UserBreak(models.Model):
     name = models.CharField(max_length=30)
     time = models.IntegerField(default=1)
