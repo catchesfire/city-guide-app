@@ -51,7 +51,7 @@
             </thead>
             <tbody>
                 {% for attraction, orders in cart.items %}
-                <tr>
+                <tr id="attraction-{{attraction.id}}">
                     <td class="align-middle">{{ forloop.counter }}</td>
                     <td class="align-middle">
                         <img src="{{attraction.main_photo.url}}" class="img-fluid cart-img" alt="Muzeum" />
@@ -59,24 +59,28 @@
                     <td class="align-middle">{{attraction}}</td>
                     <td class="align-middle">
                         {% for ticket, ticket_detail in orders.items %}
-
                         <div class="form-group row my-0">
-                            <label for="input-ticket-normal-1" class="col-sm-4 col-form-label">{{ ticket.name }}</label>
-                            <div class="col-sm-4">
-                                <input type="number" class="form-control" id="input-ticket-{{ ticket_detail.id }}" value="{{ ticket_detail.quantity }}" data-ticket-id="{{ ticket_detail.id }}">
+                            <label for="input-ticket-normal-1" class="col-sm-4 col-form-label">{{ ticket_detail.name }}</label>
+                            <div class="col-sm-3">
+                                <input type="number" class="form-control" id="input-ticket-{{ ticket_detail.id }}" value="{{ ticket_detail.quantity }}" data-ticket-id="{{ ticket_detail.id }}"
+                                    readonly>
                             </div>
                             <div class="float-left align-middle">
-                                <button class="btn btn-success btn-sm add-to-order" data-ticket-id="{{ ticket_detail.id }}" data-button-type="add">+</button>
-                                <button class="btn btn-danger btn-sm subtract-from-order" data-ticket-id="{{ ticket_detail.id }}" data-button-type="subtract">-</button>
+                                <button class="btn btn-success btn-sm add-to-order mt-1" data-ticket-id="{{ ticket_detail.id }}" data-button-type="add">
+                                    <i class="fas fa-plus"></i>
+                                </button>
+                                <button class="btn btn-danger btn-sm subtract-from-order mt-1" data-ticket-id="{{ ticket_detail.id }}" data-button-type="subtract">
+                                    <i class="fas fa-minus"></i>
+                                </button>
                             </div>
                             <div class="col col-form-label">
-                                {{ ticket_detail.cost }} zł
+                                {{ ticket_detail.cost }} PLN
                             </div>
                         </div>
                         {% endfor %}
                     </td>
                     <td class="align-middle">
-                        <button class="btn btn-danger btn-sm">
+                        <button class="btn btn-danger btn-sm delete-order" data-attraction-id="{{attraction.id}}">
                             <i class="far fa-trash-alt"></i>
                         </button>
                     </td>
@@ -87,16 +91,15 @@
     </div>
     <div class="row">
         <div class="col">
-            <div class="col">
-                <div class="float-right">
-                    <h5 class="ml-5">
-                        Całkowity koszt: {{ total_cost }} zł
-                    </h5>
-                </div>
+            <div class="float-right">
+                <h5 class="ml-5">
+                    Całkowity koszt:
+                    <span class="ml-1">{{ total_cost }}</span> PLN
+                </h5>
+            </div>
 
-                <div>
-                    <button class="btn btn-primary btn-block" data-toggle="modal" data-target=".create-tour">Zaplanuj trasę</button>
-                </div>
+            <div class="mt-5">
+                <button class="btn btn-primary btn-block" data-toggle="modal" data-target=".create-tour">Zaplanuj trasę</button>
             </div>
         </div>
     </div>
@@ -133,6 +136,24 @@
         }
 
     }
+
+    function deleteOrder(id) {
+        $('#attraction-' + id).remove();
+
+        $.get(
+            "{% url 'city_guide:cart_order_delete' %}",
+            { id: id }
+        ).done(function (data) {
+            location.reload();
+        });
+    }
+
+    $('.delete-order').on('click', function () {
+        let id = $(this).attr('data-attraction-id');
+
+        deleteOrder(id);
+    });
+
     $('.add-to-order').on('click', function () {
         let id = $(this).attr('data-ticket-id');
         let quantity = $('#input-ticket-' + id).val();

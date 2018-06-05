@@ -76,15 +76,13 @@
                             <p class="card-text descriptionText">
                                 {{attraction.description|truncatewords:2}}
                             </p>
-
-                            <a href="{% url 'city_guide:attraction' attraction.id %}">
-                                <button class="btn btn-default">
-                                    Wiecej...
-                                </button>
-                            </a>
                         </div>
                     </div>
-
+                    <a href="{% url 'city_guide:attraction' attraction.id %}" class="details-button">
+                        <button class="btn btn-default">
+                            Wiecej...
+                        </button>
+                    </a>
                 </div>
             </div>
         </div>
@@ -108,10 +106,10 @@
                         <div class="col">
                             <form class="ticket-form" action="{% url 'city_guide:cart_add' %}" method="POST">
                                 {% csrf_token %}
-                                <div class="form-row align-items-center">
+                                <div class="form-row">
                                     <label for="ticket_type">
                                         Bilety
-                                        <select class="form-control" type="number" id="ticket_type" name="ticket_id">
+                                        <select class="form-control form-control-sm" type="number" id="ticket_type" name="ticket_id">
                                             {% for ticket in attraction.ticket_set.all %}
                                             <option value="{{ticket.id}}">{{ticket.ticket_type}} - {{ticket.price}} ZŁ</option>
                                             {% endfor %}
@@ -119,14 +117,14 @@
                                     </label>
                                 </div>
 
-                                <div class="form-row align-items-center">
+                                <div class="form-row">
                                     <div class="input-group-sm">
                                         <label for="ticket_quant">
                                             Liczba
-                                            <input class="form-control " type="number" id="ticket_quant" name="quantity" value="1" min="1" max="30">
+                                            <input class="form-control form-control-sm" type="number" id="ticket_quant" name="quantity" value="1" min="1" max="30">
                                         </label>
 
-                                        <button class="btn btn-outline-success mb-sm-1" id="AddToCartBtn">
+                                        <button class="btn btn-outline-success btn-sm mb-sm-1" id="AddToCartBtn">
                                             Do koszyka
                                         </button>
                                     </div>
@@ -139,14 +137,14 @@
                             <p class="card-text descriptionText">
                                 {{attraction.description|truncatewords:50}}
                             </p>
-                            <a href="{% url 'city_guide:attraction' attraction.id %}">
-                                <button class="btn btn-default">
-                                    Wiecej...
-                                </button>
-                            </a>
                         </div>
                     </div>
 
+                    <a href="{% url 'city_guide:attraction' attraction.id %}" class="details-button">
+                        <button class="btn btn-default">
+                            Wiecej...
+                        </button>
+                    </a>
                 </div>
             </div>
         </div>

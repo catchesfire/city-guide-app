@@ -17,6 +17,7 @@ from django.contrib.auth.forms import PasswordChangeForm
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.conf import settings
 from .forms import FilterForm, SearchForm, SortForm, UserForm, OrderForm, ProfileForm, UserUpdateForm, TourCreateForm, AddBreakForm
+from .mixins import ExemplaryPlannerMixin
 
 
 
@@ -94,6 +95,7 @@ def cart(request):
                 orders[attraction][ticket]['id'] = ticket.id
                 orders[attraction][ticket]['quantity'] = quantity
                 orders[attraction][ticket]['cost'] = ticket.price * quantity
+                orders[attraction][ticket]['name'] = ticket.ticket_type
                 total_cost += ticket.price * quantity
     form = TourCreateForm(None)
 
@@ -129,6 +131,23 @@ def cart_order_edit(request):
                         'message' : "Amount can't be negative."
                     }
                 return JsonResponse(data)
+
+    return redirect('city_guide:cart')
+
+def cart_order_delete(request):
+    attr_id = request.GET.get('id', 0)
+    cart = request.session.get('cart', {})
+
+    for attraction_id, tickets in cart.items():
+        if attraction_id == attr_id:
+            del cart[str(attraction_id)]
+            request.session['cart'] = cart
+            request.session.modified = True
+            data = {
+                        'status' : 200,
+                        'message' : "OK."
+                    }
+            return JsonResponse(data)
 
     return redirect('city_guide:cart')
 
@@ -503,10 +522,10 @@ class UserFormView(View):
             
         return render(request, self.template_name, {'user_form': user_form, 'profile_form': profile_form})
 
-class PlannerView(LoginRequiredMixin, generic.DetailView):
+class PlannerView(ExemplaryPlannerMixin, generic.DetailView):
     login_url = '/login/'
     model = Tour
-    template_name = 'city_guide/planner.html'
+    # template_name = 'city_guide/planner_examplary.html'
     context_object_name = 'tour'    
     
     waypoints = {}
@@ -520,6 +539,7 @@ class PlannerView(LoginRequiredMixin, generic.DetailView):
 
     def get_context_data(self, **kwargs):
         context = super(PlannerView, self).get_context_data(**kwargs)
+        self.waypoints = {}
 
         all_orders = self.object.order_set.all()
         all_breaks = self.object.userbreak_set.all()
@@ -559,7 +579,6 @@ class PlannerView(LoginRequiredMixin, generic.DetailView):
                     
         context['cart'] = orders
         context['waypoints'] = json.dumps(waypoints)
-        # print(waypoints)
 
         def min_to_hours(time):
             hours = time // 60
@@ -575,9 +594,9 @@ class PlannerView(LoginRequiredMixin, generic.DetailView):
                 tot_time += key.time        
 
         context['total_time'] = min_to_hours(tot_time)
-        context['total_cost'] = total_cost
+        context['total_cost'] = str(total_cost) + " PLN"
         context['tour'] = self.object
         context['break_form'] = AddBreakForm(None)
-
+        
         return context
         
