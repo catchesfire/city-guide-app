@@ -630,3 +630,5 @@ class PlannerView(ExemplaryPlannerMixin, generic.DetailView):
         
         return context
         
+def description(request):
+    return render(request, 'city_guide/description.html')
