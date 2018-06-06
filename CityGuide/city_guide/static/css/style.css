@@ -88,6 +88,12 @@ body {
     border: none;
 }
 
+.attracion-single-card {
+    color: #545455;
+    /* background-color: #ededed; */
+    border: none;
+}
+
 .noAtrractionsHeader {
     text-align: center;
     color: #2d4079;
@@ -97,6 +103,12 @@ body {
     text-align: justify;
     border-top: 1px solid #545455;
     margin-top: 15px;
+}
+
+#description-single-attr{
+    text-align: justify;
+    border-top: 1px solid #545455;
+    padding-top: 5px;
 }
 
 .mainImage {
@@ -291,9 +303,7 @@ exampleTripAttr {
 }
 
 .details-button-single{
-    position: absolute;
-    bottom: -80px;
-    right: 0;
+    float: right;
 }
 
 .edge-detail {
@@ -355,8 +365,10 @@ exampleTripAttr {
     height: 100%;
 }
 
-#img-one-attr{
-    max-height: 100%;
-    width: auto;
-    margin-top: 20px;
+
+
+.img-responsive{
+    max-width: 100%;
+    height: auto;
+    display: block;
 }
