@@ -140,12 +140,6 @@ body {
     padding: 25px;
 }
 
-#map {
-    display: block;
-    width: 100%;
-    height: 500px;
-}
-
 .cart-img {
     max-height: 100px;
 }
@@ -292,17 +286,9 @@ ul {
     overflow-y: auto;
 }
 
-#map {
-    height: 800px;
-}
-
 exampleTripAttr {
     overflow-y: auto;
     max-height: 135px;
-}
-
-#map {
-    height: 600px;
 }
 
 .g-recaptcha {
@@ -477,4 +463,8 @@ exampleTripAttr {
       transform: rotate(-360deg);
       -webkit-transform: rotate(-360deg);
     }
+  }
+
+  #map{
+      height: 802px;
   }

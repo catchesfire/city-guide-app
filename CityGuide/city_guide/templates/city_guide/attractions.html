@@ -37,7 +37,7 @@
 
                 <div class="row">
                     <div class="col-7">
-                        <img class="img-responsive"  src="{{ attraction.main_photo.url }}" alt="Brak zdjecia"></img>
+                        <img class="img-responsive" src="{{ attraction.main_photo.url }}" alt="Brak zdjecia"></img>
                     </div>
 
                     <div class="col ">
@@ -59,7 +59,7 @@
                                         Liczba
                                     </label>
                                     <input class="form-control " type="number" id="ticket_quant" value="1" name="quantity" min="1" max="30">
-                                </div>                                    
+                                </div>
                             </div>
 
                             <div class="form-row align-items-center">
@@ -70,7 +70,7 @@
                                 </div>
 
 
-                                
+
                             </div>
                         </form>
                     </div>
@@ -140,7 +140,7 @@
                                         </button>
                                     </div>
 
-                                    
+
                                 </div>
                             </form>
                         </div>
@@ -161,7 +161,20 @@
                 </div>
             </div>
         </div>
-        {% endif %} {% endfor %}{% endif %}
+        {% endif %} {% endfor %} {% else %}
+        <div class="row">
+            <div class="col">
+                <h2 style="text-align: center">
+                    Nie istnieją atrakcje spełniające podane kryteria.
+                </h2>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col mt-5" style="text-align: center">
+                <img src="https://ih0.redbubble.net/image.492975032.7150/flat,800x800,075,f.u1.jpg" width="450" height="450" alt="Link nie działa">
+            </div>
+        </div>
+        {% endif %}
     </div>
 </div>
 {% endblock %} {% block javascripts %} {{block.super}}
