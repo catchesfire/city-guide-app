@@ -2,7 +2,6 @@ from django.shortcuts import redirect, reverse
 
 class ExemplaryPlannerMixin(object):
     def dispatch(self, request, *args, **kwargs):
-        print(self.get_object().user.id)
         user = self.request.user
         if user:
             if user.id == self.get_object().user.id:
