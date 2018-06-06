@@ -47,7 +47,7 @@ class ProfileForm(forms.ModelForm):
         fields = ('address', 'phone_number')
         widgets = {
             'address': forms.TextInput(attrs={'class' : 'form-control'}),
-            'phone_number': forms.NumberInput(attrs={'class' : 'form-control'}),
+            'phone_number': forms.NumberInput(attrs={'class' : 'form-control'})
         }
 
 class UserUpdateForm(forms.ModelForm):

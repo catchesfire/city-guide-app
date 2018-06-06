@@ -114,8 +114,8 @@
     <!-- location,description -->
     <div class="row">
         <!-- location -->
-        <div class="col-5">
-            <div id="map"></div>
+        <div class="col-6">
+            <div id="map-attraction"></div>
         </div>
         <!-- description -->
         <div class="col">
@@ -124,7 +124,7 @@
                     <i class="fas fa-sticky-note"></i> Opis
                 </div>
                 <div class="card-body">
-                    <p>{{object.description}}</p>
+                    <p class="p-justify">{{object.description}}</p>
                 </div>
             </div>
 
@@ -143,7 +143,7 @@
             lng: {{ object.location_y }} 
         };
     
-        var map = new google.maps.Map(document.getElementById('map'), {
+        var map = new google.maps.Map(document.getElementById('map-attraction'), {
             zoom: 17,
             center: uluru
         });

@@ -290,6 +290,12 @@ exampleTripAttr {
     right: 0;
 }
 
+.details-button-single{
+    position: absolute;
+    bottom: -80px;
+    right: 0;
+}
+
 .edge-detail {
     font-size: 80%;
 }
@@ -319,6 +325,10 @@ exampleTripAttr {
 .mt-30 {
     margin-top: 30px;
 }
+
+.mt-20 {
+    margin-top: 20px;
+}
 .mt-72{
     margin-top: 72px;
 }
@@ -328,8 +338,25 @@ exampleTripAttr {
     padding-right: 30px;
 }
 
+.pl-30 {
+    padding-left: 30px;
+}
+
 .profil-message{
     padding: 10px;
     margin: 0;
 }
 
+.p-justify{
+    text-align: justify;
+}
+
+#map-attraction{
+    height: 100%;
+}
+
+#img-one-attr{
+    max-height: 100%;
+    width: auto;
+    margin-top: 20px;
+}
