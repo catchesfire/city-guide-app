@@ -130,7 +130,13 @@ function calculateAndDisplayRoute(directionsService, directionsDisplay, pos = {}
                     document.getElementById("duration_" + i).innerHTML = edge.duration.text;
                 });
             }
-            $('#'+ map).fadeIn('slow');
+            console.log(route);
+            $('#spinner-' + map).fadeOut("slow", function(){
+              $('#' + map).animate({
+                opacity: "1" 
+              }, 500);
+            });
+            //$('#'+ map).slideDown('slow');
            console.log(dirty);
 
             //var summaryPanel = document.getElementById('directions-panel');

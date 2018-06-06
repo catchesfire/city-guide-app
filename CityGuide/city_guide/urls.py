@@ -22,6 +22,7 @@ urlpatterns = [
     path('cart/order/edit', views.cart_order_edit, name="cart_order_edit"),
     path('cart/order/delete', views.cart_order_delete, name="cart_order_delete"),    
     path('cart/add', views.cart_add, name="cart_add"),
+    path('cart/create/<int:pk>', views.cart_create, name="cart_create"),
     path('attractions/filter', views.AttractionsView.as_view(), name="filter"),
     path('attractions/search', views.AttractionsView.as_view(), name="search"),
     path('attractions/sort', views.AttractionsView.as_view(), name="sort"),
@@ -30,5 +31,7 @@ urlpatterns = [
     path('planner/add-break/<int:pk>', views.planner_add_break, name="planner_add_break"),
     path('planner/edit/<int:pk>', views.planner_edit, name="planner_edit"),
     path('description', views.description, name="description"),
-    path('planner/delete', views.planner_delete, name="planner_attraction_delete")    
+    path('planner/delete', views.planner_delete, name="planner_attraction_delete"),
+    path('planner/generate_pdf/<int:pk>', views.planner_to_pdf, name="generate_pdf"),
+    path('planner/raw/<int:pk>', views.raw_planner, name="raw_planner")
 ]

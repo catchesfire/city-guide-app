@@ -1,17 +1,25 @@
-{% extends 'base.html' %} {% load staticfiles %} {% block title%} City Guide {% endblock %}  {% block body %}
-<div class="container-fluid px-0">
-  <div clas="row">
+{% extends 'base.html' %} {% load staticfiles %} {% block title%} City Guide {% endblock %} {% block body %}
+<div class="container-fluid standard-container p-0">
+  <div clas="row m-0">
     <div id="carouselExampleIndicators" class="carousel slide mx-auto" data-ride="carousel">
       <ol class="carousel-indicators">
         <li data-target="#carouselExampleIndicators" data-slide-to="0" class="active"></li>
         <li data-target="#carouselExampleIndicators" data-slide-to="1"></li>
+        <li data-target="#carouselExampleIndicators" data-slide-to="2"></li>
+        <li data-target="#carouselExampleIndicators" data-slide-to="3"></li>
       </ol>
-      <div class="carousel-inner">
+      <div class="carousel-inner sliderHeight">
         <div class="carousel-item active">
-          <img class="d-block w-100" src="{% static 'images/slider/slider1.png' %}" alt="First slide">
+          <img class="d-block w-100" src="{% static 'images/slider/Kslider.jpg' %}" alt="First slide">
         </div>
         <div class="carousel-item">
-          <img class="d-block w-100" src="{% static 'images/slider/slider1.png' %}" alt="Second slide">
+          <img class="d-block w-100" src="{% static 'images/slider/KPalac2.jpg' %}" alt="Second slide">
+        </div>
+        <div class="carousel-item">
+          <img class="d-block w-100" src="{% static 'images/slider/praczki.jpg' %}" alt="Third slide">
+        </div>
+        <div class="carousel-item">
+          <img class="d-block w-100" src="{% static 'images/slider/stacja.jpg' %}" alt="Fourth slide">
         </div>
       </div>
       <a class="carousel-control-prev" href="#carouselExampleIndicators" role="button" data-slide="prev">
@@ -34,21 +42,15 @@
           </h1>
           <p class="text-light tourDesc">
             <small>
-              Ta strona jest super i wgl. Myśle że dej pan pięć bo somsiad bedzie zazdrosny a o to chodzi. Gdzie jest Tomasz? Bo nie chciałąś
-              w dupe to masz. No i Cisniemy z Inwokacją.
+              CityGuide jest aplikacją internetową, która umożliwia użytkownikowi wygodne planowanie podróży po Białymstoku.
             </small>
           </p>
-          <p class="text-light tourDesc">
+          <p class="p1 text-light tourDesc">
             <small>
-              Litwo! Ojczyzno moja! Ty jesteś jak zdrowie, Ile cię trzeba cenić, ten tylko się dowie, Kto cię stracił. Dziś piękność twą
-              w całej ozdobie Widzę i opisuję, bo tęsknię po tobie Panno święta, co Jasnej bronisz Częstochowy I w Ostrej
-              świecisz Bramie! Ty, co gród zamkowy Nowogródzki ochraniasz z jego wiernym ludem! Jak mnie dziecko do zdrowia
-              powróciłaś cudem, (Gdy od płaczącej matki pod Twoją opiekę Ofiarowany, martwą podniosłem powiekę I zaraz mogłem
-              pieszo do Twych świątyń progu Iść za wrócone życie podziękować Bogu), Tak nas powrócisz cudem na Ojczyzny łono.
-              Tymczasem przenoś moją duszę utęsknioną Do tych pagórków leśnych, do tych łąk zielonych, Szeroko nad błękitnym
-              Niemnem rozciągnionych; Do tych pól malowanych zbożem rozmaitem, Wyzłacanych pszenicą, posrebrzanych żytem;
-              Gdzie bursztynowy świerzop, gryka jak śnieg biała, Gdzie panieńskim rumieńcem dzięcielina pała, A wszystko
-              przepasane jakby wstęgą, miedzą Zieloną, na niej z rzadka ciche grusze siedz
+              Każdy kto chciałby stworzyć swoją trasę wycieczki musi być zalogowany, jeżeli jednak nie jest, to powinien przejść do okna rejestracji. Użytkownik aplikacji posaida własny koszyk,
+              w którym ma możliwość przechowywania stworzonych przez siebie tras składających się z atrakcji. Atrakcje przechowywane są w bazie danych, które są zawarte w aplikacji. 
+              Od użytkownika zależy jak zaplanuje swoją trasę, jaką kolejność wybierze lub ile przerw doda. Po wybranej trasie aplikacja wyznacza na mapie trasę wymarzonej podróży. 
+              Informuje ile będzie trwała wycieczka oraz jakie koszty poniesie użytkownik.  
             </small>
           </p>
         </div>
@@ -67,10 +69,11 @@
     {% for tour in tours %}
     <div class="row mt-5">
       <div class="col-12 col-lg" style="position: relative">
-        <div class="test" style="height: 400px; position: absolute; top: 50%; left: 50%; transform: translateY(-50%); margin-top: -200px;">
-          KURCZACZKI
+        <div class="spinner" id="spinner-map-{{tour.tour.id}}">
+          <div class="cube1"></div>
+          <div class="cube2"></div>
         </div>
-        <div class="map" id="map-{{ tour.tour.id }}" data-tour-id=" {{ tour.tour.id }}" data-url="{% url 'city_guide:planner' tour.tour.id %}" style="display: none">KURDE</div>
+        <div class="map" id="map-{{ tour.tour.id }}" data-tour-id=" {{ tour.tour.id }}" data-url="{% url 'city_guide:planner' tour.tour.id %}" style="opacity: 0"></div>
       </div>
       <div class="col-12 col-lg-7">
         <div class="row">
@@ -138,29 +141,22 @@
     {% endfor %}
   </div>
 </div>
-{% endblock %}
-
-{% block javascripts %}
-{{ block.super }}
+{% endblock %} {% block javascripts %} {{ block.super }}
 <script>
   var waypts;
   var mapId;
   var dirty = false;
 
-  function waypoint(data){
-    waypts = {};
+  function waypoint(data) {
     waypts = data;
     transport = "DRIVING";
   }
-  $('.map').each(function(){
+  $('.map').each(function () {
     let tourId = $(this).attr("data-tour-id");
     let mapId = $(this).attr("id");
     $.ajax({
-      url : $(this).attr('data-url')
-    }).done(function(data){
-      var test = $(this);
-      console.log(data);
-      console.log(mapId);
+      url: $(this).attr('data-url')
+    }).done(function (data) {
       waypoint(data);
       init(data, mapId);
       //$(this).show();
@@ -175,8 +171,7 @@
 <script>
   //fuu("map-4");
 </script>
-<script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCYXIhgWd59IDdrJoO38Tz2hbyoYw0u9TU"></script> 
+<script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCYXIhgWd59IDdrJoO38Tz2hbyoYw0u9TU"></script>
 <script>
 
-</script>
-{% endblock %}
+</script> {% endblock %}

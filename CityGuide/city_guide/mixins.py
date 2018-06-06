@@ -1,4 +1,4 @@
-from django.shortcuts import redirect
+from django.shortcuts import redirect, reverse
 
 class ExemplaryPlannerMixin(object):
     def dispatch(self, request, *args, **kwargs):
@@ -14,3 +14,11 @@ class ExemplaryPlannerMixin(object):
             else:
                 redirect('city_guide:index')
         return redirect('city_guide:index')
+
+class NotUserMixin(object):
+    def dispatch(self, request, *args, **kwargs):
+        user = self.request.user
+        if user and user.is_authenticated:
+            return redirect(reverse(self.redirect_url))
+        else:
+            return super(NotUserMixin, self).dispatch(request, *args, **kwargs)

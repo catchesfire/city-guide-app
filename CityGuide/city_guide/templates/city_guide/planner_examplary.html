@@ -51,6 +51,13 @@
                 </div>
             </div>
             {% endfor %}
+            <div class="row mt-3">
+                <div class="col"></div>
+                <div class="col-auto float-right">
+                    <a href="" class="btn btn-primary">Odswież trasę</a>
+                    <a href="{% url 'city_guide:cart_create' tour.id %}" class="btn btn-success">Dodaj atrakcje do koszyka</a>
+                </div>
+            </div>
         <!-- </ul> -->
     </div>
 </div>
