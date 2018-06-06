@@ -18,7 +18,7 @@ body {
 }
 
 .standard-container {
-    margin-top: 92px;
+    margin-top:77.97px;
     background-color: #fff;
     min-height: 600px;
     padding-top: 10px;
@@ -26,7 +26,7 @@ body {
 }
 
 .standard-container-photo {
-    margin-top: 92px;
+    margin-top: 77.97px;
     background-color: #fff;
     padding-top: 10px;
     padding-bottom: 40px;
@@ -38,6 +38,7 @@ body {
     min-height: 600px;
     padding-top: 10px;
     padding-bottom: 40px;
+    padding-left: 30px;
 }
 
 .navbar-light {
@@ -308,6 +309,8 @@ exampleTripAttr {
 
 .p1{
     text-indent: 50px;
+    text-align: justify; 
+
 }
 
 .descriptionPhotos{
@@ -329,10 +332,11 @@ exampleTripAttr {
     color: #6C757D;
     vertical-align: baseline !important;
     padding-right: 2px;
+}
 
-.details-button {
+.details-button{
     position: absolute;
-    bottom: 0;
+    bottom: 0px;
     right: 0;
 }
 
@@ -405,4 +409,8 @@ exampleTripAttr {
     max-height: 100%;
     width: auto;
     margin-top: 20px;
+}
+
+.sliderHeight{
+    max-height: 505px;
 }
