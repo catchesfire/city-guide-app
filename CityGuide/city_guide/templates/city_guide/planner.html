@@ -88,7 +88,7 @@
                     <ul id="sortable">
                         {% for attraction, orders in cart.items %}
                         <li class="ui-state-default order-item {{ orders.type }} my-2" data-lat="{{attraction.location_x}}" data-lng="{{attraction.location_y}}"
-                            data-id="{{attraction.id}}" data-type="{{orders.type}}">
+                            data-id="{{attraction.id}}" data-type="{{orders.type}}" id="attraction-{{attraction.id}}">
                             {% if orders.type == "break" %}
                             <div class="card alert-info">
                                 {% else %}
@@ -113,7 +113,7 @@
                                                         </button>
                                                     </div>
                                                     <div class="col-auto px-1">
-                                                        <button class="btn btn-danger btn-sm float-right mr-2">
+                                                        <button class="btn btn-danger btn-sm float-right mr-2 delete-attraction" data-attraction-id="{{attraction.id}}">
                                                             <i class="far fa-trash-alt"></i>
                                                         </button>
                                                     </div>
@@ -245,6 +245,29 @@
     <script type="text/javascript" src="{% static 'js/map.js' %}"></script>
     <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCYXIhgWd59IDdrJoO38Tz2hbyoYw0u9TU"></script>
     <script type="text/javascript">
+        function deleteAttraction(attr_id, tour_id) {
+            $('#attraction-' + attr_id).remove();
+    
+            $.get(
+                "{% url 'city_guide:planner_attraction_delete' %}",
+                { 
+                    attr_id: attr_id,
+                    tour_id: tour_id
+                }
+            ).done(function (data) {
+                location.reload();
+            });
+
+            //e.preventDefault();
+        }
+    
+        $('.delete-attraction').on('click', function () {
+            let id = $(this).attr('data-attraction-id');
+            let tour_id = "{{tour.id}}";
+            deleteAttraction(id, parseInt(tour_id));
+        });
+
+
         $(".details-button").on("click", function () {
             $("#detail-table-" + $(this).attr("data-id")).slideToggle("slow");
         });

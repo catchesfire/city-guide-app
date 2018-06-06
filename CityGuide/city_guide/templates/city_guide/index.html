@@ -112,7 +112,7 @@
               <div class="col exampleTripAttr">
                 <ul class="list-group mb-3">
                   <small>
-                    {% for attraction in tour.attractions%}
+                    {% for attraction in tour.attractions %}
                     <a href="{% url 'city_guide:attraction' attraction.id %}" class="list-group-item list-group-item-action">{{attraction.name}}</a>
                     {% endfor %}
                   </small>

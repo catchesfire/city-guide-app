@@ -83,6 +83,7 @@ class Tour(models.Model):
     def add_currency(self, value):
         return str(value) + " PLN"
 
+
 class UserBreak(models.Model):
     name = models.CharField(max_length=30)
     time = models.IntegerField(default=1)
