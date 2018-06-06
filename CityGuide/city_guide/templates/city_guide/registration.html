@@ -1,5 +1,20 @@
 {% extends 'base.html' %} {% block title%} Rejestracja {% endblock %} {% block body %}
 
+{% if messages %}
+<ul class="messages mt-72 ml-0 pl-0" style="margin-bottom: -82px; text-align: center;">
+    {% for message in messages %}
+    <li{% if message.tags %} class="alert alert-{{ message.tags }} mt-0 mb-0 "{% endif %}>{{ message }}</li>
+    {% endfor %}
+</ul>
+{% endif %}   
+
+{% if user_form.errors %}
+    <ul class="messages mt-72 ml-0 pl-0" style="margin-bottom: -82px; text-align: center;">
+    {% for key,error in user_form.errors.items %}
+        <li class="alert alert-danger mt-0 mb-0 ">{{ error|escape }}</li>
+    {% endfor %}
+    </ul>
+{% endif %}
 
 <div class="container standard-container">
     <!-- Title -->
@@ -11,11 +26,7 @@
             <form action="" method="POST">
                 {% csrf_token %}
                 {% for field in user_form %}
-                    {% if field.errors %}
-                        <div class="alert alert-danger">
-                            {{ field.errors}}
-                        </div>
-                    {% endif %}
+
                     
                     <div class="form-group row">
                         
@@ -28,11 +39,7 @@
                 
         
                 {% for field in profile_form %}
-                    {% if field.errors %}
-                        <div class="alert alert-danger">
-                            {{ field.errors}}
-                        </div>
-                    {% endif %}
+
                     
                     <div class="form-group row">
                         
@@ -44,11 +51,7 @@
                 {% endfor %}
         
                 <script src='https://www.google.com/recaptcha/api.js'></script>
-                {% if messages %}
-                    {% for message in messages %}
-                        <li class="{{ message.tags }} alert alert-danger">{{ message }}</li>
-                    {% endfor %}
-                {% endif %}
+
                 <div calss="row">
                     <div class="col mx-auto">
                         <div class="g-recaptcha mx-auto"  data-sitekey="6LdeO1wUAAAAAH38moavAxpg3n0tpU397Z07iYIa"></div>

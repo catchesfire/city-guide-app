@@ -21,11 +21,23 @@ from .mixins import ExemplaryPlannerMixin, NotUserMixin
 import pdfkit
 from django.http import HttpResponse
 
+from django.contrib.messages.views import SuccessMessageMixin
+
 
 
 def index(request):
     tours = []
     all_tours = Tour.objects.filter(user_id = 1)
+    
+    message = None
+    if( 'form_message' in request.session ):
+        print("::::::::::::::::")
+        message = request.session['form_message']
+        messages.success(request, message ) #<< if you choose to pass it through django's messaging
+        del request.session['form_message']
+        #messages.success(request, ('Twój profil został pomyslnie zmieniony!'))
+        
+    
     if all_tours.count() > 3:
         all_tours = all_tours[:3]
     
@@ -60,7 +72,6 @@ def index(request):
             'time': min_to_hours(total_time),
             'attractions': attractions
         })
-
     return render(request, 'city_guide/index.html', {'tours': tours})
 
 def logout_user(request):
@@ -256,8 +267,6 @@ def planner_delete(request):
 
     return redirect('planner:index')
 
-        
-
 def planner_add_break(request, pk):
     try:
         tour = Tour.objects.get(id = pk)
@@ -288,8 +297,6 @@ def planner_add_break(request, pk):
         }
         return JsonResponse(data)
     return redirect('city_guide:index')
-
-
 
 class AttractionsView(generic.ListView):
     filter_form_class = FilterForm
@@ -429,11 +436,13 @@ class UserLogFormView(NotUserMixin, View):
         user = authenticate(username=username, password=password)
         if user is not None:
             login(request, user)
+            request.session['form_message'] = "Zalogowano!"
             return redirect('city_guide:index')
         else:
-            error = 'Invalid username or password.'
+            messages.error(request, ('Nieprawidłowy login lub hasło.'))
+            
 
-        return render(request, self.template_name, {'error_message' : error})    
+        return render(request, self.template_name)    
 
 @login_required
 @transaction.atomic
@@ -511,15 +520,17 @@ def passwordView(request):
         else:
             messages.error(request, 'Nie udało się zmienić hasła.')
             return redirect('city_guide:profile')
-            
-# to do
-# captcha
+
 
 class UserFormView(View):
     user_form_class = UserForm
     profile_form_class = ProfileForm
     template_name = 'city_guide/registration.html'
+    success_message = "Zarejestrowano!"
+    #https://stackoverflow.com/questions/44784936/redirect-while-passing-message-in-django?rq=1
     
+    
+
     def get(self,request):
         user_form = self.user_form_class(None)
         profile_form = self.profile_form_class(None)
@@ -532,9 +543,6 @@ class UserFormView(View):
         if user_form.is_valid():
             user = user_form.save(commit=False)
             profile = profile_form.save(commit=False)
-
-
-
 
             username = user_form.cleaned_data['username']
             password = user_form.cleaned_data['password']
@@ -569,9 +577,10 @@ class UserFormView(View):
 
                 if user is not None:
                     login(request, user)
+                    request.session['form_message'] = "Zarejestrowałeś się."
                     return redirect('city_guide:index')
             else:
-                messages.error(request, 'Invalid reCAPTCHA. Please try again.')
+                messages.error(request, 'Nieprawidłwa reCAPTCHA. Spróbuj ponownie.')
             
         return render(request, self.template_name, {'user_form': user_form, 'profile_form': profile_form})
 
