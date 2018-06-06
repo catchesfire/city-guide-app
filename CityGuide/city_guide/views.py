@@ -215,10 +215,8 @@ def planner_delete(request):
 
         for order in all_orders:      
             if int(order.ticket.attraction.id) == int(attr_id):
-                print('usunalem')
-                dupa = Order.objects.get(id=order.id)
-                print(dupa)       
-                dupa.delete()
+                order_instance = Order.objects.get(id=order.id)
+                order_instance.delete()
                 break
 
         tour_dict = json.loads(tour.attraction_order)
