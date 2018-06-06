@@ -1,6 +1,6 @@
 import json
 import urllib
-from django.shortcuts import get_object_or_404, render, redirect
+from django.shortcuts import get_object_or_404, render, redirect, reverse
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse, Http404
 from city_guide.models import Attraction, Category, Ticket, TicketType, Tour, Profile, Order, User
 from django.template import loader
@@ -17,7 +17,9 @@ from django.contrib.auth.forms import PasswordChangeForm
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.conf import settings
 from .forms import FilterForm, SearchForm, SortForm, UserForm, OrderForm, ProfileForm, UserUpdateForm, TourCreateForm, AddBreakForm
-from .mixins import ExemplaryPlannerMixin
+from .mixins import ExemplaryPlannerMixin, NotUserMixin
+import pdfkit
+from django.http import HttpResponse
 
 from django.contrib.messages.views import SuccessMessageMixin
 
@@ -111,6 +113,26 @@ def cart(request):
     form = TourCreateForm(None)
 
     return render(request, template_name, {'cart': orders, 'total_cost': total_cost, 'tour_create_form' : form})
+
+def cart_create(request, pk):
+    cart = request.session.get('cart', {})
+    tour = get_object_or_404(Tour, pk=pk)
+
+    all_orders = tour.order_set.all()
+
+    for order in all_orders:
+        attraction = order.ticket.attraction
+        attraction_id = str(attraction.id)
+        ticket = order.ticket
+        ticket_id = str(ticket.id)
+        if attraction_id not in cart:
+            cart[attraction_id] = {}
+        cart[attraction_id][ticket_id] = order.quantity
+    
+    request.session['cart'] = cart
+    request.session.modified = True
+    
+    return redirect('city_guide:cart')
 
 def cart_order_edit(request):
     tid = request.GET.get('id', 0)
@@ -226,10 +248,8 @@ def planner_delete(request):
 
         for order in all_orders:      
             if int(order.ticket.attraction.id) == int(attr_id):
-                print('usunalem')
-                dupa = Order.objects.get(id=order.id)
-                print(dupa)       
-                dupa.delete()
+                order_instance = Order.objects.get(id=order.id)
+                order_instance.delete()
                 break
 
         tour_dict = json.loads(tour.attraction_order)
@@ -400,8 +420,11 @@ class AttracionView(generic.DetailView):
     template_name = 'city_guide/attraction.html'
     context_object_name = 'attraction_obj'
 
-class UserLogFormView(View):
+
+
+class UserLogFormView(NotUserMixin, View):
     template_name = 'city_guide/login.html'
+    redirect_url = 'city_guide:index'
     
     def get(self,request):
         return render(request, self.template_name)
@@ -638,4 +661,20 @@ class PlannerView(ExemplaryPlannerMixin, generic.DetailView):
         context['break_form'] = AddBreakForm(None)
         
         return context
-        
+
+def raw_planner(request, pk):
+    tour = Tour.objects.get(id=pk)
+    all_orders = tour.order_set.all()
+
+    return render(request, 'city_guide/pdf.html', {'orders': all_orders})
+
+def planner_to_pdf(request, pk):
+    tour = Tour.objects.get(id=pk)    
+    url = request.build_absolute_uri(reverse('city_guide:raw_planner', args=[pk]))
+    
+    config = pdfkit.configuration(wkhtmltopdf="E:\Studia\Semestr IV\Rozwiazania szkieletowe w tworzeniu aplikacji WWW\Pracownia specjalistyczna\Projekt\city-guide-app\CityGuide\city_guide\wkhtmltopdf\\bin\wkhtmltopdf.exe")
+    pdfkit.from_url(url, tour.name + ".pdf", configuration=config)
+    return render(request, 'city_guide/pdf.html')
+
+def description(request):
+    return render(request, 'city_guide/description.html')

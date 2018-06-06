@@ -1,0 +1,79 @@
+{% extends 'base.html' %} {% load staticfiles %} {% block title%} O Białymstoku {% endblock %} {% block body %}
+
+<div class="container p-0 standard-container-photo">
+    <div class="row m-0">
+        <img src="{% static 'images/photos/panoramaBstok.jpg' %}" class="img-fluid col p-0" alt="City Guide">
+    </div>
+</div>
+<div class="container standard-container-inside">
+    <div class="row">
+        <div class="col-1 pl-0">
+            <img class="descriptionPhotos" src="{% static 'images/photos/herb_miasta.png' %}" alt="herb">
+        </div>
+        <span class="descriptionTitle col mt-3 align-bottom">Białystok</span>
+
+    </div>
+    <div class="row mt-2">
+        <div class="col">
+
+            <p class="p1 fontForAll">
+                Miasto na prawach powiatu w północno-wschodniej Polsce, położone na Nizinie Północnopodlaskiej, nad rzeką Białą. Jest stolicą
+                województwa podlaskiego i siedzibą władz ziemskiego powiatu białostockiego. Według danych z 31 grudnia 2017
+                r. miasto liczyło 297 288 mieszkańców.
+            </p>
+
+            <p class="p1 fontForAll">
+                Osada Białystok powstała między 1440 a 1444 rokiem, gdy na miejsce obecnego Rynku Kościuszki przybyli osadnicy z ziemi kolneńskiej,
+                a do dzisiejszych Dojlid - z powiatu lidzkiego. W miejscu obecnego Rynku Kościuszki krzyżowały się drogi
+                do Suraża, Wasilkowa oraz Choroszczy. Między 1444 a 1447 rokiem Białystok od Michała Zygmuntowicza otrzymuje
+                Jakub Raczko Tabutowicz. W ciągu następnych trzech lat powstają dwa dwory oraz kościół parafialny. Przy kościele
+                w 1578 roku stanęła karczma. W latach 1617–1626 z fundacji marszałka Piotra Wiesiołowskiego zbudowano zachowany
+                do dziś Stary Kościół Farny. To on wzniósł w Białymstoku murowany gotycko-renesansowy zamek, który po gruntownej
+                przebudowie w latach 90. XVII wieku, stał się barokową rezydencją magnackiego rodu Branickich znaną do dziś
+                jako pałac Branickich. Z 1727 r. pochodzi pierwsza wzmianka o białostockiej cerkwi, która znajdowała się
+                w miejscu obecnej Katedry św. Mikołaja. Miasto prywatne, położone w ziemi bielskiej województwa podlaskiego
+                posiadało prawo magdeburskie w 1745 roku. W 1745 roku rozpoczęto budowę białostockiego ratusza. Całość założenia
+                urbanistycznego Białegostoku przypisywana jest architektom związanym z dworem hetmana Jana Klemensa Branickiego.
+            </p>
+            <p class="fontForAll">
+                <h4>Mniejszości narodowe:</h4>
+                <dl class="fontForAll">
+                    <dt>Białorusini</dt>
+                    <dd>- Białystok to ośrodek kulturalno-społeczny Białorusinów (według spisu powszechnego z 2002 roku mieszka
+                        ich tutaj prawie 7,5 tys., co stanowi 2,5% mieszkańców Białegostoku).</dd>
+                    <dt>Rosjanie</dt>
+                    <dd>- to mniejszość narodowa, która liczy około 10–15 tys. osób, mieszkających głównie w Białymstoku, na
+                        Suwalszczyźnie i Mazurach.</dd>
+                    <dt>Tatarzy</dt>
+                    <dd>- w Białymstoku mieszka ok. 1800 Tatarów.</dd>
+                    <dt>Pozostałe narodowości</dt>
+                    <dd>- Romowie oraz Ukraińcy.</dd>
+                </dl>
+            </p>
+            <p class="fontForAll">
+                <h4>Komunikacja miejska:</h4>
+                <p class="p1">Białystok jest największym miastem w Polsce posiadającym tylko jeden rodzaj komunikacji miejskiej, autobusową. W ramach komunikacji
+                organizowanej przez UM w Białymstoku operują trzy przedsiębiorstwa autobusowe: Komunalny Zakład Komunikacyjny,
+                Komunalne Przedsiębiorstwo Komunikacji Miejskiej oraz Komunalne Przedsiębiorstwo Komunikacyjne, istniały
+                także spółki Abra, BIATRA. Białostocka komunikacja miejska wyróżnia się prowadzeniem mobilnego systemu informacji
+                o rozkładzie jazdy, który jest dostępny także dla osób niewidomych i słabowidzących – Ginger. 21 października
+                2016 roku, Białystok posiadał 49 linii autobusowych, w tym 29 linii miejskich dziennych (1–29), 6 linii nocnych
+                (N1–N6) oraz 14 linii podmiejskich (100–108, 110, 200–202). W czerwcu 2009 powstał Klub Miłośników Komunikacji
+                Miejskiej w Białymstoku.
+                </p>
+                    
+            </p>
+            <footer class="blockquote-footer">From <a role="button" class="btn btn-link buttonHref" href="https://pl.wikipedia.org/wiki/Bia%C5%82ystok">Wikipedia </a>website</footer>
+        </div>
+        <div class="col-3 mr-0">
+            <img class="descriptionPhotos" src="{% static 'images/photos/staryBstok.jpg' %}" alt="staryBstok">
+            <img class="descriptionPhotos" src="{% static 'images/photos/ratusz.jpg' %}" alt="ratusz">
+            <img class="descriptionPhotos" src="{% static 'images/photos/palac.jpg' %}" alt="PalacBran">
+            <img class="descriptionPhotos" src="{% static 'images/photos/plantyPark.jpg' %}" alt="Planty">
+
+        </div>
+    </div>
+</div>
+
+
+{% endblock %}
