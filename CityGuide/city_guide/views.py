@@ -197,7 +197,6 @@ def planner_edit(request, pk):
         tour.attraction_order = json.dumps(order)
         tour.was_order_modified = True
         tour.save()
-        print(order)
         data = {
             'status': 200,
             'message': 'OK'
@@ -205,6 +204,39 @@ def planner_edit(request, pk):
         return JsonResponse(data)
 
     return redirect('city_guide:index')
+
+@login_required
+def planner_delete(request):
+    if request.method == "GET":
+        tour_id = request.GET.get("tour_id", 0)
+        attr_id = request.GET.get("attr_id", 0)     
+        tour = Tour.objects.get(pk=tour_id)
+        all_orders = tour.order_set.all()
+
+        for order in all_orders:      
+            if int(order.ticket.attraction.id) == int(attr_id):
+                print('usunalem')
+                dupa = Order.objects.get(id=order.id)
+                print(dupa)       
+                dupa.delete()
+                break
+
+        tour_dict = json.loads(tour.attraction_order)
+        for key, orders in tour_dict.items():
+            for t, attraction_id in orders.items():
+                if t == "attraction" and attraction_id == attr_id:
+                    del tour_dict[str(key)]
+                    tour.attraction_order = json.dumps(tour_dict)
+                    tour.save()
+                    data = {
+                        'status': 200,
+                        'message': 'OK'
+                    }
+                    return JsonResponse(data)
+
+    return redirect('planner:index')
+
+        
 
 def planner_add_break(request, pk):
     try:
