@@ -58,81 +58,84 @@
   </div>
 </div>
 <div class="container standard-container mt-0">
-  <div class="row">
-    <div class="col">
-      <div id="routes">
+  <div id="routes">
+    <div class="row">
+      <div class="col">
         <h2>Przykładowe trasy</h2>
-        {% for tour in tours %}
-        <div class="row mt-5">
-          <div class="col">
-            <div class="map" id="map-{{ tour.tour.id }}" data-tour-id=" {{ tour.tour.id }}" data-url="{% url 'city_guide:planner' tour.tour.id %}" style="height: 100%"></div>
-          </div>
-          <div class="col-7">
-            <div class="row">
-              <div class="col">
-                <h1>{{tour.tour.name}}</h1>
-              </div>
-            </div>
-            <div class="row">
-              <div class="col">
-                <span class="fontForAll">
-                  <small>
-                    <i class="fa fa-money-bill-alt "></i> {{tour.cost}}
-                  </small>
-                </span>
-              </div>
-              <div class="col-9">
-                <span class="fontForAll">
-                  <small>
-                    <i class="fa fa-clock"></i> {{tour.time}}
-                  </small>
-                </span>
-              </div>
-            </div>
-            <div class="row mt-3">
-              <div class="col">
-                <p class="tourDesc">
-                  <small>
-                    {{tour.tour.description}}
-                  </small>
-                </p>
-              </div>
-            </div>
-            <div class="row">
-              <div class="col mt-3">
-                <p>
-                  <i class="fa fa-university"></i>
-                  <span class="fontForAll">
-                    <small>Lista atrakcji</small>
-                  </span>
-                </p>
-              </div>
-            </div>
-            <div class="row">
-              <div class="col exampleTripAttr">
-                <ul class="list-group mb-3">
-                  <small>
-                    {% for attraction in tour.attractions %}
-                    <a href="{% url 'city_guide:attraction' attraction.id %}" class="list-group-item list-group-item-action">{{attraction.name}}</a>
-                    {% endfor %}
-                  </small>
-                </ul>
-              </div>
-            </div>
-            <div class="row">
-              <div class="col">
-                <a href="{% url 'city_guide:planner' tour.tour.id %}">
-                  <button type="button" class="btn btn-light float-right">
-                    Przejdz do trasy
-                  </button>
-                </a>
-              </div>
-            </div>
-          </div>
-        </div>
-        {% endfor %}
       </div>
     </div>
+    {% for tour in tours %}
+    <div class="row mt-5">
+      <div class="col-12 col-lg" style="position: relative">
+        <div class="test" style="height: 400px; position: absolute; top: 50%; left: 50%; transform: translateY(-50%); margin-top: -200px;">
+          KURCZACZKI
+        </div>
+        <div class="map" id="map-{{ tour.tour.id }}" data-tour-id=" {{ tour.tour.id }}" data-url="{% url 'city_guide:planner' tour.tour.id %}" style="display: none">KURDE</div>
+      </div>
+      <div class="col-12 col-lg-7">
+        <div class="row">
+          <div class="col">
+            <h1>{{tour.tour.name}}</h1>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col">
+            <span class="fontForAll">
+              <small>
+                <i class="fa fa-money-bill-alt "></i> {{tour.cost}}
+              </small>
+            </span>
+          </div>
+          <div class="col-9">
+            <span class="fontForAll">
+              <small>
+                <i class="fa fa-clock"></i> {{tour.time}}
+              </small>
+            </span>
+          </div>
+        </div>
+        <div class="row mt-3">
+          <div class="col">
+            <p class="tourDesc">
+              <small>
+                {{tour.tour.description}}
+              </small>
+            </p>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col mt-3">
+            <p>
+              <i class="fa fa-university"></i>
+              <span class="fontForAll">
+                <small>Lista atrakcji</small>
+              </span>
+            </p>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col exampleTripAttr">
+            <ul class="list-group mb-3">
+              <small>
+                {% for attraction in tour.attractions %}
+                <a href="{% url 'city_guide:attraction' attraction.id %}" class="list-group-item list-group-item-action">{{attraction.name}}</a>
+                {% endfor %}
+              </small>
+            </ul>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col">
+            <a href="{% url 'city_guide:planner' tour.tour.id %}">
+              <button type="button" class="btn btn-light float-right">
+                Przejdz do trasy
+              </button>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+    {% endfor %}
   </div>
 </div>
 {% endblock %}
@@ -155,9 +158,12 @@
     $.ajax({
       url : $(this).attr('data-url')
     }).done(function(data){
+      var test = $(this);
+      console.log(data);
       console.log(mapId);
       waypoint(data);
       init(data, mapId);
+      //$(this).show();
       //d();
     });
   });

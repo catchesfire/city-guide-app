@@ -231,8 +231,8 @@ h3 {
 
 .tourDesc {
     text-align: justify;
-    letter-spacing: 0.09em;
-    word-spacing: 0.11em;
+    letter-spacing: 0.04em;
+    word-spacing: 0.09em;
 }
 
 .buttonEditingPlanner {
@@ -329,7 +329,7 @@ exampleTripAttr {
     color: #6C757D;
     vertical-align: baseline !important;
     padding-right: 2px;
-
+}
 .details-button {
     position: absolute;
     bottom: 0;
@@ -405,4 +405,7 @@ exampleTripAttr {
     max-height: 100%;
     width: auto;
     margin-top: 20px;
+}
+.map{
+    height: 400px!important;
 }
