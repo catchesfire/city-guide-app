@@ -15,7 +15,9 @@ from django.utils import timezone
 from django.contrib.auth.hashers  import check_password
 from django.contrib.auth.forms import PasswordChangeForm
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.conf import settings
 from .forms import FilterForm, SearchForm, SortForm, UserForm, OrderForm, ProfileForm, UserUpdateForm, TourCreateForm, AddBreakForm
+from .mixins import ExemplaryPlannerMixin
 
 
 
@@ -93,6 +95,7 @@ def cart(request):
                 orders[attraction][ticket]['id'] = ticket.id
                 orders[attraction][ticket]['quantity'] = quantity
                 orders[attraction][ticket]['cost'] = ticket.price * quantity
+                orders[attraction][ticket]['name'] = ticket.ticket_type
                 total_cost += ticket.price * quantity
     form = TourCreateForm(None)
 
@@ -131,6 +134,23 @@ def cart_order_edit(request):
 
     return redirect('city_guide:cart')
 
+def cart_order_delete(request):
+    attr_id = request.GET.get('id', 0)
+    cart = request.session.get('cart', {})
+
+    for attraction_id, tickets in cart.items():
+        if attraction_id == attr_id:
+            del cart[str(attraction_id)]
+            request.session['cart'] = cart
+            request.session.modified = True
+            data = {
+                        'status' : 200,
+                        'message' : "OK."
+                    }
+            return JsonResponse(data)
+
+    return redirect('city_guide:cart')
+
 @login_required
 def planner_add(request):
     if request.method == "POST":
@@ -144,7 +164,8 @@ def planner_add(request):
 
             i = 0
             for attraction_id in cart:
-                orders[str(i)] = attraction_id
+                orders[str(i)] = {}
+                orders[str(i)]['attraction'] = attraction_id
                 i += 1
 
             user_breaks = {}
@@ -159,7 +180,7 @@ def planner_add(request):
                     order = Order(quantity=quantity, date=timezone.now(), tour=tour, ticket=ticket)
                     order.save()
             
-            return redirect('city_guide:cart')
+            return redirect('city_guide:planner', pk=tour.id)
         return redirect('city_guide:cart')
     return redirect('city_guide:cart')
 
@@ -176,7 +197,6 @@ def planner_edit(request, pk):
         tour.attraction_order = json.dumps(order)
         tour.was_order_modified = True
         tour.save()
-        print(order)
         data = {
             'status': 200,
             'message': 'OK'
@@ -184,6 +204,39 @@ def planner_edit(request, pk):
         return JsonResponse(data)
 
     return redirect('city_guide:index')
+
+@login_required
+def planner_delete(request):
+    if request.method == "GET":
+        tour_id = request.GET.get("tour_id", 0)
+        attr_id = request.GET.get("attr_id", 0)     
+        tour = Tour.objects.get(pk=tour_id)
+        all_orders = tour.order_set.all()
+
+        for order in all_orders:      
+            if int(order.ticket.attraction.id) == int(attr_id):
+                print('usunalem')
+                dupa = Order.objects.get(id=order.id)
+                print(dupa)       
+                dupa.delete()
+                break
+
+        tour_dict = json.loads(tour.attraction_order)
+        for key, orders in tour_dict.items():
+            for t, attraction_id in orders.items():
+                if t == "attraction" and attraction_id == attr_id:
+                    del tour_dict[str(key)]
+                    tour.attraction_order = json.dumps(tour_dict)
+                    tour.save()
+                    data = {
+                        'status': 200,
+                        'message': 'OK'
+                    }
+                    return JsonResponse(data)
+
+    return redirect('planner:index')
+
+        
 
 def planner_add_break(request, pk):
     try:
@@ -216,10 +269,7 @@ def planner_add_break(request, pk):
         return JsonResponse(data)
     return redirect('city_guide:index')
 
-def profile(request):
-    profile = Profile.objects.get(user=request.user)
 
-#     return render(request, 'city_guide/profile.html', {'profile': profile})
 
 class AttractionsView(generic.ListView):
     filter_form_class = FilterForm
@@ -373,17 +423,34 @@ def update_profile(request):
     password_form = PasswordChangeForm(request.user)
     tours = Tour.objects.filter(user=request.user)
 
-    print(password_form.fields)
     password_form.fields['old_password'].label = "Stare hasło"
     password_form.fields['new_password1'].label = "Nowe hasło"
-    password_form.fields['new_password2'].label = "Potrwierdź nowe hasło"
+    password_form.fields['new_password2'].label = "Potwierdź hasło"
 
     password_form.fields['old_password'].widget.attrs['class'] = 'form-control'
+    password_form.fields['new_password1'].widget.attrs['class'] = 'form-control'
+    password_form.fields['new_password2'].widget.attrs['class'] = 'form-control'
     
     # for tour in tours:
 
     #     for order in Cart.objects.filter(user=request.user).last().order_set.all():
 
+    timetab = {}
+    costtab = {}
+
+    for t in tours:
+        all_orders = t.order_set.all()
+        all_breaks = t.userbreak_set.all()
+        total_time = 0
+        total_cost = 0
+        for o in all_orders:
+            total_time += o.time()
+            total_cost += o.cost()
+        for b in all_breaks:
+            total_time += b.time
+
+        timetab[t.id] = t.min_to_hours(total_time)
+        costtab[t.id] = t.add_currency(total_cost)
 
 
 
@@ -391,7 +458,9 @@ def update_profile(request):
         'user_form': user_form,
         'profile_form': profile_form,
         'password_form': password_form,
-        'tours': tours
+        'tours': tours,
+        'timetab': timetab,
+        'costtab': costtab
 
         
     })
@@ -405,10 +474,10 @@ def profileView(request):
             user_form.save()
             profile_form.save()
             print(":::::")
-            messages.success(request, ('Your profile was successfully updated!'))
+            messages.success(request, ('Twój profil został pomyslnie zmieniony!'))
             return redirect('city_guide:profile')
-        # else:
-            # messages.error(request, _('Please correct the error below.'))
+        else:
+            messages.error(request, 'Nie udało się zmienić profilu.')
 
 def passwordView(request):
     if request.method == 'POST':
@@ -416,19 +485,20 @@ def passwordView(request):
         if password_form.is_valid():
             user = password_form.save()
             update_session_auth_hash(request, user)  # Important!
-            messages.success(request, 'Your password was successfully updated!')
+            messages.success(request, 'Twoje hasło zostało pomyslnie zmienione!')
             return redirect('city_guide:profile')
         else:
-            messages.error(request, 'Please correct the error below.')
+            messages.error(request, 'Nie udało się zmienić hasła.')
             return redirect('city_guide:profile')
             
 # to do
 # captcha
+
 class UserFormView(View):
     user_form_class = UserForm
     profile_form_class = ProfileForm
     template_name = 'city_guide/registration.html'
-
+    
     def get(self,request):
         user_form = self.user_form_class(None)
         profile_form = self.profile_form_class(None)
@@ -477,20 +547,17 @@ class UserFormView(View):
                 user = authenticate(username=username, password= password)
 
                 if user is not None:
-                    cart = Cart.objects.create(user=user)
-                    cart.save()
                     login(request, user)
-                    messages.success(request, 'New comment added with success!')
                     return redirect('city_guide:index')
             else:
                 messages.error(request, 'Invalid reCAPTCHA. Please try again.')
             
         return render(request, self.template_name, {'user_form': user_form, 'profile_form': profile_form})
 
-class PlannerView(LoginRequiredMixin, generic.DetailView):
+class PlannerView(ExemplaryPlannerMixin, generic.DetailView):
     login_url = '/login/'
     model = Tour
-    template_name = 'city_guide/planner.html'
+    # template_name = 'city_guide/planner_examplary.html'
     context_object_name = 'tour'    
     
     waypoints = {}
@@ -504,6 +571,7 @@ class PlannerView(LoginRequiredMixin, generic.DetailView):
 
     def get_context_data(self, **kwargs):
         context = super(PlannerView, self).get_context_data(**kwargs)
+        self.waypoints = {}
 
         all_orders = self.object.order_set.all()
         all_breaks = self.object.userbreak_set.all()
@@ -543,7 +611,6 @@ class PlannerView(LoginRequiredMixin, generic.DetailView):
                     
         context['cart'] = orders
         context['waypoints'] = json.dumps(waypoints)
-        # print(waypoints)
 
         def min_to_hours(time):
             hours = time // 60
@@ -559,10 +626,10 @@ class PlannerView(LoginRequiredMixin, generic.DetailView):
                 tot_time += key.time        
 
         context['total_time'] = min_to_hours(tot_time)
-        context['total_cost'] = total_cost
+        context['total_cost'] = str(total_cost) + " PLN"
         context['tour'] = self.object
         context['break_form'] = AddBreakForm(None)
-
+        
         return context
         
 def description(request):

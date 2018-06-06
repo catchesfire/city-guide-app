@@ -20,6 +20,7 @@ urlpatterns = [
     path('cart', views.cart, name="cart"),
     path('cart/details', views.cart_details, name="cart_details"),
     path('cart/order/edit', views.cart_order_edit, name="cart_order_edit"),
+    path('cart/order/delete', views.cart_order_delete, name="cart_order_delete"),    
     path('cart/add', views.cart_add, name="cart_add"),
     path('attractions/filter', views.AttractionsView.as_view(), name="filter"),
     path('attractions/search', views.AttractionsView.as_view(), name="search"),
@@ -28,5 +29,9 @@ urlpatterns = [
     path('planner/add', views.planner_add, name="planner_add"),
     path('planner/add-break/<int:pk>', views.planner_add_break, name="planner_add_break"),
     path('planner/edit/<int:pk>', views.planner_edit, name="planner_edit"),
+<<<<<<< HEAD
     path('description', views.description, name="description")
+=======
+    path('planner/delete', views.planner_delete, name="planner_attraction_delete")    
+>>>>>>> bc2c0a9c8c5aa3b7ae572f08c84bdb21cce053cc
 ]
