@@ -25,7 +25,7 @@ SECRET_KEY = 'mp_cl3#uymed500y3t(*z7y+rdt9-f-rkl@^b!7qruu)38yo98'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['192.168.137.1', '127.0.0.1']
 
 
 # Application definition

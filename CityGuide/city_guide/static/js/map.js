@@ -3,7 +3,7 @@ var waypoints = [];
 let isStartPoint = false;
 let startLocationInput;
 startLocation = localStorage.getItem('start-point');
-var transport = "DRIVING";
+var transport = localStorage.getItem('transport');
 
 if (!startLocation) {
     localStorage.setItem('start-point', "");
@@ -12,6 +12,15 @@ if (!startLocation) {
     if ($("#start-location-input").length) {
         startLocationInput = $("#start-location-input");
         startLocationInput.val(localStorage.getItem('start-point'));
+    }
+}
+if(!transport){
+    localStorage.setItem('transport', 'DRIVING');
+    transport = "DRIVING";
+} else{
+    if($("#transport").length){
+        $("#transport").val(localStorage.getItem('transport'));
+        transport = localStorage.getItem('transport');
     }
 }
 
@@ -25,8 +34,6 @@ var destination = {};
 function init(way, id = "map") {
     mapId = id;
     startLocationInput = $('#start-location-input');
-
-    console.log(waypts);
 
     origin = {
         lat: way[0].lat,
@@ -63,18 +70,20 @@ function initMap() {
                     let address = data.results[0]['formatted_address'];
                     startLocation = address;
                     startLocationInput.val(address);
-                    calculateAndDisplayRoute(directionsService, directionsDisplay, data.results[0].geometry.location);
+                    calculateAndDisplayRoute(directionsService, directionsDisplay, data.results[0].geometry.location, mapId);
+                    //$('#map-9').show();
                 } else {
                     setTimeout(getAjax, 1000);
                 }
             });
         }
     } else {
-        calculateAndDisplayRoute(directionsService, directionsDisplay);
+        calculateAndDisplayRoute(directionsService, directionsDisplay, {}, mapId);
+        //$('#' + mapId).show();
     }
 }
 
-function calculateAndDisplayRoute(directionsService, directionsDisplay, pos = {}) {
+function calculateAndDisplayRoute(directionsService, directionsDisplay, pos = {}, map) {
     waypoints = [];
 
     if ($('#transport').length) {
@@ -112,13 +121,17 @@ function calculateAndDisplayRoute(directionsService, directionsDisplay, pos = {}
         if (status === 'OK') {
             directionsDisplay.setDirections(response);
             var route = response.routes[0];
-            route.legs.forEach((edge, i) => {
-                i = i+1
-                document.getElementById("start_" + i).innerHTML = edge.start_address;
-                document.getElementById("end_" + i).innerHTML = edge.end_address;
-                document.getElementById("distance_" + i).innerHTML = edge.distance.text;
-                document.getElementById("duration_" + i).innerHTML = edge.duration.text;
-            });
+            if($('#start_').length){
+                route.legs.forEach((edge, i) => {
+                    i = i+1
+                    document.getElementById("start_" + i).innerHTML = edge.start_address;
+                    document.getElementById("end_" + i).innerHTML = edge.end_address;
+                    document.getElementById("distance_" + i).innerHTML = edge.distance.text;
+                    document.getElementById("duration_" + i).innerHTML = edge.duration.text;
+                });
+            }
+            $('#'+ map).fadeIn('slow');
+           console.log(dirty);
 
             //var summaryPanel = document.getElementById('directions-panel');
             //summaryPanel.innerHTML = '';

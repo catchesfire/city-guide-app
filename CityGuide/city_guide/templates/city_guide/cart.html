@@ -97,9 +97,15 @@
                     <span class="ml-1">{{ total_cost }}</span> PLN
                 </h5>
             </div>
-
             <div class="mt-5">
+            {% if cart|length > 1 %}
                 <button class="btn btn-primary btn-block" data-toggle="modal" data-target=".create-tour">Zaplanuj trasę</button>
+            {% else %}
+                <div class="alert alert-info">
+                    <p>Aby stworzyć planer, potrzebujesz przynajmniej dwóch elementów w koszyku.</p>
+                </div>
+                <button class="btn btn-primary btn-block" disabled>Zaplanuj trasę</button>                
+            {% endif %}
             </div>
         </div>
     </div>
@@ -138,7 +144,7 @@
     }
 
     function deleteOrder(id) {
-        $('#attraction-' + id).remove();
+        //$('#attraction-' + id).remove();
 
         $.get(
             "{% url 'city_guide:cart_order_delete' %}",

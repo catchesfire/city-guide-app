@@ -91,90 +91,89 @@
                             data-id="{{attraction.id}}" data-type="{{orders.type}}">
                             {% if orders.type == "break" %}
                             <div class="card alert-info">
-                                {% else %}
-                                <div class="card">
-                                    {% endif %}
-                                    <div class="card-body">
-                                        {% if orders.type == "attraction" %}
-                                        <div class="row">
-                                            <div class="col attractionTitleInPlanner">
-                                                {{ attraction }}
-                                            </div>
-                                            <div class="col-4">
-                                                <div class="row">
-                                                    <div class="col">
-                                                        <span class="fontForAll">
-                                                            <i class="fa fa-clock"></i> {{ attraction.time_minutes }} min
-                                                        </span>
-                                                    </div>
-                                                    <div class="col-auto px-1">
-                                                        <button class="btn btn-success btn-sm float-right details-button" data-id="{{forloop.counter}}">
-                                                            <i class="fas fa-angle-double-down"></i>
-                                                        </button>
-                                                    </div>
-                                                    <div class="col-auto px-1">
-                                                        <button class="btn btn-danger btn-sm float-right mr-2">
-                                                            <i class="far fa-trash-alt"></i>
-                                                        </button>
-                                                    </div>
+                            {% else %}
+                            <div class="card">
+                            {% endif %}
+                                <div class="card-body">
+                                    {% if orders.type == "attraction" %}
+                                    <div class="row">
+                                        <div class="col attractionTitleInPlanner">
+                                            {{ attraction }}
+                                        </div>
+                                        <div class="col-4">
+                                            <div class="row">
+                                                <div class="col">
+                                                    <span class="fontForAll">
+                                                        <i class="fa fa-clock"></i> {{ attraction.time_minutes }} min
+                                                    </span>
+                                                </div>
+                                                <div class="col-auto px-1">
+                                                    <button class="btn btn-success btn-sm float-right details-button" data-id="{{forloop.counter}}">
+                                                        <i class="fas fa-angle-double-down"></i>
+                                                    </button>
+                                                </div>
+                                                <div class="col-auto px-1">
+                                                    <button class="btn btn-danger btn-sm float-right mr-2">
+                                                        <i class="far fa-trash-alt"></i>
+                                                    </button>
                                                 </div>
                                             </div>
                                         </div>
-                                        <div class="row">
-                                            <div class="col">
-                                                Wskazówki dojścia
-                                                <div class="route-steps" style="display: none;"></div>
-                                            </div>
-                                        </div>
-                                        <div class="detail-table" id="detail-table-{{forloop.counter}}">
-                                            <table class="table mt-2">
-                                                <thead>
-                                                    <tr>
-                                                        <th class="px-0">Początek</th>
-                                                        <th class="px-0">Koniec</th>
-                                                        <th class="px-0">Dystans</th>
-                                                        <th class="px-0">Czas</th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody class="edge-detail">
-                                                    <tr>
-                                                        <th class="px-0" style="font-weight: normal" id="start_{{forloop.counter}}">--</th>
-                                                        <td class="px-0" id="end_{{forloop.counter}}">--</td>
-                                                        <td class="px-0" id="distance_{{forloop.counter}}">--</td>
-                                                        <td class="px-0" id="duration_{{forloop.counter}}">--</td>
-                                                    </tr>
-                                                </tbody>
-                                            </table>
-                                        </div>
-                                        {% else %}
-                                        <div class="row">
-                                            <div class="col attractionTitleInPlanner">
-                                                {{ attraction.name }}
-                                            </div>
-                                            <div class="col-4">
-                                                <div class="row">
-                                                    <div class="col">
-                                                        <span class="fontForAll">
-                                                            <i class="fa fa-clock"></i> {{ attraction.time }} min
-                                                        </span>
-                                                    </div>
-                                                    <div class="col-auto px-1">
-                                                        <button class="btn btn-danger btn-sm float-right ml-2">Usuń</button>
-                                                    </div>
-                                                    <div class="col-auto px-1">
-                                                        <button class="btn btn-warning btn-sm float-right mr-2">Edycja</button>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        {% endif %}
                                     </div>
+                                    <div class="row">
+                                        <div class="col">
+                                            Wskazówki dojścia
+                                            <div class="route-steps" style="display: none;"></div>
+                                        </div>
+                                    </div>
+                                    <div class="detail-table" id="detail-table-{{forloop.counter}}">
+                                        <table class="table mt-2">
+                                            <thead>
+                                                <tr>
+                                                    <th class="px-0">Początek</th>
+                                                    <th class="px-0">Koniec</th>
+                                                    <th class="px-0">Dystans</th>
+                                                    <th class="px-0">Czas</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody class="edge-detail">
+                                                <tr>
+                                                    <th class="px-0" style="font-weight: normal" id="start_{{forloop.counter}}">--</th>
+                                                    <td class="px-0" id="end_{{forloop.counter}}">--</td>
+                                                    <td class="px-0" id="distance_{{forloop.counter}}">--</td>
+                                                    <td class="px-0" id="duration_{{forloop.counter}}">--</td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                    {% else %}
+                                    <div class="row">
+                                        <div class="col attractionTitleInPlanner">
+                                            {{ attraction.name }}
+                                        </div>
+                                        <div class="col-4">
+                                            <div class="row">
+                                                <div class="col">
+                                                    <span class="fontForAll">
+                                                        <i class="fa fa-clock"></i> {{ attraction.time }} min
+                                                    </span>
+                                                </div>
+                                                <div class="col-auto px-1">
+                                                    <button class="btn btn-danger btn-sm float-right ml-2">Usuń</button>
+                                                </div>
+                                                <div class="col-auto px-1">
+                                                    <button class="btn btn-warning btn-sm float-right mr-2">Edycja</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    {% endif %}
                                 </div>
+                            </div>
                         </li>
                         {% endfor %}
                     </ul>
                     <button class="btn btn-primary btn-block mt-2" id="generateBtn">Generuj Trasę</button>
-                    </div>
                 </div>
             </div>
             {% endblock %}
@@ -186,47 +185,48 @@
                 </div>
             </div>
         </div>
-        <div class="row mt-3">
-            <div class="col">
-                <div class="card">
-                    <div class="card-body">
-                        <div class="row">
-                            <div class="col">
-                                <span class="fontforAll">
-                                    <h5>
-                                        <i class="fa fa-clock"></i>
-                                        Czas zwiedzania:
-                                        <span class="ml-1">{{ total_time }}</span>
-                                    </h5>
-                                </span>
-                            </div>
-                            <div class="col">
-                                <span class="fontforAll">
-                                    <h5>
-                                        <i class="fas fa-coins"></i>
-                                        Koszt wycieczki:
-                                        <span class="ml-1">{{ total_cost }}</span>
-                                    </h5>
-                                </span>
-                            </div>
+    </div>
+    <div class="row mt-3">
+        <div class="col">
+            <div class="card">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col">
+                            <span class="fontforAll">
+                                <h5>
+                                    <i class="fa fa-clock"></i>
+                                    Czas zwiedzania:
+                                    <span class="ml-1">{{ total_time }}</span>
+                                </h5>
+                            </span>
+                        </div>
+                        <div class="col">
+                            <span class="fontforAll">
+                                <h5>
+                                    <i class="fas fa-coins"></i>
+                                    Koszt wycieczki:
+                                    <span class="ml-1">{{ total_cost }}</span>
+                                </h5>
+                            </span>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-        <div class="row">
-            <div class="col">
-                <div id="directions-panel"></div>
-            </div>
+    </div>
+    <div class="row">
+        <div class="col">
+            <div id="directions-panel"></div>
         </div>
     </div>
+</div>
     {% endblock %} {% block javascripts %} {{ block.super }}
 
     <script type="text/javascript">
         let mapId = 'map';
         let waypts = "{{ waypoints }}";
         waypts = JSON.parse(waypts.replace(/&quot;/g, "\""));
-        let dirty = "{{tour.was_order_modified}} == True" ? true : false;
+        let dirty = "{{tour.was_order_modified}}" == "True" ? true : false;
         var startLocation = localStorage.getItem('start-point');
         if (!startLocation) {
             localStorage.setItem('is-start-point', false);
@@ -277,6 +277,7 @@
         });
 
         $('#my-location-btn').on('click', function () {
+            localStorage.setItem("transport", $("#transport").val());
             navigator.geolocation.getCurrentPosition((position) => {
                 origin = {
                     lat: position.coords.latitude,
@@ -304,6 +305,7 @@
         });
 
         $('#generateBtn').on('click', function () {
+            localStorage.setItem("transport", $("#transport").val());
             if (startLocationInput.val() != "") {
                 getAjax();
                 function getAjax() {
