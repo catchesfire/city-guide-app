@@ -1,6 +1,6 @@
 import json
 import urllib
-from django.shortcuts import get_object_or_404, render, redirect
+from django.shortcuts import get_object_or_404, render, redirect, reverse
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse, Http404
 from city_guide.models import Attraction, Category, Ticket, TicketType, Tour, Profile, Order, User
 from django.template import loader
@@ -18,8 +18,18 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.conf import settings
 from .forms import FilterForm, SearchForm, SortForm, UserForm, OrderForm, ProfileForm, UserUpdateForm, TourCreateForm, AddBreakForm
 from .mixins import ExemplaryPlannerMixin
+from io import BytesIO
+from reportlab.pdfgen import canvas
+from django.http import HttpResponse
+from reportlab.lib.pagesizes import A4
 
-
+import pdfkit
+# import time
+# from reportlab.lib.enums import TA_JUSTIFY
+# from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Image, Table, TableStyle
+# from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+# from reportlab.lib.units import inch
+# from reportlab.lib import colors
 
 def index(request):
     tours = []
@@ -629,6 +639,20 @@ class PlannerView(ExemplaryPlannerMixin, generic.DetailView):
         context['break_form'] = AddBreakForm(None)
         
         return context
-        
+
+def raw_planner(request, pk):
+    tour = Tour.objects.get(id=pk)
+    all_orders = tour.order_set.all()
+
+    return render(request, 'city_guide/pdf.html', {'orders': all_orders})
+
+def planner_to_pdf(request, pk):
+    tour = Tour.objects.get(id=pk)    
+    url = request.build_absolute_uri(reverse('city_guide:raw_planner', args=[pk]))
+    
+    config = pdfkit.configuration(wkhtmltopdf="E:\Studia\Semestr IV\Rozwiazania szkieletowe w tworzeniu aplikacji WWW\Pracownia specjalistyczna\Projekt\city-guide-app\CityGuide\city_guide\wkhtmltopdf\\bin\wkhtmltopdf.exe")
+    pdfkit.from_url(url, tour.name + ".pdf", configuration=config)
+    return render(request, 'city_guide/pdf.html')
+
 def description(request):
     return render(request, 'city_guide/description.html')

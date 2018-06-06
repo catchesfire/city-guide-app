@@ -29,9 +29,8 @@ urlpatterns = [
     path('planner/add', views.planner_add, name="planner_add"),
     path('planner/add-break/<int:pk>', views.planner_add_break, name="planner_add_break"),
     path('planner/edit/<int:pk>', views.planner_edit, name="planner_edit"),
-<<<<<<< HEAD
-    path('description', views.description, name="description")
-=======
-    path('planner/delete', views.planner_delete, name="planner_attraction_delete")    
->>>>>>> bc2c0a9c8c5aa3b7ae572f08c84bdb21cce053cc
+    path('description', views.description, name="description"),
+    path('planner/delete', views.planner_delete, name="planner_attraction_delete"),
+    path('planner/generate_pdf/<int:pk>', views.planner_to_pdf, name="generate_pdf"),
+    path('planner/raw/<int:pk>', views.raw_planner, name="raw_planner")
 ]
