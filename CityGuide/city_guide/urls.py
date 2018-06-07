@@ -32,7 +32,8 @@ urlpatterns = [
     path('planner/add-break/<int:pk>', views.planner_add_break, name="planner_add_break"),
     path('planner/edit/<int:pk>', views.planner_edit, name="planner_edit"),
     path('description', views.description, name="description"),
-    path('planner/delete', views.planner_delete, name="planner_attraction_delete"),
+    path('planner/delete_attraction', views.planner_attraction_delete, name="planner_attraction_delete"),
+    path('planner/delete_break', views.planner_break_delete, name="planner_break_delete"),
     path('planner/generate_pdf/<int:pk>', views.planner_to_pdf, name="generate_pdf"),
     path('planner/raw/<int:pk>', views.planner_to_pdf, name="raw_planner")
 ]

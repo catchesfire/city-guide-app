@@ -1,8 +1,9 @@
 import json
+import copy
 import urllib
 from django.shortcuts import get_object_or_404, render, redirect, reverse
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse, Http404
-from city_guide.models import Attraction, Category, Ticket, TicketType, Tour, Profile, Order, User
+from city_guide.models import Attraction, Category, Ticket, TicketType, Tour, Profile, Order, User, UserBreak
 from django.template import loader
 from django.views import View, generic
 from itertools import chain
@@ -27,16 +28,11 @@ def index(request):
     tours = []
     all_tours = Tour.objects.filter(user_id = 1)
 
-    messages.success(request, "Bardzo ladnie sie rozwija!")
     
     if( 'form_message' in request.session ):
         message = request.session['form_message']
-        messages.success(request, message ) #<< if you choose to pass it through django's messaging
+        messages.success(request, message )
         del request.session['form_message']
-        #messages.success(request, ('Twój profil został pomyslnie zmieniony!'))
-
-    
-        
     
     if all_tours.count() > 3:
         all_tours = all_tours[:3]
@@ -241,18 +237,21 @@ def planner_edit(request, pk):
     return redirect('city_guide:index')
 
 @login_required
-def planner_delete(request):
+def planner_attraction_delete(request):
     if request.method == "GET":
         tour_id = request.GET.get("tour_id", 0)
         attr_id = request.GET.get("attr_id", 0)     
         tour = Tour.objects.get(pk=tour_id)
         all_orders = tour.order_set.all()
 
+        print(all_orders)
         for order in all_orders:      
             if int(order.ticket.attraction.id) == int(attr_id):
                 order_instance = Order.objects.get(id=order.id)
                 order_instance.delete()
                 break
+        all_orders = tour.order_set.all()        
+        print(all_orders)
 
         tour_dict = json.loads(tour.attraction_order)
         for key, orders in tour_dict.items():
@@ -268,6 +267,36 @@ def planner_delete(request):
                     return JsonResponse(data)
 
     return redirect('planner:index')
+    
+def planner_break_delete(request):
+    if request.method == "GET":
+        tour_id = request.GET.get("tour_id", 0)
+        break_id = request.GET.get("break_id", 0)
+
+        tour = Tour.objects.get(pk=tour_id)
+        all_breaks = UserBreak.objects.filter(tour=tour)
+
+        for br in all_breaks:      
+            if int(br.id) == int(break_id):
+                break_instance = UserBreak.objects.get(id=br.id)
+                break_instance.delete()
+                break
+
+        tour_dict = json.loads(tour.attraction_order)
+        for key, orders in tour_dict.items():
+            for t, breakID in orders.items():
+                if t == "break" and breakID == break_id:
+                    del tour_dict[str(key)]
+                    tour.attraction_order = json.dumps(tour_dict)
+                    tour.save()
+                    data = {
+                        'status': 200,
+                        'message': 'OK'
+                    }
+                    return JsonResponse(data)
+
+    return redirect('planner:index')
+
 
 def planner_add_break(request, pk):
     try:
@@ -284,15 +313,22 @@ def planner_add_break(request, pk):
             user_break.save()
 
             attraction_order = json.loads(tour.attraction_order)
-            i = len(attraction_order)
-            attraction_order[str(i)] = {}
-            attraction_order[str(i)]['break'] = user_break.id
-            tour.attraction_order = json.dumps(attraction_order)
+
+            new_dict = {}
+            new_dict['0'] = {}
+            new_dict['0']['break'] = user_break.id
+            for key, value in attraction_order.items():
+                new_dict[str(int(key) + 1)] = attraction_order[key]
+
+            tour.attraction_order = json.dumps(new_dict)
             tour.save()
             data = {
                 'status' : 200,
                 'message' : 'OK'
             }
+
+            return JsonResponse(data)
+
         data = {
             'status': 400,
             'message': 'Wrong number'
@@ -306,11 +342,6 @@ class AttractionsView(generic.ListView):
     sort_form_class = SortForm
     template_name = 'city_guide/attractions.html'
     context_object_name = 'attractions_obj'
-
-    # @todo
-    # naprawić widok kiedy jest tylko jedna kategoria
-    # dobrze by było, gdyby form zapamietywał aktualne filtry
-    # to później
 
     def get(self, request, **kwargs):
         filter_form = self.filter_form_class(request.GET)
@@ -341,6 +372,7 @@ class AttractionsView(generic.ListView):
         if search_form.is_valid():
             search_fraze = request.GET.get('search_fraze', "")
             attractions = Attraction.objects.filter(Q(name__icontains=search_fraze) | Q(description__icontains=search_fraze))
+            paginator = Paginator(attractions, 6)
             return render(request, self.template_name, {"filter_form": filter_form, "attractions_obj": attractions, "categories": Category.objects.all()}) 
         
         sort_keys = [ key for key in request.GET.getlist('sort_key', [])]
@@ -350,7 +382,7 @@ class AttractionsView(generic.ListView):
             for key in sort_keys:
                 if key:
                     if key == "price" or key == "-price":
-                        attr_ids = [attr.id_attraction.id for attr in Ticket.objects.all().order_by(key)]
+                        attr_ids = [attr.attraction.id for attr in Ticket.objects.all().order_by(key)]
                         tickets_order = Case(*[When(pk=pk, then=pos) for pos, pk in enumerate(attr_ids)])
                         attractions = Attraction.objects.filter(id__in=attr_ids).order_by(tickets_order)
                     else:
@@ -429,8 +461,6 @@ def cart_add(request):
                 'status': 'ok'
             }
 
-            # new_order.save()
-
             return JsonResponse(data)
 
     data = {
@@ -502,11 +532,6 @@ def update_profile(request):
     password_form.fields['new_password1'].widget.attrs['class'] = 'form-control'
     password_form.fields['new_password2'].widget.attrs['class'] = 'form-control'
     
-    
-    # for tour in tours:
-
-    #     for order in Cart.objects.filter(user=request.user).last().order_set.all():
-
     timetab = {}
     costtab = {}
 
@@ -556,7 +581,7 @@ def passwordView(request):
         password_form = PasswordChangeForm(request.user, request.POST)
         if password_form.is_valid():
             user = password_form.save()
-            update_session_auth_hash(request, user)  # Important!
+            update_session_auth_hash(request, user)
             messages.success(request, 'Twoje hasło zostało pomyslnie zmienione!')
             return redirect('city_guide:profile')
         else:
@@ -568,10 +593,7 @@ class UserFormView(NotUserMixin, View):
     profile_form_class = ProfileForm
     template_name = 'city_guide/registration.html'
     redirect_url = 'city_guide:index'
-    success_message = "Zarejestrowano!"
-    #https://stackoverflow.com/questions/44784936/redirect-while-passing-message-in-django?rq=1
-    
-    
+    success_message = "Zarejestrowano!"  
 
     def get(self,request):
         user_form = self.user_form_class(None)

@@ -79,7 +79,7 @@
                 <div class="row">
                     <div class="card-body">
                         <p class="card-text " id="description-single-attr">
-                            {{attraction.description|truncatewords:50}}
+                            {{attraction.description|truncatechars:800}}
                         </p>
                     </div>
                 </div>
@@ -101,7 +101,7 @@
                     <div class="row atrrNameRow">
                         <div class="col">
                             <h4>
-                                {{attraction.name}}
+                                {{attraction.name|truncatewords:5}}
                             </h4>
                         </div>
                     </div>
@@ -151,7 +151,7 @@
                     <div class="row">
                         <div class="card-body">
                             <p class="card-text descriptionText pt-2">
-                                {{attraction.description|truncatewords:50}}
+                                {{attraction.description|truncatechars:400}}
                             </p>
                         </div>
                     </div>
