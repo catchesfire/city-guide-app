@@ -34,5 +34,5 @@ urlpatterns = [
     path('description', views.description, name="description"),
     path('planner/delete', views.planner_delete, name="planner_attraction_delete"),
     path('planner/generate_pdf/<int:pk>', views.planner_to_pdf, name="generate_pdf"),
-    path('planner/raw/<int:pk>', views.raw_planner, name="raw_planner")
+    path('planner/raw/<int:pk>', views.planner_to_pdf, name="raw_planner")
 ]

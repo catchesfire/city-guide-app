@@ -711,22 +711,81 @@ def raw_planner(request, pk):
     return render(request, 'city_guide/pdf.html', {'orders': all_orders})
 
 def planner_to_pdf(request, pk):
-    tour = Tour.objects.get(id=pk)    
-    url = request.build_absolute_uri(reverse('city_guide:raw_planner', args=[pk]))
-    
-    config = pdfkit.configuration(wkhtmltopdf="E:\Studia\Semestr IV\Rozwiazania szkieletowe w tworzeniu aplikacji WWW\Pracownia specjalistyczna\Projekt\city-guide-app\CityGuide\city_guide\wkhtmltopdf\\bin\wkhtmltopdf.exe")
-    pdfkit.from_url(url, tour.name + ".pdf", configuration=config)
-    return render(request, 'city_guide/pdf.html')
+    tour = Tour.objects.get(id=pk)
+
+    all_orders = tour.order_set.all()
+    all_breaks = tour.userbreak_set.all()
+
+    unsorted_orders = {}
+    total_cost = 0
+
+    for order in all_orders:
+        unsorted_orders[order.ticket.attraction] = all_orders.filter(ticket_id__in=Ticket.objects.filter(attraction_id=order.ticket.attraction.id))
+        total_cost += order.cost()
+
+    orders = {}
+    positions = json.loads(tour.attraction_order)
+
+    j = 0
+    for i, types in positions.items():
+        for type_name, attraction_id in types.items():
+            if type_name == "attraction":
+                for attraction, ticket in unsorted_orders.items():
+                    if int(attraction.id) == int(attraction_id):
+                        orders[attraction] = {}
+                        orders[attraction]['type'] = "attraction"
+                        orders[attraction]['items'] = ticket
+                        j += 1
+                        break
+            else:
+                user_break = tour.userbreak_set.get(pk=attraction_id)
+                orders[user_break] = {}
+                orders[user_break]['type'] = 'break'
+                orders[user_break]['items'] = user_break
+
+    return render(request, 'city_guide/pdf.html', {'orders': orders})
 
 class PDFView(View):
     template = 'city_guide/pdf.html'
 
     def get(self, request):
         tour = Tour.objects.get(id=pk)
+
         all_orders = tour.order_set.all()
+        all_breaks = tour.userbreak_set.all()
+
+        unsorted_orders = {}
+        total_cost = 0
+
+        for order in all_orders:
+            unsorted_orders[order.ticket.attraction] = all_orders.filter(ticket_id__in=Ticket.objects.filter(attraction_id=order.ticket.attraction.id))
+            total_cost += order.cost()
+
+        orders = {}
+        positions = json.loads(tour.attraction_order)
+
+        j = 0
+        for i, types in positions.items():
+            for type_name, attraction_id in types.items():
+                if type_name == "attraction":
+                    for attraction, ticket in unsorted_orders.items():
+                        if int(attraction.id) == int(attraction_id):
+                            orders[attraction] = {}
+                            orders[attraction]['type'] = "attraction"
+                            orders[attraction]['items'] = ticket
+                            waypoints[str(j)] = {}
+                            waypoints[str(j)]['lat'] = float(attraction.location_x)
+                            waypoints[str(j)]['lng'] = float(attraction.location_y)
+                            j += 1
+                            break
+                else:
+                    user_break = tour.userbreak_set.get(pk=attraction_id)
+                    orders[user_break] = {}
+                    orders[user_break]['type'] = 'break'
+                    orders[user_break]['items'] = user_break
 
         data = {
-            'orders' : all_orders
+            'orders' : orders
         }
 
         response = PDFTemplateResponse(request = request,

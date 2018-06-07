@@ -44,6 +44,7 @@
     </div>
     <div class="row mt-0">
         <div class="col-5 px-4">
+            {% block setupJourney %}
             <div class="row">
                 <div class="mx-auto">
                     <h1>Przebieg podróży</h1>
@@ -81,6 +82,7 @@
                     </div>
                 </div>
             </div>
+            {% endblock %}
             {% block custom %}
             <div class="row">
                 <div class="col">
@@ -208,12 +210,14 @@
                         </div>
                         <div class="col">
                                 <span class="fontforAll float-right">
+                                    {% block generatePDF %}
                                     <a href="{% url 'city_guide:generate_pdf' tour.id %}">
                                         <button class="btn btn-success">
                                             Generuj PDF
                                             <i class="fas fa-file-pdf ml-2"></i>
                                         </button>
                                     </a>
+                                    {% endblock %}
                                 </span>
                             </div>
                     </div>
@@ -256,7 +260,7 @@
             $('#attraction-' + attr_id).remove();
     
             $.get(
-                "{% url 'city_guide:planner_attraction_delete' %}",
+                //"{% url 'city_guide:planner_attraction_delete' %}",
                 { 
                     attr_id: attr_id,
                     tour_id: tour_id
@@ -370,7 +374,7 @@
                         newOrder[$(this).index().toString()][type] = id;
                     });
                     $.ajax({
-                        url: "{% url 'city_guide:planner_edit' tour.id %}",
+                       // url: "{% comment %}{% url 'city_guide:planner_edit' tour.id %}{% endcomment %}",
                         type: 'GET',
                         data: { order: JSON.stringify(newOrder) },
                         dataType: 'json'
