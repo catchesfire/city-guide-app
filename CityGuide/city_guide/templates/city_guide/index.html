@@ -1,14 +1,20 @@
-{% extends 'base.html' %} {% load staticfiles %} {% block title%} City Guide {% endblock %}  {% block body %}
-
-{% if messages %}
-<ul class="messages messages-slide mt-72 ml-0 pl-0" style="margin-bottom: -72px; text-align: center;">
-    {% for message in messages %}
-    <li{% if message.tags %} class="alert alert-{{ message.tags }} mt-0 mb-0 py-3"{% endif %}>{{ message }}</li>
-    {% endfor %}
-</ul>
-{% endif %}       
+{% extends 'base.html' %} 
+{% load staticfiles %} 
+{% block title%} City Guide {% endblock %}  
+{% block body %}      
 
 <div class="container-fluid mt-72 px-0">
+  {% if messages %}
+  <div class="row">
+    <div class="col">
+      <ul class="messages messages-slide px-0 m-0">
+          {% for message in messages %}
+          <li{% if message.tags %} class="alert alert-{{ message.tags }} mt-0 mb-0 py-4"{% endif %}>{{ message }}</li>
+          {% endfor %}
+      </ul>
+    </div>
+  </div>
+  {% endif %} 
   <div clas="row m-0">
     <div id="carouselExampleIndicators" class="carousel slide mx-auto" data-ride="carousel">
       <ol class="carousel-indicators">
@@ -17,7 +23,7 @@
         <li data-target="#carouselExampleIndicators" data-slide-to="2"></li>
         <li data-target="#carouselExampleIndicators" data-slide-to="3"></li>
       </ol>
-      <div class="carousel-inner sliderHeight">
+      <div class="carousel-inner slider-height">
         <div class="carousel-item active">
           <img class="d-block w-100" src="{% static 'images/slider/Kslider.jpg' %}" alt="First slide">
         </div>
@@ -49,18 +55,15 @@
           <h1 class="text-light">
             Jak to działa?
           </h1>
-          <p class="text-light tourDesc">
-            <small>
+          <p class="text-light tour-desc pt-3">
               CityGuide jest aplikacją internetową, która umożliwia użytkownikowi wygodne planowanie podróży po Białymstoku.
-            </small>
           </p>
-          <p class="p1 text-light tourDesc">
-            <small>
-              Każdy kto chciałby stworzyć swoją trasę wycieczki musi być zalogowany, jeżeli jednak nie jest, to powinien przejść do okna rejestracji. Użytkownik aplikacji posaida własny koszyk,
+          <p class="p1 text-light tour-desc">
+              Każdy, kto chciałby stworzyć swoją trasę wycieczki musi być zalogowany, jeżeli jednak nie jest, to powinien przejść do okna rejestracji. Użytkownik aplikacji posaida własny koszyk,
               w którym ma możliwość przechowywania stworzonych przez siebie tras składających się z atrakcji. Atrakcje przechowywane są w bazie danych, które są zawarte w aplikacji. 
-              Od użytkownika zależy jak zaplanuje swoją trasę, jaką kolejność wybierze lub ile przerw doda. Po wybranej trasie aplikacja wyznacza na mapie trasę wymarzonej podróży. 
+          </p>
+          <p class="p1 text-light tour-desc">Od użytkownika zależy jak zaplanuje swoją trasę, jaką kolejność wybierze lub ile przerw doda. Po wybranej trasie aplikacja wyznacza na mapie trasę wymarzonej podróży. 
               Informuje ile będzie trwała wycieczka oraz jakie koszty poniesie użytkownik.  
-            </small>
           </p>
         </div>
       </div>
@@ -68,86 +71,92 @@
     </div>
   </div>
 </div>
-<div class="container standard-container mt-0">
-  <div id="routes">
-    <div class="row">
-      <div class="col">
-        <h2>Przykładowe trasy</h2>
+<div class="container-fluid" style="background: #fff">
+  <div class="row">
+    <div class="col">
+      <div class="container standard-container mt-0">
+        <div id="routes">
+          <div class="row">
+            <div class="col">
+              <h2>Przykładowe trasy</h2>
+            </div>
+          </div>
+          {% for tour in tours %}
+          <div class="row mt-5">
+            <div class="col-12 col-lg" style="position: relative">
+              <div class="spinner" id="spinner-map-{{tour.tour.id}}">
+                <div class="cube1"></div>
+                <div class="cube2"></div>
+              </div>
+              <div class="map" id="map-{{ tour.tour.id }}" data-tour-id=" {{ tour.tour.id }}" data-url="{% url 'city_guide:planner' tour.tour.id %}" style="opacity: 0"></div>
+            </div>
+            <div class="col-12 col-lg-7">
+              <div class="row">
+                <div class="col">
+                  <h1>{{tour.tour.name}}</h1>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col">
+                  <span class="font-for-all">
+                    <small>
+                      <i class="fa fa-money-bill-alt "></i> {{tour.cost}}
+                    </small>
+                  </span>
+                </div>
+                <div class="col-9">
+                  <span class="font-for-all">
+                    <small>
+                      <i class="fa fa-clock"></i> {{tour.time}}
+                    </small>
+                  </span>
+                </div>
+              </div>
+              <div class="row mt-3">
+                <div class="col">
+                  <p class="tour-desc">
+                    <small>
+                      {{tour.tour.description}}
+                    </small>
+                  </p>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col mt-3">
+                  <p>
+                    <i class="fa fa-university"></i>
+                    <span class="font-for-all">
+                      <small>Lista atrakcji</small>
+                    </span>
+                  </p>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col example-trip-attr">
+                  <ul class="list-group mb-3">
+                    <small>
+                      {% for attraction in tour.attractions %}
+                      <a href="{% url 'city_guide:attraction' attraction.id %}" class="list-group-item list-group-item-action">{{attraction.name}}</a>
+                      {% endfor %}
+                    </small>
+                  </ul>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col">
+                  <a href="{% url 'city_guide:planner' tour.tour.id %}">
+                    <button type="button" class="btn btn-light float-right">
+                      Przejdz do trasy
+                    </button>
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+          {% endfor %}
+        </div>
       </div>
     </div>
-    {% for tour in tours %}
-    <div class="row mt-5">
-      <div class="col-12 col-lg" style="position: relative">
-        <div class="spinner" id="spinner-map-{{tour.tour.id}}">
-          <div class="cube1"></div>
-          <div class="cube2"></div>
-        </div>
-        <div class="map" id="map-{{ tour.tour.id }}" data-tour-id=" {{ tour.tour.id }}" data-url="{% url 'city_guide:planner' tour.tour.id %}" style="opacity: 0"></div>
-      </div>
-      <div class="col-12 col-lg-7">
-        <div class="row">
-          <div class="col">
-            <h1>{{tour.tour.name}}</h1>
-          </div>
-        </div>
-        <div class="row">
-          <div class="col">
-            <span class="fontForAll">
-              <small>
-                <i class="fa fa-money-bill-alt "></i> {{tour.cost}}
-              </small>
-            </span>
-          </div>
-          <div class="col-9">
-            <span class="fontForAll">
-              <small>
-                <i class="fa fa-clock"></i> {{tour.time}}
-              </small>
-            </span>
-          </div>
-        </div>
-        <div class="row mt-3">
-          <div class="col">
-            <p class="tourDesc">
-              <small>
-                {{tour.tour.description}}
-              </small>
-            </p>
-          </div>
-        </div>
-        <div class="row">
-          <div class="col mt-3">
-            <p>
-              <i class="fa fa-university"></i>
-              <span class="fontForAll">
-                <small>Lista atrakcji</small>
-              </span>
-            </p>
-          </div>
-        </div>
-        <div class="row">
-          <div class="col exampleTripAttr">
-            <ul class="list-group mb-3">
-              <small>
-                {% for attraction in tour.attractions %}
-                <a href="{% url 'city_guide:attraction' attraction.id %}" class="list-group-item list-group-item-action">{{attraction.name}}</a>
-                {% endfor %}
-              </small>
-            </ul>
-          </div>
-        </div>
-        <div class="row">
-          <div class="col">
-            <a href="{% url 'city_guide:planner' tour.tour.id %}">
-              <button type="button" class="btn btn-light float-right">
-                Przejdz do trasy
-              </button>
-            </a>
-          </div>
-        </div>
-      </div>
-    </div>
-    {% endfor %}
   </div>
 </div>
 {% endblock %} {% block javascripts %} {{ block.super }}

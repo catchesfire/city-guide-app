@@ -7,6 +7,7 @@ h3 { font-size: 2em; color: #2d4079; }
 ul { list-style-type: none; }
 
 .img-responsive { max-width: 100%; height: auto; display: block; }
+.messages{ text-align: center; }
 .messages-slide { display: none; }
 
 body {
@@ -34,7 +35,7 @@ footer {
 }
 
 .standard-container {
-    margin-top: 77.97px;
+    margin-top: 72px;
     background-color: #fff;
     min-height: 600px;
     padding-top: 10px;
@@ -42,7 +43,7 @@ footer {
 }
 
 .standard-container-photo {
-    margin-top: 77.97px;
+    margin-top: 72px;
     background-color: #fff;
     padding-top: 10px;
     padding-bottom: 40px;
@@ -60,6 +61,8 @@ footer {
 .navbar-light .navbar-nav .nav-link, .navbar-light .navbar-nav .nav-link:hover { font-weight: bold; color: #2d4079; }
 .navbar-light .navbar-nav .active>.nav-link{ border-bottom: solid 3px #2d4079; }
 .nav-link{ padding: .2rem 1rem; }
+.list-inline-item a { color: #2d4079; }
+.nav-cart{ color: #864d3f!important; }
 .navbar-light {
     background-color: #fcfcfc;
     font-family: 'Roboto Condensed', sans-serif;
@@ -69,7 +72,7 @@ footer {
 
 /* Buttons */
 
-.details-button { position: absolute; bottom: 0px; right: 0; }
+.details-button { position: absolute; bottom: 0px; right: 30px; }
 .details-button-single { float: right; }
 
 .btn.btn-outline-success {
@@ -116,10 +119,10 @@ slider { margin-top: 50px; }
 
 /* INDEX PAGE */
 
-#site-info { background-color: #2d4079; font-family: Verdana, Geneva, Tahoma, sans-serif; padding: 20px 0 40px; }
+#site-info { background-color: #2d4079; font-family: Verdana, Geneva, Tahoma, sans-serif; padding: 40px 0 60px; }
 #site-info h1 { font-size: 36px; font-family: 'Roboto Condensed', sans-serif; }
 .font-for-all { font-family: "Helvetica Neue", Arial, sans-serif; font-weight: lighter !important; text-align: justify;}
-.tour-desc { text-align: justify; letter-spacing: 0.04em; word-spacing: 0.09em; }
+.tour-desc { text-align: justify; letter-spacing: 0.04em; word-spacing: 0.09em; font-size: 14px; }
 .slider-height { max-height: 505px; }
 
 /* FILTER FORM */

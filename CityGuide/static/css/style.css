@@ -70,7 +70,7 @@ footer{
 
 /* #region przyciski */
 
-.imageShort {
+.image-short {
     max-height: 720px;
 }
 
@@ -103,15 +103,15 @@ footer{
     background: url('../images/przygoda.png') #ededed center center no-repeat;
 }
 
-.attrDeck {
+.attr-deck {
     margin-bottom: 20px;
 }
 
-.attractionsCont {
+.attraction-cont {
     margin-top: 22px;
 }
 
-.attracionShort {
+.attraction-short {
     min-height: 500px;
     max-height: 500px;
     color: #545455;
@@ -125,12 +125,12 @@ footer{
     border: none;
 }
 
-.noAtrractionsHeader {
+.no-attraction-header {
     text-align: center;
     color: #2d4079;
 }
 
-.descriptionText {
+.description-text {
     text-align: justify;
     border-top: 1px solid #545455;
     margin-top: 15px;
@@ -142,7 +142,7 @@ footer{
     padding-top: 5px;
 }
 
-.mainImage {
+.main-image {
     margin-top: 10px;
 }
 
@@ -151,7 +151,7 @@ footer{
     max-height: 150px;
 }
 
-.attracionShort {
+.attraction-short {
     padding: 25px;
 }
 
@@ -159,7 +159,7 @@ footer{
     max-height: 100px;
 }
 
-.filterNavbarCont {
+.filter-navbar-cont {
     margin-top: 92px;
 }
 
@@ -187,7 +187,7 @@ footer{
     color: white;
 }
 
-.sliderValues {
+.slider-values {
     border: 0;
     color: white;
     background-color: #2d4079;
@@ -244,13 +244,13 @@ h3 {
     background-color: #ededed;
 }
 
-.fontForAll {
+.font-for-all {
     font-family: "Helvetica Neue", Arial, sans-serif;
     font-weight: lighter !important;
     text-align: justify;
 }
 
-.tourDesc {
+.tour-desc {
     text-align: justify;
     letter-spacing: 0.04em;
     word-spacing: 0.09em;
@@ -261,7 +261,7 @@ h3 {
     width: 31px;
 }
 
-.filterCard {
+.filter-card {
     margin-top: 10px;
     margin-bottom: 10px;
     padding: 15px;
@@ -271,16 +271,16 @@ h3 {
     border-radius: 0;
 }
 
-.attractionTitleInPlanner {
+.attraction-planner-title {
     font-family: 'Roboto Condensed', sans-serif;
     font-size: 1.1em;
 }
 
-.registerRef {
+.register-ref {
     text-align: center;
 }
 
-.logAndRegisterCard {
+.log-and-register-card {
     margin: auto;
     max-width: 400px;
     max-height: 590px;
@@ -300,7 +300,7 @@ ul {
     overflow-y: auto;
 }
 
-exampleTripAttr {
+example-trip-attr {
     overflow-y: auto;
     max-height: 135px;
 }
@@ -310,7 +310,7 @@ exampleTripAttr {
     margin-bottom: -72px;
 }
 
-.decriptionPhot {
+.description-phot {
     min-width: 1280px;
     max-width: 1280px;
 }
@@ -320,20 +320,20 @@ exampleTripAttr {
     text-align: justify;
 }
 
-.descriptionPhotos {
+.description-photos {
     width: 100%;
     height: auto;
     margin-left: 10px;
     margin-right: 0px;
 }
 
-.descriptionTitle {
+.description-title {
     font-family: 'Roboto Condensed', sans-serif;
     font-size: 4.5em;
     color: #2d4079;
 }
 
-.buttonHref {
+.button-href {
     padding-left: 0px !important;
     font-size: 80%;
     color: #6C757D;
@@ -421,7 +421,7 @@ exampleTripAttr {
     height: 100%;
 }
 
-.sliderHeight {
+.slider-height {
     max-height: 505px;
 }
 
