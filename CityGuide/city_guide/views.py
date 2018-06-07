@@ -745,8 +745,8 @@ def planner_to_pdf(request, pk):
     tour = Tour.objects.get(id=pk)    
     url = request.build_absolute_uri(reverse('city_guide:raw_planner', args=[pk]))
     
-    config = pdfkit.configuration(wkhtmltopdf="E:\Studia\Semestr IV\Rozwiazania szkieletowe w tworzeniu aplikacji WWW\Pracownia specjalistyczna\Projekt\city-guide-app\CityGuide\city_guide\wkhtmltopdf\\bin\wkhtmltopdf.exe")
-    pdfkit.from_url(url, tour.name + ".pdf", configuration=config)
+    config = pdfkit.configuration(wkhtmltopdf="/usr/local/bin/wkhtmltopdf")
+    pdfkit.from_url(url, "tmp/" + tour.name + ".pdf", configuration=config)
     return render(request, 'city_guide/pdf.html')
 
 # class PDFView(View):
