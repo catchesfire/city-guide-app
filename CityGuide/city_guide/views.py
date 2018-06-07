@@ -18,15 +18,16 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.conf import settings
 from .forms import FilterForm, SearchForm, SortForm, UserForm, OrderForm, ProfileForm, UserUpdateForm, TourCreateForm, AddBreakForm
 from .mixins import ExemplaryPlannerMixin, NotUserMixin
+from wkhtmltopdf.views import PDFTemplateResponse
 import pdfkit
 from django.http import HttpResponse
-
-
 
 
 def index(request):
     tours = []
     all_tours = Tour.objects.filter(user_id = 1)
+
+    messages.success(request, "Bardzo ladnie sie rozwija!")
     
     if( 'form_message' in request.session ):
         message = request.session['form_message']
@@ -71,7 +72,7 @@ def index(request):
             'time': min_to_hours(total_time),
             'attractions': attractions
         })
-    return render(request, 'city_guide/index.html', {'tours': tours})
+    return render(request, 'city_guide/index.html', {'tours': tours, 'page' : 'home'})
 
 def logout_user(request):
     logout(request)
@@ -379,6 +380,12 @@ class AttractionsView(generic.ListView):
 
         return render(request, self.template_name, {"filter_form": filter_form, "attractions_obj": Attraction.objects.all().order_by('name'), "categories": Category.objects.all()})
 
+    def get_context_data(self, **kwargs):
+        context = super(AttractionsView, self).get_context_data(**kwargs)
+
+        context['page'] = 'attraction'
+
+        return context
 
 def tour_delete(request, pk):
     try:
@@ -392,8 +399,6 @@ def tour_delete(request, pk):
 
     request.session['form_message'] = ("Podróż została poprawnie usunięta.", "success")
     return redirect('city_guide:profile')
-
-
 
 def cart_add(request):
     order_form_class = OrderForm
@@ -410,10 +415,12 @@ def cart_add(request):
             ticket = Ticket.objects.get(pk = ticket_id)
             attraction = ticket.attraction
 
-            if str(attraction.id) in cart:
+            if str(attraction.id) not in cart:
+                cart[str(attraction.id)] = {}
+
+            if str(ticket.id) in cart[str(attraction.id)]:
                 cart[str(attraction.id)][str(ticket.id)] += int(quantity)
             else:
-                cart[str(attraction.id)] = {}
                 cart[str(attraction.id)][str(ticket.id)] = int(quantity)
             request.session['cart'] = cart
             request.session.modified = True
@@ -437,7 +444,12 @@ class AttracionView(generic.DetailView):
     template_name = 'city_guide/attraction.html'
     context_object_name = 'attraction_obj'
 
+    def get_context_data(self, **kwargs):
+        context = super(AttracionView, self).get_context_data(**kwargs)
 
+        context['page'] = 'attraction'
+
+        return context
 
 class UserLogFormView(NotUserMixin, View):
     template_name = 'city_guide/login.html'
@@ -551,11 +563,13 @@ def passwordView(request):
             messages.error(request, 'Nie udało się zmienić hasła.')
             return redirect('city_guide:profile')
 
-
-class UserFormView(View):
+class UserFormView(NotUserMixin, View):
     user_form_class = UserForm
     profile_form_class = ProfileForm
     template_name = 'city_guide/registration.html'
+    redirect_url = 'city_guide:index'
+    success_message = "Zarejestrowano!"
+    #https://stackoverflow.com/questions/44784936/redirect-while-passing-message-in-django?rq=1
     
     
 
@@ -704,5 +718,32 @@ def planner_to_pdf(request, pk):
     pdfkit.from_url(url, tour.name + ".pdf", configuration=config)
     return render(request, 'city_guide/pdf.html')
 
+class PDFView(View):
+    template = 'city_guide/pdf.html'
+
+    def get(self, request):
+        tour = Tour.objects.get(id=pk)
+        all_orders = tour.order_set.all()
+
+        data = {
+            'orders' : all_orders
+        }
+
+        response = PDFTemplateResponse(request = request,
+                                        template = self.template,
+                                        filename = "test.pdf",
+                                        context = data,
+                                        show_content_in_browser=False,
+                                        cmd_options= {
+                                            'margin-top0': 10,
+                                            'zoom': 1,
+                                            'viewport-size': '1366x513',
+                                            'javascript-delay': 1000,
+                                            'footer-center': '[page]/[topage]',
+                                            'no-stop-slow-scripts': True
+                                            },
+                                        )
+        return response
+
 def description(request):
-    return render(request, 'city_guide/description.html')
+    return render(request, 'city_guide/description.html', {'page': 'about'})

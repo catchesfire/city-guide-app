@@ -13,6 +13,13 @@ body {
     margin: 0;
 }
 
+footer{
+    background-color: #fff;
+    padding: 10px 20px;
+    clear: both;
+    border-top: solid 1px #6C757D;
+}
+
 .container-fluid {
     overflow-x: hidden;
 }
@@ -51,6 +58,14 @@ body {
 .navbar-light .navbar-nav .nav-link, .navbar-light .navbar-nav .nav-link:hover {
     font-weight: bold;
     color: #2d4079;
+}
+
+.navbar-light .navbar-nav .active>.nav-link{
+    border-bottom: solid 3px #2d4079;
+}
+
+.nav-link{
+    padding: .2rem 1rem;
 }
 
 /* #region przyciski */
@@ -413,6 +428,11 @@ exampleTripAttr {
 .sliderHeight{
     max-height: 505px;
 }
+
+.messages-slide{
+    display: none;
+}
+
 .spinner {
     width: 40px;
     height: 40px;

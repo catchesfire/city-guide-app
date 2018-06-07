@@ -98,13 +98,20 @@
                 </h5>
             </div>
             <div class="mt-5">
-            {% if cart|length > 1 %}
+            {% if not user.is_authenticated %}
+                <div class="alert alert-info">
+                    <p>Aby stworzyć planer, <a href="{% url 'city_guide:login' %}">zaloguj się</a>.</p>
+                </div>
+                <button class="btn btn-primary btn-block" disabled>Zaplanuj trasę</button>
+            {% else %}     
+                {% if cart|length > 1 %}
                 <button class="btn btn-primary btn-block" data-toggle="modal" data-target=".create-tour">Zaplanuj trasę</button>
-            {% else %}
+                {% else %}
                 <div class="alert alert-info">
                     <p>Aby stworzyć planer, potrzebujesz przynajmniej dwóch elementów w koszyku.</p>
                 </div>
                 <button class="btn btn-primary btn-block" disabled>Zaplanuj trasę</button>                
+                {% endif %}
             {% endif %}
             </div>
         </div>

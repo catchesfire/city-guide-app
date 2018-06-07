@@ -95,7 +95,7 @@
             </div>
         </div>
         {% else %}
-        <div class="col-6">
+        <div class="col-12 col-md-6">
             <div class="card-deck attrDeck">
                 <div class="card attracionShort">
                     <div class="row atrrNameRow">
@@ -182,17 +182,8 @@
 </div>
 {% endblock %} {% block javascripts %} {{block.super}}
 <script>
-    let show = false;
-
     $(".showFilters").on("click", function () {
-        if (!show) {
-            $(".filterCard").slideDown("slow");
-        }
-        else {
-            $(".filterCard").slideUp("slow");
-        }
-
-        show = !show;
+        $('.sliderCard').slideToggle('slow');
     });
 
     $(function () {
@@ -234,16 +225,17 @@
         $.ajax({
             url: url,
             type: 'POST',
-            data: $(this).serialize(),
-            success: function (data) {
+            data: $(this).serialize()
+        }).done(function(){
+            $('.added-to-cart').modal('toggle');
+            setTimeout(function () {
                 $('.added-to-cart').modal('toggle');
-                setTimeout(function () {
-                    $('.added-to-cart').modal('toggle');
-                }, 1000);
-            }
+            }, 600);
         });
 
         e.preventDefault();
     });
 
-</script> {% endblock %}
+</script> 
+
+{% endblock %}
