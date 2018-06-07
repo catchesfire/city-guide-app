@@ -1,0 +1,501 @@
+/* GLOBAL */
+
+body {
+    background-image: url('../images/bg.png');
+    background-repeat: no-repeat;
+    background-position: center center;
+    background-attachment: fixed;
+    -o-background-size: 100% 100%, auto;
+    -moz-background-size: 100% 100%, auto;
+    -webkit-background-size: 100% 100%, auto;
+    background-size: 100% 100%, auto;
+    padding: 0px;
+    margin: 0;
+}
+
+footer {
+    background-color: #fff;
+    padding: 10px 20px;
+    clear: both;
+    border-top: solid 1px #6C757D;
+}
+
+.container-fluid {
+    overflow-x: hidden;
+}
+
+.standard-container {
+    margin-top: 77.97px;
+    background-color: #fff;
+    min-height: 600px;
+    padding-top: 10px;
+    padding-bottom: 40px;
+}
+
+.standard-container-photo {
+    margin-top: 77.97px;
+    background-color: #fff;
+    padding-top: 10px;
+    padding-bottom: 40px;
+    min-height: 60px;
+}
+
+.standard-container-inside {
+    background-color: #fff;
+    min-height: 600px;
+    padding-top: 10px;
+    padding-bottom: 40px;
+    padding-left: 30px;
+}
+
+.navbar-light {
+    background-color: #fcfcfc;
+    font-family: 'Roboto Condensed', sans-serif;
+    font-weight: bold;
+    min-height: 72px;
+}
+
+.navbar-light .navbar-nav .nav-link, .navbar-light .navbar-nav .nav-link:hover {
+    font-weight: bold;
+    color: #2d4079;
+}
+
+.navbar-light .navbar-nav .active>.nav-link {
+    border-bottom: solid 3px #2d4079;
+}
+
+.nav-link {
+    padding: .2rem 1rem;
+}
+
+/* #region przyciski */
+
+.imageShort {
+    max-height: 720px;
+}
+
+.btn.btn-outline-success {
+    background-color: white;
+    color: #2d4079;
+    font-weight: 500;
+    border-color: #2d4079;
+}
+
+.btn.btn-outline-success:active:focus {
+    color: white;
+    background-color: #2d4079;
+    border-color: white;
+}
+
+.btn.btn-outline-success:hover {
+    color: white;
+    background-color: #2d4079;
+    border-color: white;
+}
+
+/* #endregion */
+
+/* #region Atrakcje */
+
+#attraction-jump {
+    height: 288px;
+    margin-top: 72px;
+    background: url('../images/przygoda.png') #ededed center center no-repeat;
+}
+
+.attrDeck {
+    margin-bottom: 20px;
+}
+
+.attractionsCont {
+    margin-top: 22px;
+}
+
+.attracionShort {
+    min-height: 500px;
+    max-height: 500px;
+    color: #545455;
+    /* background-color: #ededed; */
+    border: none;
+}
+
+.attracion-single-card {
+    color: #545455;
+    /* background-color: #ededed; */
+    border: none;
+}
+
+.noAtrractionsHeader {
+    text-align: center;
+    color: #2d4079;
+}
+
+.descriptionText {
+    text-align: justify;
+    border-top: 1px solid #545455;
+    margin-top: 15px;
+}
+
+#description-single-attr {
+    text-align: justify;
+    border-top: 1px solid #545455;
+    padding-top: 5px;
+}
+
+.mainImage {
+    margin-top: 10px;
+}
+
+.minor-photo {
+    cursor: pointer;
+    max-height: 150px;
+}
+
+.attracionShort {
+    padding: 25px;
+}
+
+.cart-img {
+    max-height: 100px;
+}
+
+.filterNavbarCont {
+    margin-top: 92px;
+}
+
+.fa-search {
+    color: white;
+}
+
+.navbar-custom {
+    background-color: #2d4079;
+}
+
+.navbar-custom .navbar-brand {
+    color: white;
+}
+
+.navbar-custom .navbar-text {
+    color: white;
+}
+
+.navbar-custom .nav-item.active .nav-link, .navbar-custom .nav-item:hover .nav-link {
+    color: white;
+}
+
+.navbar-custom .navbar-nav .nav-link {
+    color: white;
+}
+
+.sliderValues {
+    border: 0;
+    color: white;
+    background-color: #2d4079;
+    font-weight: bold;
+}
+
+slider {
+    margin-top: 50px;
+}
+
+/* #endregion */
+
+h1 {
+    font-family: 'Roboto Condensed', sans-serif;
+    font-size: 2em;
+    margin-top: 10px;
+}
+
+h2 {
+    font-family: 'Roboto Condensed', sans-serif;
+    font-size: 2.5em;
+    margin-top: 10px;
+    color: #864d3f;
+}
+
+h3 {
+    font-family: 'Roboto Condensed', sans-serif;
+    font-size: 2em;
+    color: #2d4079;
+}
+
+#site-info {
+    background-color: #2d4079;
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+    padding: 20px 0 40px;
+}
+
+#site-info h1 {
+    font-size: 36px;
+    font-family: 'Roboto Condensed', sans-serif;
+}
+
+.cardBody {
+    margin-left: 75px;
+    margin-right: 75px;
+}
+
+.cardRoutInfo {
+    border-radius: 0 !important;
+    background-color: #ededed;
+}
+
+.cardPlanner {
+    background-color: #ededed;
+}
+
+.fontForAll {
+    font-family: "Helvetica Neue", Arial, sans-serif;
+    font-weight: lighter !important;
+    text-align: justify;
+}
+
+.tourDesc {
+    text-align: justify;
+    letter-spacing: 0.04em;
+    word-spacing: 0.09em;
+}
+
+.buttonEditingPlanner {
+    height: 19px;
+    width: 31px;
+}
+
+.filterCard {
+    margin-top: 10px;
+    margin-bottom: 10px;
+    padding: 15px;
+    background-color: #2d4079;
+    color: white;
+    display: none;
+    border-radius: 0;
+}
+
+.attractionTitleInPlanner {
+    font-family: 'Roboto Condensed', sans-serif;
+    font-size: 1.1em;
+}
+
+.registerRef {
+    text-align: center;
+}
+
+.logAndRegisterCard {
+    margin: auto;
+    max-width: 400px;
+    max-height: 560px;
+}
+
+.loginBtn {
+    float: right;
+}
+
+ul {
+    list-style-type: none;
+}
+
+#sortable {
+    padding-left: 0px;
+    max-height: 525px;
+    overflow-y: auto;
+}
+
+exampleTripAttr {
+    overflow-y: auto;
+    max-height: 135px;
+}
+
+.g-recaptcha {
+    margin-bottom: 10px;
+}
+
+.filter-nav-container {
+    margin-top: 72px;
+    margin-bottom: -72px;
+}
+
+.decriptionPhot {
+    min-width: 1280px;
+    max-width: 1280px;
+}
+
+.p1 {
+    text-indent: 50px;
+    text-align: justify;
+}
+
+.descriptionPhotos {
+    width: 100%;
+    height: auto;
+    margin-left: 10px;
+    margin-right: 0px;
+}
+
+.descriptionTitle {
+    font-family: 'Roboto Condensed', sans-serif;
+    font-size: 4.5em;
+    color: #2d4079;
+}
+
+.buttonHref {
+    padding-left: 0px !important;
+    font-size: 80%;
+    color: #6C757D;
+    vertical-align: baseline !important;
+    padding-right: 2px;
+}
+
+.details-button {
+    position: absolute;
+    bottom: 0px;
+    right: 0;
+}
+
+.details-button-single {
+    float: right;
+}
+
+.edge-detail {
+    font-size: 80%;
+}
+
+.detail-table {
+    display: none;
+}
+
+.profile-form-group-left {
+    padding-left: 30px;
+    padding-right: 15px;
+}
+
+.profile-form-group-right {
+    padding-left: 15px;
+    padding-right: 30px;
+}
+
+.mr-30 {
+    margin-right: 30px;
+}
+
+.mr-15 {
+    margin-right: 15px;
+}
+
+.mt-30 {
+    margin-top: 30px;
+}
+
+.mt-20 {
+    margin-top: 20px;
+}
+
+.mt-72 {
+    margin-top: 72px;
+}
+
+.px-30 {
+    padding-left: 30px;
+    padding-right: 30px;
+}
+
+.pl-30 {
+    padding-left: 30px;
+}
+
+.profil-message {
+    padding: 10px;
+    margin: 0;
+}
+
+.p-justify {
+    text-align: justify;
+}
+
+#map-attraction {
+    height: 100%;
+}
+
+.img-responsive {
+    max-width: 100%;
+    height: auto;
+    display: block;
+}
+
+.map {
+    height: 100%!important;
+}
+
+.sliderHeight {
+    max-height: 505px;
+}
+
+.messages-slide {
+    display: none;
+}
+
+.spinner {
+    width: 40px;
+    height: 40px;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate('-50%', '-50%');
+}
+
+.cube1, .cube2 {
+    background-color: #333;
+    width: 15px;
+    height: 15px;
+    position: absolute;
+    top: 0;
+    left: 0;
+    -webkit-animation: sk-cubemove 1.8s infinite ease-in-out;
+    animation: sk-cubemove 1.8s infinite ease-in-out;
+}
+
+.cube2 {
+    -webkit-animation-delay: -0.9s;
+    animation-delay: -0.9s;
+}
+
+@-webkit-keyframes sk-cubemove {
+    25% {
+        -webkit-transform: translateX(42px) rotate(-90deg) scale(0.5)
+    }
+    50% {
+        -webkit-transform: translateX(42px) translateY(42px) rotate(-180deg)
+    }
+    75% {
+        -webkit-transform: translateX(0px) translateY(42px) rotate(-270deg) scale(0.5)
+    }
+    100% {
+        -webkit-transform: rotate(-360deg)
+    }
+}
+
+@keyframes sk-cubemove {
+    25% {
+        transform: translateX(42px) rotate(-90deg) scale(0.5);
+        -webkit-transform: translateX(42px) rotate(-90deg) scale(0.5);
+    }
+    50% {
+        transform: translateX(42px) translateY(42px) rotate(-179deg);
+        -webkit-transform: translateX(42px) translateY(42px) rotate(-179deg);
+    }
+    50.1% {
+        transform: translateX(42px) translateY(42px) rotate(-180deg);
+        -webkit-transform: translateX(42px) translateY(42px) rotate(-180deg);
+    }
+    75% {
+        transform: translateX(0px) translateY(42px) rotate(-270deg) scale(0.5);
+        -webkit-transform: translateX(0px) translateY(42px) rotate(-270deg) scale(0.5);
+    }
+    100% {
+        transform: rotate(-360deg);
+        -webkit-transform: rotate(-360deg);
+    }
+}
+
+#map {
+    height: 96%;
+}

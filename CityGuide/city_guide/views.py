@@ -23,21 +23,15 @@ from .mixins import ExemplaryPlannerMixin, NotUserMixin
 import pdfkit
 from django.http import HttpResponse
 
-
 def index(request):
     tours = []
     all_tours = Tour.objects.filter(user_id = 1)
 
-    messages.success(request, "Bardzo ladnie sie rozwija!")
     
     if( 'form_message' in request.session ):
         message = request.session['form_message']
-        messages.success(request, message ) #<< if you choose to pass it through django's messaging
+        messages.success(request, message )
         del request.session['form_message']
-        #messages.success(request, ('Twój profil został pomyslnie zmieniony!'))
-
-    
-        
     
     if all_tours.count() > 3:
         all_tours = all_tours[:3]
@@ -377,6 +371,7 @@ class AttractionsView(generic.ListView):
         if search_form.is_valid():
             search_fraze = request.GET.get('search_fraze', "")
             attractions = Attraction.objects.filter(Q(name__icontains=search_fraze) | Q(description__icontains=search_fraze))
+            paginator = Paginator(attractions, 6)
             return render(request, self.template_name, {"filter_form": filter_form, "attractions_obj": attractions, "categories": Category.objects.all()}) 
         
         sort_keys = [ key for key in request.GET.getlist('sort_key', [])]
@@ -538,11 +533,6 @@ def update_profile(request):
     password_form.fields['new_password1'].widget.attrs['class'] = 'form-control'
     password_form.fields['new_password2'].widget.attrs['class'] = 'form-control'
     
-    
-    # for tour in tours:
-
-    #     for order in Cart.objects.filter(user=request.user).last().order_set.all():
-
     timetab = {}
     costtab = {}
 
@@ -592,7 +582,7 @@ def passwordView(request):
         password_form = PasswordChangeForm(request.user, request.POST)
         if password_form.is_valid():
             user = password_form.save()
-            update_session_auth_hash(request, user)  # Important!
+            update_session_auth_hash(request, user)
             messages.success(request, 'Twoje hasło zostało pomyslnie zmienione!')
             return redirect('city_guide:profile')
         else:

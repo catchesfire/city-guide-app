@@ -183,7 +183,7 @@
     <div class="row mt-3">
         <div class="col">
             <div class="card">
-                <div class="card-body">
+                <div class="card-body" style="text-align: center">
                     <div class="row">
                         <div class="col">
                             <span class="fontforAll">
@@ -204,7 +204,7 @@
                             </span>
                         </div>
                         <div class="col">
-                                <span class="fontforAll float-right">
+                                <span class="fontforAll">
                                     <a href="{% url 'city_guide:generate_pdf' tour.id %}">
                                         <button class="btn btn-success">
                                             Generuj PDF
@@ -377,16 +377,17 @@
             $('#sortable').sortable({
                 update: function (event, ui) {
                     $('.order-item').each(function (e) {
-                        // let size = $('.order-item').length
-                        console.log(size)
-                        console.log($(this).index() + 1)
+                        let size = $('.order-item').length
+                        console.log(event);
 
                         let type = $(this).attr("data-type");
                         let id = $(this).attr("data-id");
 
-                        // if ($(this).index() + 1 >= size && type == "break") {
-                        //     return;
-                        // }
+                        if ($(this).index() + 1 >= size && type == "break") {
+                            //alert('Nie można dodać przerwy na koniec podróży!');
+                            event.preventDefault();
+                            return;
+                        }
 
                         newOrder[$(this).index().toString()] = {};
                         newOrder[$(this).index().toString()][type] = id;
