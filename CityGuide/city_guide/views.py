@@ -18,7 +18,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.conf import settings
 from .forms import FilterForm, SearchForm, SortForm, UserForm, OrderForm, ProfileForm, UserUpdateForm, TourCreateForm, AddBreakForm
 from .mixins import ExemplaryPlannerMixin, NotUserMixin
-from wkhtmltopdf.views import PDFTemplateResponse
+# from wkhtmltopdf.views import PDFTemplateResponse
 import pdfkit
 from django.http import HttpResponse
 
@@ -691,32 +691,32 @@ def planner_to_pdf(request, pk):
     pdfkit.from_url(url, tour.name + ".pdf", configuration=config)
     return render(request, 'city_guide/pdf.html')
 
-class PDFView(View):
-    template = 'city_guide/pdf.html'
+# class PDFView(View):
+#     template = 'city_guide/pdf.html'
 
-    def get(self, request):
-        tour = Tour.objects.get(id=pk)
-        all_orders = tour.order_set.all()
+#     def get(self, request):
+#         tour = Tour.objects.get(id=pk)
+#         all_orders = tour.order_set.all()
 
-        data = {
-            'orders' : all_orders
-        }
+#         data = {
+#             'orders' : all_orders
+#         }
 
-        response = PDFTemplateResponse(request = request,
-                                        template = self.template,
-                                        filename = "test.pdf",
-                                        context = data,
-                                        show_content_in_browser=False,
-                                        cmd_options= {
-                                            'margin-top0': 10,
-                                            'zoom': 1,
-                                            'viewport-size': '1366x513',
-                                            'javascript-delay': 1000,
-                                            'footer-center': '[page]/[topage]',
-                                            'no-stop-slow-scripts': True
-                                            },
-                                        )
-        return response
+#         response = PDFTemplateResponse(request = request,
+#                                         template = self.template,
+#                                         filename = "test.pdf",
+#                                         context = data,
+#                                         show_content_in_browser=False,
+#                                         cmd_options= {
+#                                             'margin-top0': 10,
+#                                             'zoom': 1,
+#                                             'viewport-size': '1366x513',
+#                                             'javascript-delay': 1000,
+#                                             'footer-center': '[page]/[topage]',
+#                                             'no-stop-slow-scripts': True
+#                                             },
+#                                         )
+#         return response
 
 def description(request):
     return render(request, 'city_guide/description.html', {'page': 'about'})
