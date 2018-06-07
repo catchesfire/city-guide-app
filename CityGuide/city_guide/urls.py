@@ -27,6 +27,7 @@ urlpatterns = [
     path('attractions/search', views.AttractionsView.as_view(), name="search"),
     path('attractions/sort', views.AttractionsView.as_view(), name="sort"),
     path('planner/<int:pk>', views.PlannerView.as_view(), name='planner'),
+    path('tour/delete/<int:pk>', views.tour_delete, name='tour_delete'),
     path('planner/add', views.planner_add, name="planner_add"),
     path('planner/add-break/<int:pk>', views.planner_add_break, name="planner_add_break"),
     path('planner/edit/<int:pk>', views.planner_edit, name="planner_edit"),
