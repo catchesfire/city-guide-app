@@ -111,21 +111,24 @@
                             <img class="card-img-top mainImage" src="{{ attraction.main_photo.url }}" alt="Brak zdjecia"></img>
                         </div>
 
-                        <div class="col">
+                        <div class="col mt-1">
                             <form class="ticket-form" action="{% url 'city_guide:cart_add' %}" method="POST">
                                 {% csrf_token %}
                                 <div class="form-row">
-                                    <label for="ticket_type">
-                                        Bilety
-                                    </label>
-                                    <select class="form-control form-control-sm" type="number" id="ticket_type" name="ticket_id">
-                                        {% for ticket in attraction.ticket_set.all %}
-                                        <option value="{{ticket.id}}">{{ticket.ticket_type}} - {{ticket.price}} ZŁ</option>
-                                        {% endfor %}
-                                    </select>
+                                    <div class="col-12">
+                                        <label for="ticket_type">
+                                            Bilety
+                                        </label>
+                                        <select class="form-control form-control-sm" type="number" id="ticket_type" name="ticket_id">
+                                            {% for ticket in attraction.ticket_set.all %}
+                                            <option value="{{ticket.id}}">{{ticket.ticket_type}} - {{ticket.price}} ZŁ</option>
+                                            {% endfor %}
+                                        </select>
+
+                                    </div>
                                 </div>
 
-                                <div class="form-row">
+                                <div class="form-row mt-1">
                                     <div class="col-12">
                                         <label for="ticket_quant">
                                             Liczba
