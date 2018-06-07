@@ -35,15 +35,15 @@
 
                         <div class="collapse navbar-collapse" id="navbarSupportedContent">
                             <ul class="navbar-nav mr-auto ml-lg-5 pt-lg-3">
-                                <li class="nav-item active">
+                                <li class="nav-item {% if page == 'home' %} active {% endif %}">
                                     <a class="nav-link mx-3" href="{% url 'city_guide:index' %}">Home
                                         <span class="sr-only">(current)</span>
                                     </a>
                                 </li>
-                                <li class="nav-item mx-3">
+                                <li class="nav-item {% if page == 'attraction' %} active {% endif %} mx-3">
                                     <a class="nav-link" href="{% url 'city_guide:attractions' %}">Atrakcje</a>
                                 </li>
-                                <li class="nav-item mx-3">
+                                <li class="nav-item {% if page == 'about' %} active {% endif %} mx-3">
                                     <a class="nav-link" href="{% url 'city_guide:description' %}">O Białymstoku</a>
                                 </li>
                             </ul>
@@ -62,7 +62,7 @@
                                     <li class="list-inline-item">
                                         <a style="color: #864d3f" href="{% url 'city_guide:cart' %}">
                                             <i class="fas fa-shopping-cart"></i>
-                                            <span id="cart-count"></span>
+                                            <span id="cart-count">0</span>
                                         </a>
                                     </li>
                                 </ul>
@@ -74,7 +74,18 @@
         </div>
     </div>
 
-    {% block body %}{% endblock %} {% block javascripts %}
+    {% block body %}{% endblock %} 
+    
+    <div class="container">
+        <div class="row px-0">
+            <div class="col px-0">
+                <footer>
+                    <p>&copy; 2018 Wszelkie prawa zastrzeżone</p>
+                </footer
+            </div>
+        </div>
+    </div>
+    {% block javascripts %}
     <!-- Optional JavaScript -->
     <!-- jQuery first, then Popper.js, then Bootstrap JS -->
     <script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
@@ -89,10 +100,17 @@
             $.ajax({
                 url: "{% url 'city_guide:cart_details' %}"
             })
-                .done(function (data) {
-                    $('#cart-count').html(data.count);
-                });
+            .done(function (data) {
+                $('#cart-count').html(data.count);
+            });
         }
+        if($(".messages-slide").length){
+            $('.messages-slide').slideDown('slow', function(){
+              setTimeout(function(){
+                $('.messages-slide').slideUp('slow');
+              }, 2500);
+            });
+          }
         $(window).focus(updateCartCount());
         setInterval(updateCartCount, 15000);
     </script> {% endblock %}
