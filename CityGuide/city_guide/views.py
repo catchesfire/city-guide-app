@@ -381,7 +381,7 @@ class AttractionsView(generic.ListView):
             for key in sort_keys:
                 if key:
                     if key == "price" or key == "-price":
-                        attr_ids = [attr.id_attraction.id for attr in Ticket.objects.all().order_by(key)]
+                        attr_ids = [attr.attraction.id for attr in Ticket.objects.all().order_by(key)]
                         tickets_order = Case(*[When(pk=pk, then=pos) for pos, pk in enumerate(attr_ids)])
                         attractions = Attraction.objects.filter(id__in=attr_ids).order_by(tickets_order)
                     else:
