@@ -1,5 +1,6 @@
 {% extends 'base.html' %} 
 {% load staticfiles %} 
+{% load mathfilters %}
 {% block title%} Planowanie trasy {% endblock %} 
 {% block body %}
 {% block modals %}
@@ -37,11 +38,6 @@
 </div>
 {% endblock %}
 <div class="container-fluid standard-container">
-    <div class="row mt-2">
-        <div class="mx-auto">
-            <h3>Planowanie podróży</h3>
-        </div>
-    </div>
     <div class="row mt-0">
         <div class="col-5 px-4">
             <div class="row">
@@ -56,10 +52,10 @@
             </div>
             <div class="row">
                 <div class="col">
-                    <div class="form-group form-check">
-                        <input type="checkbox" class="form-check-input" id="is-start-point" checked>
-                        <label class="form-check-label" for="is-start-point">Chcę ustawić startu</label>
-                    </div>
+                    <div class="custom-control custom-checkbox">
+                        <input type="checkbox" class="custom-control-input" id="is-start-point">
+                        <label class="custom-control-label" for="is-start-point">Chcę ustawić punkt startu</label>
+                      </div>
                     <div class="form-group row">
                         <label for="start-location-input" class="col-form-label col-sm-4">Punkt startowy</label>
                         <div class="col-sm">
@@ -107,13 +103,15 @@
                                                         <i class="fa fa-clock"></i> {{ attraction.time_minutes }} min
                                                     </span>
                                                 </div>
+                                                {% ifnotequal cart|length forloop.counter %}
                                                 <div class="col-auto px-1">
                                                     <button class="btn btn-success btn-sm float-right details-button" data-id="{{forloop.counter}}">
                                                         <i class="fas fa-angle-double-down"></i>
                                                     </button>
                                                 </div>
+                                                {% endifnotequal %}
                                                 <div class="col-auto px-1">
-                                                    <button class="btn btn-danger btn-sm float-right mr-2">
+                                                    <button class="btn btn-danger btn-sm float-right mr-2 delete-attraction" data-attraction-id="{{attraction.id}}">
                                                         <i class="far fa-trash-alt"></i>
                                                     </button>
                                                 </div>
@@ -126,6 +124,7 @@
                                             <div class="route-steps" style="display: none;"></div>
                                         </div>
                                     </div>
+                                    {% ifnotequal cart|length forloop.counter %}
                                     <div class="detail-table" id="detail-table-{{forloop.counter}}">
                                         <table class="table mt-2">
                                             <thead>
@@ -146,6 +145,7 @@
                                             </tbody>
                                         </table>
                                     </div>
+                                    {% endifnotequal %}
                                     {% else %}
                                     <div class="row">
                                         <div class="col attractionTitleInPlanner">
@@ -158,11 +158,8 @@
                                                         <i class="fa fa-clock"></i> {{ attraction.time }} min
                                                     </span>
                                                 </div>
-                                                <div class="col-auto px-1">
-                                                    <button class="btn btn-danger btn-sm float-right ml-2">Usuń</button>
-                                                </div>
-                                                <div class="col-auto px-1">
-                                                    <button class="btn btn-warning btn-sm float-right mr-2">Edycja</button>
+                                                <div class="col" style="padding-right: 12px">
+                                                    <button class="btn btn-danger btn-sm float-right delete-break" data-break-id="{{attraction.id}}"><i class="far fa-trash-alt"></i></button>
                                                 </div>
                                             </div>
                                         </div>
@@ -264,16 +261,33 @@
             ).done(function (data) {
                 location.reload();
             });
-
-            //e.preventDefault();
         }
-    
+
         $('.delete-attraction').on('click', function () {
             let id = $(this).attr('data-attraction-id');
             let tour_id = "{{tour.id}}";
             deleteAttraction(id, parseInt(tour_id));
         });
 
+        function deleteBreak(break_id, tour_id) {
+            $('#attraction-' + break_id).remove();
+    
+            $.get(
+                "{% url 'city_guide:planner_break_delete' %}",
+                { 
+                    break_id: break_id,
+                    tour_id: tour_id
+                }
+            ).done(function (data) {
+                location.reload();
+            });
+        }
+
+        $('.delete-break').on('click', function () {
+            let id = $(this).attr('data-break-id');
+            let tour_id = "{{tour.id}}";
+            deleteBreak(id, parseInt(tour_id));
+        });
 
         $(".details-button").on("click", function () {
             $("#detail-table-" + $(this).attr("data-id")).slideToggle("slow");
@@ -363,9 +377,17 @@
             $('#sortable').sortable({
                 update: function (event, ui) {
                     $('.order-item').each(function (e) {
+                        // let size = $('.order-item').length
+                        console.log(size)
+                        console.log($(this).index() + 1)
+
                         let type = $(this).attr("data-type");
-                        //let type = "attraction";
                         let id = $(this).attr("data-id");
+
+                        // if ($(this).index() + 1 >= size && type == "break") {
+                        //     return;
+                        // }
+
                         newOrder[$(this).index().toString()] = {};
                         newOrder[$(this).index().toString()][type] = id;
                     });

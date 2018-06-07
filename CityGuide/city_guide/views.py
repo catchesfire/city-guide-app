@@ -1,8 +1,9 @@
 import json
+import copy
 import urllib
 from django.shortcuts import get_object_or_404, render, redirect, reverse
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse, Http404
-from city_guide.models import Attraction, Category, Ticket, TicketType, Tour, Profile, Order, User
+from city_guide.models import Attraction, Category, Ticket, TicketType, Tour, Profile, Order, User, UserBreak
 from django.template import loader
 from django.views import View, generic
 from itertools import chain
@@ -241,18 +242,21 @@ def planner_edit(request, pk):
     return redirect('city_guide:index')
 
 @login_required
-def planner_delete(request):
+def planner_attraction_delete(request):
     if request.method == "GET":
         tour_id = request.GET.get("tour_id", 0)
         attr_id = request.GET.get("attr_id", 0)     
         tour = Tour.objects.get(pk=tour_id)
         all_orders = tour.order_set.all()
 
+        print(all_orders)
         for order in all_orders:      
             if int(order.ticket.attraction.id) == int(attr_id):
                 order_instance = Order.objects.get(id=order.id)
                 order_instance.delete()
                 break
+        all_orders = tour.order_set.all()        
+        print(all_orders)
 
         tour_dict = json.loads(tour.attraction_order)
         for key, orders in tour_dict.items():
@@ -268,6 +272,36 @@ def planner_delete(request):
                     return JsonResponse(data)
 
     return redirect('planner:index')
+    
+def planner_break_delete(request):
+    if request.method == "GET":
+        tour_id = request.GET.get("tour_id", 0)
+        break_id = request.GET.get("break_id", 0)
+
+        tour = Tour.objects.get(pk=tour_id)
+        all_breaks = UserBreak.objects.filter(tour=tour)
+
+        for br in all_breaks:      
+            if int(br.id) == int(break_id):
+                break_instance = UserBreak.objects.get(id=br.id)
+                break_instance.delete()
+                break
+
+        tour_dict = json.loads(tour.attraction_order)
+        for key, orders in tour_dict.items():
+            for t, breakID in orders.items():
+                if t == "break" and breakID == break_id:
+                    del tour_dict[str(key)]
+                    tour.attraction_order = json.dumps(tour_dict)
+                    tour.save()
+                    data = {
+                        'status': 200,
+                        'message': 'OK'
+                    }
+                    return JsonResponse(data)
+
+    return redirect('planner:index')
+
 
 def planner_add_break(request, pk):
     try:
@@ -284,15 +318,22 @@ def planner_add_break(request, pk):
             user_break.save()
 
             attraction_order = json.loads(tour.attraction_order)
-            i = len(attraction_order)
-            attraction_order[str(i)] = {}
-            attraction_order[str(i)]['break'] = user_break.id
-            tour.attraction_order = json.dumps(attraction_order)
+
+            new_dict = {}
+            new_dict['0'] = {}
+            new_dict['0']['break'] = user_break.id
+            for key, value in attraction_order.items():
+                new_dict[str(int(key) + 1)] = attraction_order[key]
+
+            tour.attraction_order = json.dumps(new_dict)
             tour.save()
             data = {
                 'status' : 200,
                 'message' : 'OK'
             }
+
+            return JsonResponse(data)
+
         data = {
             'status': 400,
             'message': 'Wrong number'
@@ -306,11 +347,6 @@ class AttractionsView(generic.ListView):
     sort_form_class = SortForm
     template_name = 'city_guide/attractions.html'
     context_object_name = 'attractions_obj'
-
-    # @todo
-    # naprawić widok kiedy jest tylko jedna kategoria
-    # dobrze by było, gdyby form zapamietywał aktualne filtry
-    # to później
 
     def get(self, request, **kwargs):
         filter_form = self.filter_form_class(request.GET)
@@ -430,8 +466,6 @@ def cart_add(request):
             data = {
                 'status': 'ok'
             }
-
-            # new_order.save()
 
             return JsonResponse(data)
 
