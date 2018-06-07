@@ -4,16 +4,18 @@
 {% block body %}
 
 
+
+
 {% if messages %}
-<ul class="messages mt-72 ml-0 pl-0" style="margin-bottom: -82px">
+<ul class="messages mt-72 ml-0 pl-0" style="margin-bottom: -72px; text-align: center;">
     {% for message in messages %}
-    <li{% if message.tags %} class="alert alert-{{ message.tags }} mt-0 mb-0 "{% endif %}>{{ message }}</li>
+    <li{% if message.tags %} class="alert alert-{{ message.tags }} mt-0 mb-0 py-3"{% endif %}>{{ message }}</li>
     {% endfor %}
 </ul>
-{% endif %}       
+{% endif %}  
 <div class="row">
     <div class="col">
-        <div class="container standard-container" >
+        <div class="container standard-container mt-72" >
                 <div class="row">
                     <div class="col">
                         <div class="row">
@@ -98,7 +100,7 @@
                             </div>
                         </div>
                         <div class="row">
-                            <div class="col px-30">
+                            <div class="col px-30" style="text-align: center;">
                                 <table class="table table-responsive-xl">
                                     <thead>
                                       <tr>
@@ -129,7 +131,14 @@
                                                     {% endif %}
                                                 {% endfor %}
                                             </td>
-                                            <td><a href="{% url 'city_guide:planner' tour.id %}"><button class="btn-default btn">Szczegóły</button></a></td>
+                                            <td>
+                                                    <a href="{% url 'city_guide:planner' tour.id %}">
+                                                        <button class="btn-default btn">Szczegóły</button>
+                                                    </a>
+                                                    <a href="{% url 'city_guide:tour_delete' tour.id %}">
+                                                        <button class="btn-danger btn">Usuń</button>
+                                                    </a>
+                                            </td>
                                         </tr>
                                         
                                         {% endfor %}

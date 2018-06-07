@@ -21,7 +21,6 @@ from .mixins import ExemplaryPlannerMixin, NotUserMixin
 import pdfkit
 from django.http import HttpResponse
 
-from django.contrib.messages.views import SuccessMessageMixin
 
 
 
@@ -29,13 +28,13 @@ def index(request):
     tours = []
     all_tours = Tour.objects.filter(user_id = 1)
     
-    message = None
     if( 'form_message' in request.session ):
-        print("::::::::::::::::")
         message = request.session['form_message']
         messages.success(request, message ) #<< if you choose to pass it through django's messaging
         del request.session['form_message']
         #messages.success(request, ('Twój profil został pomyslnie zmieniony!'))
+
+    
         
     
     if all_tours.count() > 3:
@@ -76,6 +75,8 @@ def index(request):
 
 def logout_user(request):
     logout(request)
+
+    request.session['form_message'] = "Wylogowano!"
     return redirect('city_guide:index')
 
 def cart_details(request):
@@ -378,6 +379,22 @@ class AttractionsView(generic.ListView):
 
         return render(request, self.template_name, {"filter_form": filter_form, "attractions_obj": Attraction.objects.all().order_by('name'), "categories": Category.objects.all()})
 
+
+def tour_delete(request, pk):
+    try:
+        tour = Tour.objects.get(id=pk)
+        if tour.user.id == request.user.id:
+            tour.delete()
+        else:
+            return redirect('city_guide:index')
+    except:
+        raise Http404("Tour doesn't exsist.")
+
+    request.session['form_message'] = ("Podróż została poprawnie usunięta.", "success")
+    return redirect('city_guide:profile')
+
+
+
 def cart_add(request):
     order_form_class = OrderForm
 
@@ -453,6 +470,18 @@ def update_profile(request):
     password_form = PasswordChangeForm(request.user)
     tours = Tour.objects.filter(user=request.user)
 
+    if( 'form_message' in request.session ):
+        form_message = request.session['form_message']
+        message = form_message[0]
+        tag = form_message[1]
+
+        if tag == "danger":
+            messages.error(request, message)
+        else:
+            messages.success(request, message )
+
+        del request.session['form_message']
+
     password_form.fields['old_password'].label = "Stare hasło"
     password_form.fields['new_password1'].label = "Nowe hasło"
     password_form.fields['new_password2'].label = "Potwierdź hasło"
@@ -460,6 +489,7 @@ def update_profile(request):
     password_form.fields['old_password'].widget.attrs['class'] = 'form-control'
     password_form.fields['new_password1'].widget.attrs['class'] = 'form-control'
     password_form.fields['new_password2'].widget.attrs['class'] = 'form-control'
+    
     
     # for tour in tours:
 
@@ -526,8 +556,6 @@ class UserFormView(View):
     user_form_class = UserForm
     profile_form_class = ProfileForm
     template_name = 'city_guide/registration.html'
-    success_message = "Zarejestrowano!"
-    #https://stackoverflow.com/questions/44784936/redirect-while-passing-message-in-django?rq=1
     
     
 
@@ -577,7 +605,7 @@ class UserFormView(View):
 
                 if user is not None:
                     login(request, user)
-                    request.session['form_message'] = "Zarejestrowałeś się."
+                    request.session['form_message'] = "Zarejestrowano!"
                     return redirect('city_guide:index')
             else:
                 messages.error(request, 'Nieprawidłwa reCAPTCHA. Spróbuj ponownie.')
