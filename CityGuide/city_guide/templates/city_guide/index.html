@@ -1,9 +1,9 @@
 {% extends 'base.html' %} {% load staticfiles %} {% block title%} City Guide {% endblock %}  {% block body %}
 
 {% if messages %}
-<ul class="messages mt-72 ml-0 pl-0" style="margin-bottom: -72px; text-align: center;">
+<ul class="messages messages-slide mt-72 ml-0 pl-0" style="margin-bottom: -0px; text-align: center;">
     {% for message in messages %}
-    <li{% if message.tags %} class="alert alert-{{ message.tags }} mt-0 mb-0 "{% endif %}>{{ message }}</li>
+    <li{% if message.tags %} class="alert alert-{{ message.tags }} mt-0 mb-0 py-3"{% endif %}>{{ message }}</li>
     {% endfor %}
 </ul>
 {% endif %}       
