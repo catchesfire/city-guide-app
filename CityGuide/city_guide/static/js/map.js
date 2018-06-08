@@ -121,60 +121,12 @@ function calculateAndDisplayRoute(directionsService, directionsDisplay, pos = {}
         if (status === 'OK') {
             directionsDisplay.setDirections(response);
             var route = response.routes[0];
-            if($('#start_').length){
-                route.legs.forEach((edge, i) => {
-                    i = i+1
-                    document.getElementById("start_" + i).innerHTML = edge.start_address;
-                    document.getElementById("end_" + i).innerHTML = edge.end_address;
-                    document.getElementById("distance_" + i).innerHTML = edge.distance.text;
-                    document.getElementById("duration_" + i).innerHTML = edge.duration.text;
-                });
-            }
-            console.log(route);
+            
             $('#spinner-' + map).fadeOut("slow", function(){
               $('#' + map).animate({
                 opacity: "1" 
               }, 500);
             });
-            //$('#'+ map).slideDown('slow');
-           console.log(dirty);
-
-            //var summaryPanel = document.getElementById('directions-panel');
-            //summaryPanel.innerHTML = '';
-            // For each route, display summary information.
-            //console.log(route);
-            //var i = 0;
-            //$('.route-steps').each(function(){
-            //    $(this).html("");
-            //})
-            //$('.attraction').each(function(){
-            //    steps = $(this).find('.route-steps');
-            //    var string = "";
-            //   for(var j = 0; j < route.legs[i].steps.length; j++){
-            //        string += route.legs[i].steps[j].instructions + "<br>";
-            //    }
-            //    steps.html(string);
-
-            //    if(i < route.legs.length)
-            //        i++;
-            //});
-            //if(isStartPoint){
-            //d = document.createElement('div');
-            // $(d).attr('id', "block-0");
-            // d.innerHTML += route.legs[0].start_address + ' to ';
-            //  d.innerHTML += route.legs[0].end_address + '<br>';
-            // d.innerHTML += route.legs[0].distance.text + '<br><br>';
-            //   $('#sortable').prepend(d);
-            //}
-            //$('.attraction').not
-            //for (var i = 0; i < route.legs.length; i++) {
-            //var routeSegment = i + 1;
-            // summaryPanel.innerHTML += '<b>Route Segment: ' + routeSegment +
-            //    '</b><br>';
-            //  summaryPanel.innerHTML += route.legs[i].start_address + ' to ';
-            //    summaryPanel.innerHTML += route.legs[i].end_address + '<br>';
-            //      summaryPanel.innerHTML += route.legs[i].distance.text + '<br><br>';
-            //}
         } else {
             window.alert('Directions request failed due to ' + status);
         }
