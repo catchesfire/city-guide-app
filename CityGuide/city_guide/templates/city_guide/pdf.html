@@ -43,7 +43,7 @@
                         <div class="card-body">
                             {% if order.type == "attraction" %}
                             <div class="row">
-                                <div class="col-8 attraction-planner-title">
+                                <div class="col-6 attraction-planner-title">
                                     {{ attraction }}
                                 </div>
                                 <div class="col-4">
@@ -54,12 +54,6 @@
                                             </span>
                                         </div>
                                     </div>
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="col">
-                                    Wskazówki dojścia
-                                    <div class="route-steps" style="display: none;"></div>
                                 </div>
                             </div>
                             {% else %}
@@ -84,29 +78,6 @@
             </div>
             {% endfor %}
     </div>
-</div>
-{% endblock %}
-{% block routes %}
-<div class="row mt-3">
-    <div class="col">
-        <h2>Wskazówki dojazdu</h2>
-    </div>
-</div>
-<div class="row mt-3">
-    <table class="table table-striped">
-        <thead>
-            <tr>
-                <th>#</th>
-                <th>Początek</th>
-                <th>Koniec</th>
-                <th>Czas</th>
-                <th>Odległość</th>
-            </tr>
-        </thead>
-        <tbody id="routes">
-
-        </tbody>
-    </table>
 </div>
 {% endblock %}
 {% block javascripts %} 
