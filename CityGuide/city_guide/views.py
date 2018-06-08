@@ -112,6 +112,43 @@ def cart(request):
 
     return render(request, template_name, {'cart': orders, 'total_cost': total_cost, 'tour_create_form' : form})
 
+def cart_add(request):
+    order_form_class = OrderForm
+
+    if request.method == 'POST' and request.is_ajax():
+        order_form = order_form_class(request.POST)
+
+        if order_form.is_valid():
+
+            cart = request.session.get('cart', {})
+
+            quantity = request.POST.get('quantity', 1)
+            ticket_id = request.POST['ticket_id']
+            ticket = Ticket.objects.get(pk = ticket_id)
+            attraction = ticket.attraction
+
+            if str(attraction.id) not in cart:
+                cart[str(attraction.id)] = {}
+
+            if str(ticket.id) in cart[str(attraction.id)]:
+                cart[str(attraction.id)][str(ticket.id)] += int(quantity)
+            else:
+                cart[str(attraction.id)][str(ticket.id)] = int(quantity)
+            request.session['cart'] = cart
+            request.session.modified = True
+
+            data = {
+                'status': 'ok'
+            }
+
+            return JsonResponse(data)
+
+    data = {
+        'status': 'error'
+    }  
+
+    return JsonResponse(data)
+
 def cart_create(request, pk):
     cart = request.session.get('cart', {})
     tour = get_object_or_404(Tour, pk=pk)
@@ -244,14 +281,12 @@ def planner_attraction_delete(request):
         tour = Tour.objects.get(pk=tour_id)
         all_orders = tour.order_set.all()
 
-        print(all_orders)
         for order in all_orders:      
             if int(order.ticket.attraction.id) == int(attr_id):
                 order_instance = Order.objects.get(id=order.id)
                 order_instance.delete()
                 break
         all_orders = tour.order_set.all()        
-        print(all_orders)
 
         tour_dict = json.loads(tour.attraction_order)
         for key, orders in tour_dict.items():
@@ -268,6 +303,7 @@ def planner_attraction_delete(request):
 
     return redirect('planner:index')
     
+@login_required
 def planner_break_delete(request):
     if request.method == "GET":
         tour_id = request.GET.get("tour_id", 0)
@@ -297,7 +333,7 @@ def planner_break_delete(request):
 
     return redirect('planner:index')
 
-
+@login_required
 def planner_add_break(request, pk):
     try:
         tour = Tour.objects.get(id = pk)
@@ -372,7 +408,6 @@ class AttractionsView(generic.ListView):
         if search_form.is_valid():
             search_fraze = request.GET.get('search_fraze', "")
             attractions = Attraction.objects.filter(Q(name__icontains=search_fraze) | Q(description__icontains=search_fraze))
-            paginator = Paginator(attractions, 6)
             return render(request, self.template_name, {"filter_form": filter_form, "attractions_obj": attractions, "categories": Category.objects.all()}) 
         
         sort_keys = [ key for key in request.GET.getlist('sort_key', [])]
@@ -419,6 +454,7 @@ class AttractionsView(generic.ListView):
 
         return context
 
+@login_required
 def tour_delete(request, pk):
     try:
         tour = Tour.objects.get(id=pk)
@@ -431,43 +467,6 @@ def tour_delete(request, pk):
 
     request.session['form_message'] = ("Podróż została poprawnie usunięta.", "success")
     return redirect('city_guide:profile')
-
-def cart_add(request):
-    order_form_class = OrderForm
-
-    if request.method == 'POST' and request.is_ajax():
-        order_form = order_form_class(request.POST)
-
-        if order_form.is_valid():
-
-            cart = request.session.get('cart', {})
-
-            quantity = request.POST.get('quantity', 1)
-            ticket_id = request.POST['ticket_id']
-            ticket = Ticket.objects.get(pk = ticket_id)
-            attraction = ticket.attraction
-
-            if str(attraction.id) not in cart:
-                cart[str(attraction.id)] = {}
-
-            if str(ticket.id) in cart[str(attraction.id)]:
-                cart[str(attraction.id)][str(ticket.id)] += int(quantity)
-            else:
-                cart[str(attraction.id)][str(ticket.id)] = int(quantity)
-            request.session['cart'] = cart
-            request.session.modified = True
-
-            data = {
-                'status': 'ok'
-            }
-
-            return JsonResponse(data)
-
-    data = {
-        'status': 'error'
-    }  
-
-    return JsonResponse(data)
 
 class AttracionView(generic.DetailView):
     model = Attraction
@@ -570,7 +569,6 @@ def profileView(request):
         if user_form.is_valid() and profile_form.is_valid():
             user_form.save()
             profile_form.save()
-            print(":::::")
             messages.success(request, ('Twój profil został pomyslnie zmieniony!'))
             return redirect('city_guide:profile')
         else:
@@ -651,7 +649,6 @@ class UserFormView(NotUserMixin, View):
 class PlannerView(ExemplaryPlannerMixin, generic.DetailView):
     login_url = '/login/'
     model = Tour
-    # template_name = 'city_guide/planner_examplary.html'
     context_object_name = 'tour'    
     
     waypoints = {}
@@ -746,6 +743,7 @@ def planner_to_pdf(request, pk):
         total_cost += order.cost()
 
     orders = {}
+    waypoints = {}
     positions = json.loads(tour.attraction_order)
 
     j = 0
@@ -757,6 +755,9 @@ def planner_to_pdf(request, pk):
                         orders[attraction] = {}
                         orders[attraction]['type'] = "attraction"
                         orders[attraction]['items'] = ticket
+                        waypoints[str(j)] = {}
+                        waypoints[str(j)]['lat'] = float(attraction.location_x)
+                        waypoints[str(j)]['lng'] = float(attraction.location_y)
                         j += 1
                         break
             else:
@@ -765,7 +766,7 @@ def planner_to_pdf(request, pk):
                 orders[user_break]['type'] = 'break'
                 orders[user_break]['items'] = user_break
 
-    return render(request, 'city_guide/pdf.html', {'orders': orders})
+    return render(request, 'city_guide/pdf.html', {'tour' : tour, 'total_cost': total_cost, 'orders': orders, 'waypoints' : json.dumps(waypoints)})
 
 class PDFView(View):
     template = 'city_guide/pdf.html'

@@ -37,7 +37,10 @@
     </div>
 </div>
 {% endblock %}
+{% block container %}
 <div class="container-fluid standard-container">
+{% endblock %}
+{% block tour_header %}{% endblock %}
     <div class="row mt-0">
         <div class="col-5 px-4">
             {% block setupJourney %}
@@ -95,13 +98,13 @@
                                 <div class="card-body">
                                     {% if orders.type == "attraction" %}
                                     <div class="row">
-                                        <div class="col attractionTitleInPlanner">
+                                        <div class="col attraction-planner-title">
                                             {{ attraction }}
                                         </div>
                                         <div class="col-4">
                                             <div class="row">
                                                 <div class="col">
-                                                    <span class="fontForAll">
+                                                    <span class="font-for-all">
                                                         <i class="fa fa-clock"></i> {{ attraction.time_minutes }} min
                                                     </span>
                                                 </div>
@@ -150,13 +153,13 @@
                                     {% endifnotequal %}
                                     {% else %}
                                     <div class="row">
-                                        <div class="col attractionTitleInPlanner">
+                                        <div class="col attraction-planner-title">
                                             {{ attraction.name }}
                                         </div>
                                         <div class="col-4">
                                             <div class="row">
                                                 <div class="col">
-                                                    <span class="fontForAll">
+                                                    <span class="font-for-all">
                                                         <i class="fa fa-clock"></i> {{ attraction.time }} min
                                                     </span>
                                                 </div>
@@ -181,79 +184,64 @@
             <div class="mt-5 mb-3" id="map"></div>
         </div>
     </div>
-    
     <div class="row mt-3">
         <div class="col">
-            <div class="card">
+            <div class="card planner-summary">
                 <div class="card-body" style="text-align: center">
                     <div class="row">
                         <div class="col">
-                            <span class="fontforAll">
+                            <span class="font-for-all">
                                 <h5>
-                                    <i class="fa fa-clock"></i>
-                                    Czas zwiedzania:
-                                    <span class="ml-1">{{ total_time }}</span>
+                                    <i class="fa fa-clock"></i>Czas zwiedzania: <span class="ml-1">{{ total_time }}</span>
                                 </h5>
                             </span>
                         </div>
                         <div class="col">
-                            <span class="fontforAll">
+                            <span class="font-for-all">
                                 <h5>
-                                    <i class="fas fa-coins"></i>
-                                    Koszt wycieczki:
-                                    <span class="ml-1">{{ total_cost }}</span>
+                                    <i class="fas fa-coins"></i>Koszt wycieczki: <span class="ml-1">{{ total_cost }}</span>
                                 </h5>
                             </span>
                         </div>
                         <div class="col">
-<<<<<<< HEAD
-                                <span class="fontforAll float-right">
-                                    {% block generatePDF %}
-=======
-                                <span class="fontforAll">
->>>>>>> origin/fix/planner
-                                    <a href="{% url 'city_guide:generate_pdf' tour.id %}">
-                                        <button class="btn btn-success">
-                                            Generuj PDF
-                                            <i class="fas fa-file-pdf ml-2"></i>
-                                        </button>
-                                    </a>
-                                    {% endblock %}
-                                </span>
-                            </div>
+                            <span class="font-for-all">
+                                {% block generatePDF %}
+                                <a href="{% url 'city_guide:generate_pdf' tour.id %}" class="btn btn-success">Generuj PDF <i class="fas fa-file-pdf ml-2"></i></a>
+                                {% endblock %}
+                            </span>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-    <div class="row">
-        <div class="col">
-            <div id="directions-panel"></div>
-        </div>
-    </div>
 </div>
-    {% endblock %} {% block javascripts %} {{ block.super }}
+{% endblock %} 
+{% block javascripts %} 
 
-    <script type="text/javascript">
-        let mapId = 'map';
-        let waypts = "{{ waypoints }}";
-        waypts = JSON.parse(waypts.replace(/&quot;/g, "\""));
-        let dirty = "{{tour.was_order_modified}}" == "True" ? true : false;
-        var startLocation = localStorage.getItem('start-point');
-        if (!startLocation) {
-            localStorage.setItem('is-start-point', false);
-            startLocation = localStorage.getItem('start-point');
-            $('#is-start-point').prop('checked', false);
-        }
+{{ block.super }}
 
-        if (localStorage.getItem('is-start-point') == "true") {
-            $('#is-start-point').prop('checked', true);
-        } else {
-            $('#is-start-point').prop('checked', false);
-        }
+<script type="text/javascript">
+    let mapId = 'map';
+    let waypts = "{{ waypoints }}";
+    waypts = JSON.parse(waypts.replace(/&quot;/g, "\""));
+    let dirty = "{{tour.was_order_modified}}" == "True" ? true : false;
+    var startLocation = localStorage.getItem('start-point');
 
-        $('#start-location-input').prop('disabled', !($('#is-start-point')[0].checked));
-    </script>
+    if (!startLocation) {
+        localStorage.setItem('is-start-point', false);
+        startLocation = localStorage.getItem('start-point');
+        $('#is-start-point').prop('checked', false);
+    }
+
+    if (localStorage.getItem('is-start-point') == "true") {
+        $('#is-start-point').prop('checked', true);
+    } else {
+        $('#is-start-point').prop('checked', false);
+    }
+
+    $('#start-location-input').prop('disabled', !($('#is-start-point')[0].checked));
+</script>
     <script type="text/javascript" src="{% static 'js/map.js' %}"></script>
     <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCYXIhgWd59IDdrJoO38Tz2hbyoYw0u9TU"></script>
     <script type="text/javascript">
@@ -261,7 +249,7 @@
             $('#attraction-' + attr_id).remove();
     
             $.get(
-                //"{% url 'city_guide:planner_attraction_delete' %}",
+                "{% url 'city_guide:planner_attraction_delete' %}",
                 { 
                     attr_id: attr_id,
                     tour_id: tour_id
@@ -352,7 +340,7 @@
                     });
                 }
             }, () => {
-                alert("Wystąpił błąd podczas pobierania lokalizacji.\n Zezwoliłeś na udostępnienie Twojej lokalizacji?");
+                alert("Wystąpił błąd podczas pobierania lokalizacji.\nZezwoliłeś na udostępnienie Twojej lokalizacji?");
             });
         });
 
@@ -392,7 +380,6 @@
                         let id = $(this).attr("data-id");
 
                         if ($(this).index() + 1 >= size && type == "break") {
-                            //alert('Nie można dodać przerwy na koniec podróży!');
                             event.preventDefault();
                             return;
                         }
@@ -401,7 +388,7 @@
                         newOrder[$(this).index().toString()][type] = id;
                     });
                     $.ajax({
-                       // url: "{% comment %}{% url 'city_guide:planner_edit' tour.id %}{% endcomment %}",
+                        url: "{% url 'city_guide:planner_edit' tour.id %}",
                         type: 'GET',
                         data: { order: JSON.stringify(newOrder) },
                         dataType: 'json'
@@ -411,16 +398,12 @@
         });
 
         $(function () {
-            // $("#sortable").sortable({
-            //    revert: true
-            //});
             $("#draggable").draggable({
                 connectToSortable: "#sortable",
                 helper: "clone",
                 revert: "invalid"
             });
             $("ul, li").disableSelection();
-            //var sorted = $( ".attraction" ).sortable( "serialize", { key: "sort" } );
         });
 
     </script> {% endblock %}

@@ -79,7 +79,7 @@
     </div>
 </nav>
 
-<div class="card filterCard">
+<div class="card filter-card">
     <form action="{% url 'city_guide:filter' %}" method="GET">
         <div class="container">
             <div class="row">
@@ -104,12 +104,12 @@
                     <div class="row">
                         <div class="col">
                             <label for="priceSliderMin">Cena minimalna:</label>
-                            <input class="sliderValues" type="number" id="priceSliderMin" name="price_min" readonly>
+                            <input class="slider-values" type="number" id="priceSliderMin" name="price_min" readonly>
                         </div>
 
                         <div class="col">
                             <label for="priceSliderMax">Cena maksymalna:</label>
-                            <input class="sliderValues" type="number" id="priceSliderMax" name="price_max" readonly>
+                            <input class="slider-values" type="number" id="priceSliderMax" name="price_max" readonly>
                         </div>
                     </div>
 
@@ -124,12 +124,12 @@
                     <div class="row">
                         <div class="col">
                             <label for="timeSliderMin">Minimalny czas zwiedzania:</label>
-                            <input class="sliderValues" type="number" id="timeSliderMin" name="time_min" readonly>
+                            <input class="slider-values" type="number" id="timeSliderMin" name="time_min" readonly>
                         </div>
 
                         <div class="col">
                             <label for="timeSliderMax">Maksymalny czas zwiedzania:</label>
-                            <input class="sliderValues" type="number" id="timeSliderMax" name="time_max" readonly>
+                            <input class="slider-values" type="number" id="timeSliderMax" name="time_max" readonly>
                         </div>
                     </div>
 

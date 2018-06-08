@@ -39,7 +39,6 @@ footer {
     background-color: #fff;
     min-height: 600px;
     padding-top: 10px;
-    padding-bottom: 40px;
 }
 
 .standard-container-photo {
@@ -145,7 +144,7 @@ slider { margin-top: 50px; }
 .attraction-planner-title { font-family: 'Roboto Condensed', sans-serif; font-size: 1.1em; }
 .edge-detail { font-size: 80%; }
 .detail-table { display: none; }
-
+.planner-summary{ border: none; }
 
 /* REGISTRATION AND LOGIN */
 
