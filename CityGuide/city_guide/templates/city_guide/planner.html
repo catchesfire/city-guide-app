@@ -336,15 +336,8 @@
             $('#sortable').sortable({
                 update: function (event, ui) {
                     $('.order-item').each(function (e) {
-                        let size = $('.order-item').length
-
                         let type = $(this).attr("data-type");
                         let id = $(this).attr("data-id");
-
-                        if ($(this).index() + 1 >= size && type == "break") {
-                            event.preventDefault();
-                            return;
-                        }
 
                         newOrder[$(this).index().toString()] = {};
                         newOrder[$(this).index().toString()][type] = id;
