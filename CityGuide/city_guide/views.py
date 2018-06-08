@@ -687,7 +687,10 @@ class PlannerView(ExemplaryPlannerMixin, generic.DetailView):
                             j += 1
                             break
                 else:
-                    user_break = self.object.userbreak_set.get(pk=attraction_id)
+                    try:
+                        user_break = self.object.userbreak_set.get(pk=attraction_id)
+                    except:
+                        continue
                     orders[user_break] = {}
                     orders[user_break]['type'] = 'break'
                     orders[user_break]['items'] = user_break
