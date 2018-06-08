@@ -706,12 +706,6 @@ class PlannerView(ExemplaryPlannerMixin, generic.DetailView):
         context['cart'] = orders
         context['waypoints'] = json.dumps(waypoints)
 
-        def min_to_hours(time):
-            hours = time // 60
-            minutes = time - hours * 60
-
-            return str(hours) + " godz. " + str(minutes) + " min"
-
         tot_time = 0
         for key, items in orders.items():
             if items['type'] == 'attraction':
@@ -719,7 +713,7 @@ class PlannerView(ExemplaryPlannerMixin, generic.DetailView):
             else:
                 tot_time += key.time        
 
-        context['total_time'] = min_to_hours(tot_time)
+        context['total_time'] = tot_time
         context['total_cost'] = str(total_cost) + " PLN"
         context['tour'] = self.object
         context['break_form'] = AddBreakForm(None)

@@ -179,5 +179,6 @@ slider { margin-top: 50px; }
 /* MAP */
 #map { height: 96%; }
 #map-attraction { height: 100%; }
+#total-time{ display: none; }
 
 .map { height: 100%!important; }
