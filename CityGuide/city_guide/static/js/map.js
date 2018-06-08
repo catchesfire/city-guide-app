@@ -121,13 +121,14 @@ function calculateAndDisplayRoute(directionsService, directionsDisplay, pos = {}
         if (status === 'OK') {
             directionsDisplay.setDirections(response);
             var route = response.routes[0];
-            if($('#start_').length){
+            if($('#routes').length){
                 route.legs.forEach((edge, i) => {
                     i = i+1
-                    document.getElementById("start_" + i).innerHTML = edge.start_address;
-                    document.getElementById("end_" + i).innerHTML = edge.end_address;
-                    document.getElementById("distance_" + i).innerHTML = edge.distance.text;
-                    document.getElementById("duration_" + i).innerHTML = edge.duration.text;
+                    $('#routes').append('<tr><td>' + i + '</td><td>' + edge.start_address + '</td><td>' + edge.end_address + '</td><td>' + edge.duration.text + '</td><td>' + edge.distance.text + '</td></tr>');
+                    // document.getElementById("start_" + i).innerHTML = edge.start_address;
+                    // document.getElementById("end_" + i).innerHTML = edge.end_address;
+                    // document.getElementById("distance_" + i).innerHTML = edge.distance.text;
+                    // document.getElementById("duration_" + i).innerHTML = edge.duration.text;
                 });
             }
             console.log(route);

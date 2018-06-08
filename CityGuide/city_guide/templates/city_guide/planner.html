@@ -42,7 +42,7 @@
 {% endblock %}
 {% block tour_header %}{% endblock %}
     <div class="row mt-0">
-        <div class="col-5 px-4">
+        <div class="col-12 px-4">
             {% block setupJourney %}
             <div class="row">
                 <div class="mx-auto">
@@ -215,6 +215,7 @@
             </div>
         </div>
     </div>
+    {% block routes %}{% endblock %}
 </div>
 {% endblock %} 
 {% block javascripts %} 
