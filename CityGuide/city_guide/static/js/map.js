@@ -83,6 +83,24 @@ function initMap() {
     }
 }
 
+function minToHours(time){
+    let days = Math.floor(time / 1440);
+    
+    if (days > 0){
+        time -= 1440;
+    }
+
+    hours = Math.floor(time / 60)
+    time -= 60 * hours
+    minutes = time 
+    
+    let daysStr = (days == 1) ? days + " dzień" :  (days != 0) ? days + " dni" : "";
+    let hoursStr = (hours > 0) ? hours + " godz." : "";
+    let minutesStr = (minutes > 0) ? minutes + " min" : ""; 
+
+    return daysStr + " " + hoursStr + " " + minutesStr;
+} 
+
 function calculateAndDisplayRoute(directionsService, directionsDisplay, pos = {}, map) {
     waypoints = [];
 
@@ -121,6 +139,17 @@ function calculateAndDisplayRoute(directionsService, directionsDisplay, pos = {}
         if (status === 'OK') {
             directionsDisplay.setDirections(response);
             var route = response.routes[0];
+
+            let time = parseInt(document.getElementById('total-time').innerHTML)
+            let travelTime = 0;
+            route.legs.forEach(edge => {
+                travelTime += parseInt(edge.duration.text.split(' '[0]));
+            });
+
+            time += travelTime;
+
+            document.getElementById('total-time').innerHTML = minToHours(time);
+            $('#total-time').css('display', 'inline');
             
             $('#spinner-' + map).fadeOut("slow", function(){
               $('#' + map).animate({

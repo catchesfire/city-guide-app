@@ -499,3 +499,7 @@ exampleTripAttr {
 #map {
     height: 96%;
 }
+
+#total-time{
+    display: none;
+}

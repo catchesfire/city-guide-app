@@ -155,7 +155,7 @@
                                 <h5>
                                     <i class="fa fa-clock"></i>
                                     Czas zwiedzania:
-                                    <span class="ml-1">{{ total_time }}</span>
+                                    <span id='total-time' class="ml-1">{{ total_time }}</span>
                                 </h5>
                             </span>
                         </div>
@@ -214,6 +214,7 @@
     <script type="text/javascript" src="{% static 'js/map.js' %}"></script>
     <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCYXIhgWd59IDdrJoO38Tz2hbyoYw0u9TU"></script>
     <script type="text/javascript">
+
         function deleteAttraction(attr_id, tour_id) {
             $('#attraction-' + attr_id).remove();
     
