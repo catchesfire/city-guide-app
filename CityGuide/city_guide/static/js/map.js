@@ -140,17 +140,17 @@ function calculateAndDisplayRoute(directionsService, directionsDisplay, pos = {}
             directionsDisplay.setDirections(response);
             var route = response.routes[0];
 
-            let time = parseInt(document.getElementById('total-time').innerHTML)
             let travelTime = 0;
             route.legs.forEach(edge => {
                 travelTime += parseInt(edge.duration.text.split(' '[0]));
             });
-
-            time += travelTime;
-
-            document.getElementById('total-time').innerHTML = minToHours(time);
-            $('#total-time').css('display', 'inline');
             
+            if($('#total-time').length){
+                let time = parseInt(document.getElementById('total-time').innerHTML)
+                time += travelTime;
+                document.getElementById('total-time').innerHTML = minToHours(time);
+                $('#total-time').css('display', 'inline');
+            }
             $('#spinner-' + map).fadeOut("slow", function(){
               $('#' + map).animate({
                 opacity: "1" 

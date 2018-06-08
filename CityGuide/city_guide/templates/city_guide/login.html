@@ -2,7 +2,7 @@
 
 
 {% if messages %}
-<ul class="messages mt-72 ml-0 pl-0" style="margin-bottom: -82px; text-align: center;">
+<ul class="messages mt-72 ml-0 pl-0" style="margin-bottom: -92px; text-align: center;">
     {% for message in messages %}
     <li{% if message.tags %} class="alert alert-{{ message.tags }} mt-0 mb-0 "{% endif %}>{{ message }}</li>
     {% endfor %}
@@ -12,7 +12,7 @@
 <div class="container" style="margin-top: 92px; background-color: #fff">
     <!-- Title -->
 
-    <div class="row logAndRegisterCard">
+    <div class="row log-and-register-card">
         <div class="col">
             <h1>Zaloguj się</h1>
             {% if error_message %}
@@ -33,7 +33,7 @@
                 <!--ok -->
                 <div class="row">
                     <div class="col mb-3">
-                        <button type="submit" class="btn loginBtn">Zaloguj</button>
+                        <button type="submit" class="btn float-right">Zaloguj</button>
                     </div>
                 </div>
             </form>
@@ -45,8 +45,8 @@
 <div class="container" style="margin-top: 15px; background-color: #fff">
     <!-- Title -->
 
-    <div class="row logAndRegisterCard">
-        <div class="col my-3 registerRef" >
+    <div class="row log-and-register-card">
+        <div class="col my-3 register-ref" >
             <a> Nie masz konta?</a>
             <a href="{% url 'city_guide:register' %}"> Zarejestruj się!</a>
         </div>

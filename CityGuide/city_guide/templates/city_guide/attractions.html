@@ -23,7 +23,7 @@
 </div>
 <div class="container standard-container">
     {% if attractions_obj %}
-    <div class="row attractionsCont">
+    <div class="row attraction-cont">
         {% for attraction in attractions_obj %} {% if attractions_obj.count == 1 %}
         <div class="col">
             <div class="card attracion-single-card">
@@ -96,8 +96,8 @@
         </div>
         {% else %}
         <div class="col-12 col-md-6">
-            <div class="card-deck attrDeck">
-                <div class="card attracionShort">
+            <div class="card-deck attr-deck">
+                <div class="card attraction-short">
                     <div class="row atrrNameRow">
                         <div class="col">
                             <h4>
@@ -108,7 +108,7 @@
 
                     <div class="row">
                         <div class="col-7">
-                            <img class="card-img-top mainImage" src="{{ attraction.main_photo.url }}" alt="Brak zdjecia"></img>
+                            <img class="card-img-top main-image" src="{{ attraction.main_photo.url }}" alt="Brak zdjecia"></img>
                         </div>
 
                         <div class="col mt-1">
@@ -150,7 +150,7 @@
                     </div>
                     <div class="row">
                         <div class="card-body">
-                            <p class="card-text descriptionText pt-2">
+                            <p class="card-text description-text pt-2">
                                 {{attraction.description|truncatechars:400}}
                             </p>
                         </div>
@@ -183,7 +183,7 @@
 {% endblock %} {% block javascripts %} {{block.super}}
 <script>
     $(".showFilters").on("click", function () {
-        $('.sliderCard').slideToggle('slow');
+        $('.filter-card').slideToggle('slow');
     });
 
     $(function () {

@@ -1,11 +1,12 @@
 {% load staticfiles %}
 <!doctype html>
 <html lang="pl">
-
 <head>
     <!-- Required meta tags -->
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"> {% block stylesheets %}
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"> 
+    
+    {% block stylesheets %}
     <link rel="shortcut icon" type="image/png" href="{% static '/favicon/favicon.ico' %}" />
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/css/bootstrap.min.css" integrity="sha384-9gVQ4dYFwwWSjIDZnLEWnxCjeSWFphJiwGPXr1jddIhOegiu1FwO5qRGvFXOdJZ4"
@@ -14,12 +15,15 @@
         crossorigin="anonymous">
     <link href="https://fonts.googleapis.com/css?family=Roboto+Condensed:400,700" rel="stylesheet">
     <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
-    <link rel="stylesheet" href="{% static 'css/style.css' %}"> {% endblock %}
+    <link rel="stylesheet" href="{% static 'css/style.css' %}"> 
+    <link rel="stylesheet" href="{% static 'css/util.css' %}">
+    <link rel="stylesheet" href="{% static 'css/spinner.css' %}">
+    {% endblock %}
 
-    <title>{% block title %}Hello, world!{% endblock %}</title>
+    <title>{% block title %}City Guide - Twój przewodnik po Białymstoku{% endblock %}</title>
 </head>
-
 <body>
+    {% block header %}
     <div class="container-fluid px-0">
         <div class="row">
             <div class="col-12">
@@ -27,7 +31,6 @@
                     <div class="container">
                         <a href="{% url 'city_guide:index' %}"><img class="navbar-brand" src="{% static 'images/logo/CityGuide.svg' %}" style="min-height: 62px; max-height:62px" alt="City Guide"></a>
 
-                        <!-- <a class="navbar-brand" href="#">City Guide</a> -->
                         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
                             aria-expanded="false" aria-label="Toggle navigation">
                             <span class="navbar-toggler-icon"></span>
@@ -52,15 +55,14 @@
                                     <li class="list-inline-item">
                                         <i class="far fa-user"></i>
                                         {% spaceless %} {% if user.is_authenticated %}
-                                        <a style="color: #2d4079" href="{% url 'city_guide:profile' %}" class="mr-2"> Witaj, {{ user.get_username }}</a>
-
-                                        <a style="color: #2d4079" href="{% url 'city_guide:logout' %}"> Wyloguj</a>
+                                        <a href="{% url 'city_guide:profile' %}" class="mr-2"> Witaj, {{ user.get_username }}</a>
+                                        <a href="{% url 'city_guide:logout' %}"> Wyloguj</a>
                                         {% else %}
-                                        <a style="color: #2d4079" href="{% url 'city_guide:login' %}"> Zaloguj</a>
+                                        <a href="{% url 'city_guide:login' %}"> Zaloguj</a>
                                         {% endif %}{% endspaceless %}
                                     </li>
                                     <li class="list-inline-item">
-                                        <a style="color: #864d3f" href="{% url 'city_guide:cart' %}">
+                                        <a class="nav-cart" href="{% url 'city_guide:cart' %}">
                                             <i class="fas fa-shopping-cart"></i>
                                             <span id="cart-count">0</span>
                                         </a>
@@ -73,10 +75,11 @@
             </div>
         </div>
     </div>
+    {% endblock %}
 
     {% block body %}{% endblock %} 
     
-    <div class="container">
+    <!-- <div class="container">
         <div class="row px-0" >
             <div class="col px-0">
                 <footer class="footer">
@@ -84,7 +87,7 @@
                 </footer
             </div>
         </div>
-    </div>
+    </div> -->
     {% block javascripts %}
     <!-- Optional JavaScript -->
     <!-- jQuery first, then Popper.js, then Bootstrap JS -->
@@ -95,7 +98,7 @@
         crossorigin="anonymous"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/js/bootstrap.min.js" integrity="sha384-uefMccjFJAIv6A+rW+L4AHf99KvxDjWSu1z9VI8SKNVmz4sk7buKt/6v9KI65qnm"
         crossorigin="anonymous"></script>
-    <script>
+    <script type="text/javascript">
         function updateCartCount() {
             $.ajax({
                 url: "{% url 'city_guide:cart_details' %}"
@@ -113,7 +116,7 @@
           }
         $(window).focus(updateCartCount());
         setInterval(updateCartCount, 15000);
-    </script> {% endblock %}
+    </script> 
+    {% endblock %}
 </body>
-
 </html>

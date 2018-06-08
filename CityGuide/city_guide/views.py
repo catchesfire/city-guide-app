@@ -19,9 +19,10 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.conf import settings
 from .forms import FilterForm, SearchForm, SortForm, UserForm, OrderForm, ProfileForm, UserUpdateForm, TourCreateForm, AddBreakForm
 from .mixins import ExemplaryPlannerMixin, NotUserMixin
-# from wkhtmltopdf.views import PDFTemplateResponse
+from wkhtmltopdf.views import PDFTemplateResponse
 import pdfkit
 from django.http import HttpResponse
+
 
 def index(request):
     tours = []
@@ -110,6 +111,43 @@ def cart(request):
     form = TourCreateForm(None)
 
     return render(request, template_name, {'cart': orders, 'total_cost': total_cost, 'tour_create_form' : form})
+
+def cart_add(request):
+    order_form_class = OrderForm
+
+    if request.method == 'POST' and request.is_ajax():
+        order_form = order_form_class(request.POST)
+
+        if order_form.is_valid():
+
+            cart = request.session.get('cart', {})
+
+            quantity = request.POST.get('quantity', 1)
+            ticket_id = request.POST['ticket_id']
+            ticket = Ticket.objects.get(pk = ticket_id)
+            attraction = ticket.attraction
+
+            if str(attraction.id) not in cart:
+                cart[str(attraction.id)] = {}
+
+            if str(ticket.id) in cart[str(attraction.id)]:
+                cart[str(attraction.id)][str(ticket.id)] += int(quantity)
+            else:
+                cart[str(attraction.id)][str(ticket.id)] = int(quantity)
+            request.session['cart'] = cart
+            request.session.modified = True
+
+            data = {
+                'status': 'ok'
+            }
+
+            return JsonResponse(data)
+
+    data = {
+        'status': 'error'
+    }  
+
+    return JsonResponse(data)
 
 def cart_create(request, pk):
     cart = request.session.get('cart', {})
@@ -243,14 +281,12 @@ def planner_attraction_delete(request):
         tour = Tour.objects.get(pk=tour_id)
         all_orders = tour.order_set.all()
 
-        print(all_orders)
         for order in all_orders:      
             if int(order.ticket.attraction.id) == int(attr_id):
                 order_instance = Order.objects.get(id=order.id)
                 order_instance.delete()
                 break
         all_orders = tour.order_set.all()        
-        print(all_orders)
 
         tour_dict = json.loads(tour.attraction_order)
         for key, orders in tour_dict.items():
@@ -267,6 +303,7 @@ def planner_attraction_delete(request):
 
     return redirect('planner:index')
     
+@login_required
 def planner_break_delete(request):
     if request.method == "GET":
         tour_id = request.GET.get("tour_id", 0)
@@ -296,7 +333,7 @@ def planner_break_delete(request):
 
     return redirect('planner:index')
 
-
+@login_required
 def planner_add_break(request, pk):
     try:
         tour = Tour.objects.get(id = pk)
@@ -409,6 +446,7 @@ class AttractionsView(generic.ListView):
         return render(request, self.template_name, {"filter_form": filter_form, "attractions_obj": Attraction.objects.all().order_by('name'), "categories": Category.objects.all(), 'page': 'attraction'})
 
 
+@login_required
 def tour_delete(request, pk):
     try:
         tour = Tour.objects.get(id=pk)
@@ -421,45 +459,6 @@ def tour_delete(request, pk):
 
     request.session['form_message'] = ("Podróż została poprawnie usunięta.", "success")
     return redirect('city_guide:profile')
-
-
-
-def cart_add(request):
-    order_form_class = OrderForm
-
-    if request.method == 'POST' and request.is_ajax():
-        order_form = order_form_class(request.POST)
-
-        if order_form.is_valid():
-
-            cart = request.session.get('cart', {})
-
-            quantity = request.POST.get('quantity', 1)
-            ticket_id = request.POST['ticket_id']
-            ticket = Ticket.objects.get(pk = ticket_id)
-            attraction = ticket.attraction
-
-            if str(attraction.id) not in cart:
-                cart[str(attraction.id)] = {}
-
-            if str(ticket.id) in cart[str(attraction.id)]:
-                cart[str(attraction.id)][str(ticket.id)] += int(quantity)
-            else:
-                cart[str(attraction.id)][str(ticket.id)] = int(quantity)
-            request.session['cart'] = cart
-            request.session.modified = True
-
-            data = {
-                'status': 'ok'
-            }
-
-            return JsonResponse(data)
-
-    data = {
-        'status': 'error'
-    }  
-
-    return JsonResponse(data)
 
 class AttracionView(generic.DetailView):
     model = Attraction
@@ -562,7 +561,6 @@ def profileView(request):
         if user_form.is_valid() and profile_form.is_valid():
             user_form.save()
             profile_form.save()
-            print(":::::")
             messages.success(request, ('Twój profil został pomyslnie zmieniony!'))
             return redirect('city_guide:profile')
         else:
@@ -584,6 +582,8 @@ class UserFormView(NotUserMixin, View):
     user_form_class = UserForm
     profile_form_class = ProfileForm
     template_name = 'city_guide/registration.html'
+    redirect_url = 'city_guide:index'
+    success_message = "Zarejestrowano!"  
 
     def get(self,request):
         user_form = self.user_form_class(None)
@@ -719,39 +719,136 @@ def raw_planner(request, pk):
     return render(request, 'city_guide/pdf.html', {'orders': all_orders})
 
 def planner_to_pdf(request, pk):
-    tour = Tour.objects.get(id=pk)    
-    url = request.build_absolute_uri(reverse('city_guide:raw_planner', args=[pk]))
+    tour = Tour.objects.get(id=pk)
+
+    all_orders = tour.order_set.all()
+    all_breaks = tour.userbreak_set.all()
+
+    unsorted_orders = {}
+    total_cost = 0
+
+    for order in all_orders:
+        unsorted_orders[order.ticket.attraction] = all_orders.filter(ticket_id__in=Ticket.objects.filter(attraction_id=order.ticket.attraction.id))
+        total_cost += order.cost()
+
+    orders = {}
+    waypoints = {}
+    positions = json.loads(tour.attraction_order)
+
+    j = 0
+    for i, types in positions.items():
+        for type_name, attraction_id in types.items():
+            if type_name == "attraction":
+                for attraction, ticket in unsorted_orders.items():
+                    if int(attraction.id) == int(attraction_id):
+                        orders[attraction] = {}
+                        orders[attraction]['type'] = "attraction"
+                        orders[attraction]['items'] = ticket
+                        waypoints[str(j)] = {}
+                        waypoints[str(j)]['lat'] = float(attraction.location_x)
+                        waypoints[str(j)]['lng'] = float(attraction.location_y)
+                        j += 1
+                        break
+            else:
+                user_break = tour.userbreak_set.get(pk=attraction_id)
+                orders[user_break] = {}
+                orders[user_break]['type'] = 'break'
+                orders[user_break]['items'] = user_break
     
-    config = pdfkit.configuration(wkhtmltopdf="/usr/local/bin/wkhtmltopdf")
-    pdfkit.from_url(url, "tmp/" + tour.name + ".pdf", configuration=config)
-    return render(request, 'city_guide/pdf.html')
+    def min_to_hours(time):
+        hours = time // 60
+        minutes = time - hours * 60
 
-# class PDFView(View):
-#     template = 'city_guide/pdf.html'
+        return str(hours) + " godz. " + str(minutes) + " min"
 
-#     def get(self, request):
-#         tour = Tour.objects.get(id=pk)
-#         all_orders = tour.order_set.all()
+    tot_time = 0
+    for key, items in orders.items():
+        if items['type'] == 'attraction':
+            tot_time += key.time_minutes
+        else:
+            tot_time += key.time        
 
-#         data = {
-#             'orders' : all_orders
-#         }
+    tot_time = min_to_hours(tot_time)
 
-#         response = PDFTemplateResponse(request = request,
-#                                         template = self.template,
-#                                         filename = "test.pdf",
-#                                         context = data,
-#                                         show_content_in_browser=False,
-#                                         cmd_options= {
-#                                             'margin-top0': 10,
-#                                             'zoom': 1,
-#                                             'viewport-size': '1366x513',
-#                                             'javascript-delay': 1000,
-#                                             'footer-center': '[page]/[topage]',
-#                                             'no-stop-slow-scripts': True
-#                                             },
-#                                         )
-#         return response
+    return render(request, 'city_guide/pdf.html', {'tour' : tour, 'total_cost': total_cost, 'total_time': tot_time, 'orders': orders, 'waypoints' : json.dumps(waypoints)})
+
+class PDFView(View):
+    template = 'city_guide/pdf.html'
+
+    def get(self, request, pk):
+        tour = Tour.objects.get(id=pk)
+        all_orders = tour.order_set.all()
+        all_breaks = tour.userbreak_set.all()
+
+        unsorted_orders = {}
+        total_cost = 0
+
+        for order in all_orders:
+            unsorted_orders[order.ticket.attraction] = all_orders.filter(ticket_id__in=Ticket.objects.filter(attraction_id=order.ticket.attraction.id))
+            total_cost += order.cost()
+
+        orders = {}
+        waypoints = {}
+        positions = json.loads(tour.attraction_order)
+
+        j = 0
+        for i, types in positions.items():
+            for type_name, attraction_id in types.items():
+                if type_name == "attraction":
+                    for attraction, ticket in unsorted_orders.items():
+                        if int(attraction.id) == int(attraction_id):
+                            orders[attraction] = {}
+                            orders[attraction]['type'] = "attraction"
+                            orders[attraction]['items'] = ticket
+                            waypoints[str(j)] = {}
+                            waypoints[str(j)]['lat'] = float(attraction.location_x)
+                            waypoints[str(j)]['lng'] = float(attraction.location_y)
+                            j += 1
+                            break
+                else:
+                    user_break = tour.userbreak_set.get(pk=attraction_id)
+                    orders[user_break] = {}
+                    orders[user_break]['type'] = 'break'
+                    orders[user_break]['items'] = user_break
+        
+        def min_to_hours(time):
+            hours = time // 60
+            minutes = time - hours * 60
+
+            return str(hours) + " godz. " + str(minutes) + " min"
+
+        tot_time = 0
+        for key, items in orders.items():
+            if items['type'] == 'attraction':
+                tot_time += key.time_minutes
+            else:
+                tot_time += key.time        
+
+        tot_time = min_to_hours(tot_time)
+
+        data = {
+            'tour' : tour, 
+            'total_cost': total_cost, 
+            'total_time': tot_time, 
+            'orders': orders, 
+            'waypoints' : json.dumps(waypoints)
+        }
+
+        response = PDFTemplateResponse(request = request,
+                                        template = self.template,
+                                        filename = "test.pdf",
+                                        context = data,
+                                        show_content_in_browser=False,
+                                        cmd_options= {
+                                            'margin-top0': 10,
+                                            'zoom': 1,
+                                            'viewport-size': '1366x513',
+                                            'javascript-delay': 1000,
+                                            'footer-center': '[page]/[topage]',
+                                            'no-stop-slow-scripts': True
+                                            },
+                                        )
+        return response
 
 def description(request):
     return render(request, 'city_guide/description.html', {'page': 'about'})

@@ -1,48 +1,106 @@
-{% load staticfiles %}
-<!DOCTYPE html>
-<html lang="en">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/css/bootstrap.min.css" integrity="sha384-9gVQ4dYFwwWSjIDZnLEWnxCjeSWFphJiwGPXr1jddIhOegiu1FwO5qRGvFXOdJZ4"
-        crossorigin="anonymous">
-    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
-        crossorigin="anonymous"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.0/umd/popper.min.js" integrity="sha384-cs/chFZiN24E4KMATLdqdvsezGxaGsi4hLGOzlXwp5UZB1LY//20VyM2taTB4QvJ"
-        crossorigin="anonymous"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/js/bootstrap.min.js" integrity="sha384-uefMccjFJAIv6A+rW+L4AHf99KvxDjWSu1z9VI8SKNVmz4sk7buKt/6v9KI65qnm"
-        crossorigin="anonymous"></script>
-    <title>Document</title>
-</head>
-
-<body>
-    <thead>
-        <tr>
-            <th>#</th>
-            <th></th>
-            <th>Nazwa</th>
-            <th>Czas</th>
-            <th>Koszt</th>
-        </tr>
-    </thead>
-    <table class="table">
-        <tbody>
-            {% for order in orders %}
-            <tr>
-                <td class="align-middle">{{ forloop.counter }}</td>
-                <td class="align-middle">
-                    <!-- <img src="{{order.ticket.attraction.main_photo.url}}" class="img-fluid cart-img" alt="Muzeum" /> -->
-                    <img src="{{order.ticket.attraction.main_photo.url}}" width="300" height="150" class="img-fluid cart-img" alt="Muzeum" />
-                </td>
-                <td class="align-middle">{{order.ticket.attraction.name}}</td>
-                <td class="align-middle">{{order.ticket.attraction.time_minutes}}</td>
-                <td>{{order.ticket.price}} PLN</td>
-            </tr>
+{% extends 'city_guide/planner.html' %} 
+{% load staticfiles %} 
+{% block stylesheets %}
+{{ block.super }}
+<style>
+    body {
+        background: #fff;
+    }
+    #map{
+        margin-top: 0!important;
+        height: 100%;
+    }
+</style>
+{% endblock %}
+{% block modals %}{% endblock %}
+{% block header %}{% endblock %}
+{% block generatePDF %}{% endblock %}
+{% block setupJourney %}{% endblock %}
+{% block plannercontainer %}<div class="col-12 px-4">{% endblock %}
+{% block container %} 
+<div class="container standard-container" style="margin-top: 0;">
+{% endblock %}
+{% block tour_header %}
+<div class="row">
+    <div class="col">
+        <h1>{{ tour.name }}</h1>
+    </div>
+</div>
+<div class="row">
+    <div class="col">
+        <p>{{ tour.description }}</p>
+    </div>
+</div>
+{% endblock %}
+{% block custom %}
+<div class="row">
+    <div class="col">
+        <!-- <div class="row"> -->
+            {% for attraction, order in orders.items %}
+            <div class="row">
+                <div class="col">
+                    <div class="card">
+                        <div class="card-body">
+                            {% if order.type == "attraction" %}
+                            <div class="row">
+                                <div class="col-6 attraction-planner-title">
+                                    {{ attraction }}
+                                </div>
+                                <div class="col-4">
+                                    <div class="row">
+                                        <div class="col">
+                                            <span class="font-for-all">
+                                                <i class="fa fa-clock"></i> {{ attraction.time_minutes }} min
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            {% else %}
+                            <div class="row">
+                                <div class="col-8 attraction-planner-title">
+                                    {{ attraction.name }}
+                                </div>
+                                <div class="col-4">
+                                    <div class="row">
+                                        <div class="col">
+                                            <span class="font-for-all">
+                                                <i class="fa fa-clock"></i> {{ attraction.time }} min
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
             {% endfor %}
-        </tbody>
-    </table>
-</body>
+    </div>
+</div>
+{% endblock %}
+{% block javascripts %} 
+<script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
+        crossorigin="anonymous"></script>
+<script type="text/javascript">
+    let mapId = 'map';
+    let waypts = "{{ waypoints }}";
+    waypts = JSON.parse(waypts.replace(/&quot;/g, "\""));
+    let dirty = "{{tour.was_order_modified}}" == "True" ? true : false;
+    var startLocation = localStorage.getItem('start-point');
 
-</html>
+    if (!startLocation) {
+        localStorage.setItem('is-start-point', false);
+        startLocation = localStorage.getItem('start-point');
+        $('#is-start-point').prop('checked', false);
+    }
+
+    
+</script>
+<script type="text/javascript" src="{% static 'js/map.js' %}"></script>
+<script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCYXIhgWd59IDdrJoO38Tz2hbyoYw0u9TU"></script>
+<script type="text/javascript">
+    init(waypts); 
+</script>
+    {% endblock %}
