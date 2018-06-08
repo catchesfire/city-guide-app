@@ -312,7 +312,6 @@ def planner_add_break(request, pk):
             user_break.save()
 
             attraction_order = json.loads(tour.attraction_order)
-
             new_dict = {}
             new_dict['0'] = {}
             new_dict['0']['break'] = user_break.id
@@ -340,7 +339,6 @@ class AttractionsView(generic.ListView):
     search_form_class = SearchForm
     sort_form_class = SortForm
     template_name = 'city_guide/attractions.html'
-    context_object_name = 'attractions_obj'
 
     def get(self, request, **kwargs):
         filter_form = self.filter_form_class(request.GET)
@@ -371,7 +369,7 @@ class AttractionsView(generic.ListView):
         if search_form.is_valid():
             search_fraze = request.GET.get('search_fraze', "")
             attractions = Attraction.objects.filter(Q(name__icontains=search_fraze) | Q(description__icontains=search_fraze))
-            return render(request, self.template_name, {"filter_form": filter_form, "attractions_obj": attractions, "categories": Category.objects.all()}) 
+            return render(request, self.template_name, {"filter_form": filter_form, "attractions_obj": attractions, "categories": Category.objects.all(), 'page': 'attraction'}) 
         
         sort_keys = [ key for key in request.GET.getlist('sort_key', [])]
         if len(sort_keys) != 0:
@@ -392,7 +390,7 @@ class AttractionsView(generic.ListView):
             if not found:
                 attractions = Attraction.objects.all().order_by('name')
             
-            return render(request, self.template_name, {"filter_form": filter_form, "attractions_obj": attractions, "categories": Category.objects.all()}) 
+            return render(request, self.template_name, {"filter_form": filter_form, "attractions_obj": attractions, "categories": Category.objects.all(), 'page': 'attraction'}) 
             
         if filter_form.is_valid():
             if request.GET.getlist('categories'):
@@ -406,16 +404,10 @@ class AttractionsView(generic.ListView):
             time_max = request.GET.get('time_max', 1000)
 
             attractions = Attraction.objects.filter(id__in=GetAttractionsByCategory(category_ids)).filter(id__in=GetAttractionsByPrice(price_min, price_max)).filter(time_minutes__gte=time_min, time_minutes__lte=time_max).order_by('name')
-            return render(request, self.template_name, {"filter_form": filter_form, "attractions_obj": attractions, "categories": Category.objects.all()})             
+            return render(request, self.template_name, {"filter_form": filter_form, "attractions_obj": attractions, "categories": Category.objects.all(), 'page': 'attraction'})             
 
-        return render(request, self.template_name, {"filter_form": filter_form, "attractions_obj": Attraction.objects.all().order_by('name'), "categories": Category.objects.all()})
+        return render(request, self.template_name, {"filter_form": filter_form, "attractions_obj": Attraction.objects.all().order_by('name'), "categories": Category.objects.all(), 'page': 'attraction'})
 
-    def get_context_data(self, **kwargs):
-        context = super(AttractionsView, self).get_context_data(**kwargs)
-
-        context['page'] = 'attraction'
-
-        return context
 
 def tour_delete(request, pk):
     try:
@@ -649,7 +641,6 @@ class UserFormView(NotUserMixin, View):
 class PlannerView(ExemplaryPlannerMixin, generic.DetailView):
     login_url = '/login/'
     model = Tour
-    # template_name = 'city_guide/planner_examplary.html'
     context_object_name = 'tour'    
     
     waypoints = {}
