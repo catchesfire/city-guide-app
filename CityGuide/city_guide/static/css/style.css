@@ -150,6 +150,8 @@ slider { margin-top: 50px; }
 
 .register-ref { text-align: center; }
 .log-and-register-card { margin: auto; max-width: 400px; max-height: 560px; }
+.register-card { margin: auto; max-width: 400px;  }
+
 .g-recaptcha { margin-bottom: 10px; }
 
 /* ABOUT PAGE */
