@@ -371,7 +371,6 @@ class AttractionsView(generic.ListView):
         if search_form.is_valid():
             search_fraze = request.GET.get('search_fraze', "")
             attractions = Attraction.objects.filter(Q(name__icontains=search_fraze) | Q(description__icontains=search_fraze))
-            paginator = Paginator(attractions, 6)
             return render(request, self.template_name, {"filter_form": filter_form, "attractions_obj": attractions, "categories": Category.objects.all()}) 
         
         sort_keys = [ key for key in request.GET.getlist('sort_key', [])]
