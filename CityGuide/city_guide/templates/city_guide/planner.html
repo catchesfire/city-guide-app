@@ -192,21 +192,21 @@
                         <div class="col">
                             <span class="font-for-all">
                                 <h5>
-                                    <i class="fa fa-clock"></i>Czas zwiedzania: <span class="ml-1">{{ total_time }}</span>
+                                    <i class="fa fa-clock"></i> Czas zwiedzania: <span class="ml-1">{{ total_time }}</span>
                                 </h5>
                             </span>
                         </div>
                         <div class="col">
                             <span class="font-for-all">
                                 <h5>
-                                    <i class="fas fa-coins"></i>Koszt wycieczki: <span class="ml-1">{{ total_cost }}</span>
+                                    <i class="fas fa-coins"></i> Koszt wycieczki: <span class="ml-1">{{ total_cost }}</span>
                                 </h5>
                             </span>
                         </div>
                         <div class="col">
                             <span class="font-for-all">
                                 {% block generatePDF %}
-                                <a href="{% url 'city_guide:generate_pdf' tour.id %}" class="btn btn-success">Generuj PDF <i class="fas fa-file-pdf ml-2"></i></a>
+                                <a href="{% url 'city_guide:planner_pdf' tour.id %}" class="btn btn-success">Generuj PDF <i class="fas fa-file-pdf ml-2"></i></a>
                                 {% endblock %}
                             </span>
                         </div>

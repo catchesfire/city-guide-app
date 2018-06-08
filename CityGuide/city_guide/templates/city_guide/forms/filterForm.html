@@ -19,7 +19,6 @@
 
                     <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
                         <form action="{% url 'city_guide:sort' %}" method="GET" id="sort_form">
-                            {% csrf_token %}
                             <a class="dropdown-item" href="javascript:{}" onclick="document.getElementById('alph_asc').value='name'; document.getElementById('sort_form').submit();">Alfabetycznie
                                 <span class="fa fa-long-arrow-alt-up ml-1"></span>
                                 <input id="alph_asc" type="hidden" name="sort_key">
@@ -57,7 +56,6 @@
                 <div class="container-fluid">
                     <div class="form-row align-items-center">
                         <form action="{% url 'city_guide:search' %}" method="GET">
-                            {% csrf_token %}
                             <div class="col-auto">
                                 <label for="attrSearch">
                                     <i class="fa fa-search"></i>

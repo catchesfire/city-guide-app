@@ -765,15 +765,29 @@ def planner_to_pdf(request, pk):
                 orders[user_break] = {}
                 orders[user_break]['type'] = 'break'
                 orders[user_break]['items'] = user_break
+    
+    def min_to_hours(time):
+        hours = time // 60
+        minutes = time - hours * 60
 
-    return render(request, 'city_guide/pdf.html', {'tour' : tour, 'total_cost': total_cost, 'orders': orders, 'waypoints' : json.dumps(waypoints)})
+        return str(hours) + " godz. " + str(minutes) + " min"
+
+    tot_time = 0
+    for key, items in orders.items():
+        if items['type'] == 'attraction':
+            tot_time += key.time_minutes
+        else:
+            tot_time += key.time        
+
+    tot_time = min_to_hours(tot_time)
+
+    return render(request, 'city_guide/pdf.html', {'tour' : tour, 'total_cost': total_cost, 'total_time': tot_time, 'orders': orders, 'waypoints' : json.dumps(waypoints)})
 
 class PDFView(View):
     template = 'city_guide/pdf.html'
 
-    def get(self, request):
+    def get(self, request, pk):
         tour = Tour.objects.get(id=pk)
-
         all_orders = tour.order_set.all()
         all_breaks = tour.userbreak_set.all()
 
@@ -785,6 +799,7 @@ class PDFView(View):
             total_cost += order.cost()
 
         orders = {}
+        waypoints = {}
         positions = json.loads(tour.attraction_order)
 
         j = 0
@@ -806,9 +821,28 @@ class PDFView(View):
                     orders[user_break] = {}
                     orders[user_break]['type'] = 'break'
                     orders[user_break]['items'] = user_break
+        
+        def min_to_hours(time):
+            hours = time // 60
+            minutes = time - hours * 60
+
+            return str(hours) + " godz. " + str(minutes) + " min"
+
+        tot_time = 0
+        for key, items in orders.items():
+            if items['type'] == 'attraction':
+                tot_time += key.time_minutes
+            else:
+                tot_time += key.time        
+
+        tot_time = min_to_hours(tot_time)
 
         data = {
-            'orders' : orders
+            'tour' : tour, 
+            'total_cost': total_cost, 
+            'total_time': tot_time, 
+            'orders': orders, 
+            'waypoints' : json.dumps(waypoints)
         }
 
         response = PDFTemplateResponse(request = request,

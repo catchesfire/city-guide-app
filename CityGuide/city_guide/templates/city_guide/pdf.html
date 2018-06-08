@@ -1,5 +1,17 @@
 {% extends 'city_guide/planner.html' %} 
 {% load staticfiles %} 
+{% block stylesheets %}
+{{ block.super }}
+<style>
+    body {
+        background: #fff;
+    }
+    #map{
+        margin-top: 0!important;
+        height: 100%;
+    }
+</style>
+{% endblock %}
 {% block modals %}{% endblock %}
 {% block header %}{% endblock %}
 {% block generatePDF %}{% endblock %}
@@ -11,6 +23,11 @@
 <div class="row">
     <div class="col">
         <h1>{{ tour.name }}</h1>
+    </div>
+</div>
+<div class="row">
+    <div class="col">
+        <p>{{ tour.description }}</p>
     </div>
 </div>
 {% endblock %}

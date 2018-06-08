@@ -25,7 +25,7 @@ urlpatterns = [
     path('cart/create/<int:pk>', views.cart_create, name="cart_create"),
     path('attractions/filter', views.AttractionsView.as_view(), name="filter"),
     path('attractions/search', views.AttractionsView.as_view(), name="search"),
-    path('attractions/sort', views.AttractionsView.as_view(), name="sort"),
+    path('attractions/sort', csrf_exempt(views.AttractionsView.as_view()), name="sort"),
     path('planner/<int:pk>', views.PlannerView.as_view(), name='planner'),
     path('tour/delete/<int:pk>', views.tour_delete, name='tour_delete'),
     path('planner/add', views.planner_add, name="planner_add"),
@@ -34,6 +34,5 @@ urlpatterns = [
     path('description', views.description, name="description"),
     path('planner/delete_attraction', views.planner_attraction_delete, name="planner_attraction_delete"),
     path('planner/delete_break', views.planner_break_delete, name="planner_break_delete"),
-    path('planner/generate_pdf/<int:pk>', views.planner_to_pdf, name="generate_pdf"),
-    path('planner/raw/<int:pk>', views.planner_to_pdf, name="raw_planner")
+    path('planner/pdf/<int:pk>', views.PDFView.as_view(), name="planner_pdf")
 ]
