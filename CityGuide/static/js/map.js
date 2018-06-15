@@ -1,3 +1,4 @@
+//var waypts;
 var waypoints = [];
 let isStartPoint = false;
 let startLocationInput;
@@ -13,11 +14,11 @@ if (!startLocation) {
         startLocationInput.val(localStorage.getItem('start-point'));
     }
 }
-if (!transport) {
+if(!transport){
     localStorage.setItem('transport', 'DRIVING');
     transport = "DRIVING";
-} else {
-    if ($("#transport").length) {
+} else{
+    if($("#transport").length){
         $("#transport").val(localStorage.getItem('transport'));
         transport = localStorage.getItem('transport');
     }
@@ -70,6 +71,7 @@ function initMap() {
                     startLocation = address;
                     startLocationInput.val(address);
                     calculateAndDisplayRoute(directionsService, directionsDisplay, data.results[0].geometry.location, mapId);
+                    //$('#map-9').show();
                 } else {
                     setTimeout(getAjax, 1000);
                 }
@@ -77,8 +79,27 @@ function initMap() {
         }
     } else {
         calculateAndDisplayRoute(directionsService, directionsDisplay, {}, mapId);
+        //$('#' + mapId).show();
     }
 }
+
+function minToHours(time){
+    let days = Math.floor(time / 1440);
+    
+    if (days > 0){
+        time -= 1440;
+    }
+
+    hours = Math.floor(time / 60)
+    time -= 60 * hours
+    minutes = time 
+    
+    let daysStr = (days == 1) ? days + " dzień" :  (days != 0) ? days + " dni" : "";
+    let hoursStr = (hours > 0) ? hours + " godz." : "";
+    let minutesStr = (minutes > 0) ? minutes + " min" : ""; 
+
+    return daysStr + " " + hoursStr + " " + minutesStr;
+} 
 
 function calculateAndDisplayRoute(directionsService, directionsDisplay, pos = {}, map) {
     waypoints = [];
@@ -119,28 +140,21 @@ function calculateAndDisplayRoute(directionsService, directionsDisplay, pos = {}
             directionsDisplay.setDirections(response);
             var route = response.routes[0];
 
-            // route.legs.forEach((edge, i) => {
-            //     i = i + 1
-            //     document.getElementById("start_" + i).innerHTML = edge.start_address;
-            //     document.getElementById("end_" + i).innerHTML = edge.end_address;
-            //     document.getElementById("distance_" + i).innerHTML = edge.distance.text;
-            //     document.getElementById("duration_" + i).innerHTML = edge.duration.text;
-            // });
-
-            for (let i = 0; i < route.legs.length; i++) {
-                let index = i + 1;
-                if (document.getElementById("start_" + index) != null) {
-                    document.getElementById("start_" + index).innerHTML = route.legs[i].start_address;
-                    document.getElementById("end_" + index).innerHTML = route.legs[i].end_address;
-                    document.getElementById("distance_" + index).innerHTML = route.legs[i].distance.text;
-                    document.getElementById("duration_" + index).innerHTML = route.legs[i].duration.text;
-                }
-            }
+            let travelTime = 0;
+            route.legs.forEach(edge => {
+                travelTime += parseInt(edge.duration.text.split(' '[0]));
+            });
             
-            $('#spinner-' + map).fadeOut("slow", function () {
-                $('#' + map).animate({
-                    opacity: "1"
-                }, 500);
+            if($('#total-time').length){
+                let time = parseInt(document.getElementById('total-time').innerHTML)
+                time += travelTime;
+                document.getElementById('total-time').innerHTML = minToHours(time);
+                $('#total-time').css('display', 'inline');
+            }
+            $('#spinner-' + map).fadeOut("slow", function(){
+              $('#' + map).animate({
+                opacity: "1" 
+              }, 500);
             });
         } else {
             window.alert('Directions request failed due to ' + status);

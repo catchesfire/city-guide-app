@@ -41,7 +41,7 @@
                     </div>
 
                     <div class="col ">
-                        <form action="{% url 'city_guide:cart_add' %}" method="POST">
+                        <form class="ticket-form" action="{% url 'city_guide:cart_add' %}" method="POST">
                             {% csrf_token %}
                             <div class="form-row align-items-center">
                                 <div class="form-group col-md-12">

@@ -840,9 +840,9 @@ class PDFView(View):
                                         context = data,
                                         show_content_in_browser=False,
                                         cmd_options= {
-                                            'margin-top0': 10,
+                                            'margin-top': 10,
                                             'zoom': 1,
-                                            'viewport-size': '1366x513',
+                                            'viewport-size': '1920x720',
                                             'javascript-delay': 1000,
                                             'footer-center': '[page]/[topage]',
                                             'no-stop-slow-scripts': True

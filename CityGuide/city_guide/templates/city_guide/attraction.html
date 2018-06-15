@@ -138,9 +138,11 @@
 
 <script>
     function initMap() {
+	var lat = "{{ object.location_x }}";
+	var lng = "{{ object.location_y }}";
         var uluru = { 
-            lat: {{ object.location_x }}, 
-            lng: {{ object.location_y }} 
+            lat: parseFloat(lat.replace(",", ".")), 
+            lng: parseFloat(lng.replace(",", ".")) 
         };
     
         var map = new google.maps.Map(document.getElementById('map-attraction'), {
@@ -152,8 +154,6 @@
             position: uluru,
             map: map
         });
-
-        marker.showInfoWindow();
     }
 </script>
 <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCYXIhgWd59IDdrJoO38Tz2hbyoYw0u9TU&callback=initMap">
